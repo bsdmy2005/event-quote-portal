@@ -1,3 +1,6 @@
+i work on windows make sure to use powershell commands.
+
+
 # Payments Setup Instructions
 
 Use this guide to setup the payments for this project.

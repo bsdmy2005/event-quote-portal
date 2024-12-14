@@ -2,7 +2,7 @@
 
 ```
 
-Use this guide to setup the auth for this project.
+Use this guide to setup the auth for this project. i work on windows make sure to use powershell commands.
 
 It uses Clerk for authentication.
 

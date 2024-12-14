@@ -8,6 +8,9 @@ Write the complete code for every step. Do not get lazy. Write everything that i
 
 Your goal is to completely finish the backend setup.
 
+i work on windows make sure to use powershell commands.
+
+
 ## Helpful Links
 
 If the user gets stuck, refer them to the following links:

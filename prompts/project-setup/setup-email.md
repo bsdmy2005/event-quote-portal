@@ -7,6 +7,7 @@ It uses Postmark for sending emails and Next.js API routes for handling email re
 Write the complete code for every step. Do not get lazy. Write everything that is needed.
 
 Your goal is to completely finish the email setup.
+i work on windows make sure to use powershell commands.
 
 ## Helpful Links
 

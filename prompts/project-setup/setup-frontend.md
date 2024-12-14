@@ -8,6 +8,9 @@ Write the complete code for every step. Do not get lazy. Write everything that i
 
 Your goal is to completely finish the frontend setup.
 
+i work on windows make sure to use powershell commands.
+
+
 ## Helpful Links
 
 If the user gets stuck, refer them to the following links:
@@ -26,6 +29,10 @@ Make sure the user knows to run the following scripts if project is not setup ye
 ```bash
 npx shadcn@latest init
 ```
+
+## Install Shadcn UI all components
+
+
 make sure to run this step
 
 ```bash

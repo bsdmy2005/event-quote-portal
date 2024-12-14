@@ -1,3 +1,6 @@
+i work on windows make sure to use powershell commands.
+
+
 # Navigation & Auth Setup Guide
 
 This guide provides instructions for setting up navigation, authentication protection, and header components in a Next.js project.
