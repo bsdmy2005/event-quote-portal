@@ -12,6 +12,5 @@ Run these files in order:
 
 - Run the `setup-frontend.md` file
 - Run the `setup-backend.md` file
-- Run the `setup-auth.md` file
-- Run the `setup-payments.md` file
+- Run the `auth-setup-updated.md` file
 - The project is now setup.

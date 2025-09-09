@@ -54,4 +54,32 @@ export const deleteProfile = async (userId: string): Promise<void> => {
     console.error("Error deleting profile:", error);
     throw new Error("Failed to delete profile");
   }
+};
+
+export const getProfileByEmail = async (email: string): Promise<SelectProfile | null> => {
+  try {
+    const profile = await db.query.profilesTable.findFirst({
+      where: eq(profilesTable.email, email)
+    });
+    return profile as SelectProfile || null;
+  } catch (error) {
+    console.error("Error getting profile by email:", error);
+    throw new Error("Failed to get profile by email");
+  }
+};
+
+export const getProfileWithOrganization = async (userId: string) => {
+  try {
+    const profile = await db.query.profilesTable.findFirst({
+      where: eq(profilesTable.userId, userId),
+      with: {
+        agency: true,
+        supplier: true
+      }
+    });
+    return profile;
+  } catch (error) {
+    console.error("Error getting profile with organization:", error);
+    throw new Error("Failed to get profile with organization");
+  }
 }; 

@@ -1,0 +1,303 @@
+---
+alwaysApply: true
+---
+# Navigation & Auth Setup Rules
+
+This file provides guidance for setting up navigation, authentication protection, and header components in this Next.js project.
+
+## Prerequisites
+
+- Next.js 14+ project
+- Clerk authentication setup
+- Shadcn UI components installed
+- Tailwind CSS configured
+- Use PowerShell commands for Windows environment
+
+## Core Components Structure
+
+### Header Component Pattern
+When creating/updating `components/header.tsx`:
+
+```typescript
+"use client";
+import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut, SignInButton, useUser, SignOutButton } from "@clerk/nextjs";
+import { ClipboardCheckIcon, HomeIcon, BarChartIcon, Menu, X, UserIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+export default function Header({ isAdmin }: { isAdmin: boolean }) {
+  const { user } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // NavItem component for consistent navigation links
+  const NavItem = ({ href, icon: Icon, label, iconOnly = false }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            href={href}
+            className={`hover:text-primary flex items-center space-x-2 ${
+              iconOnly ? 'justify-center w-10 h-10 rounded-full bg-secondary' : ''
+            }`}
+          >
+            <Icon className={`${iconOnly ? 'h-5 w-5' : 'h-6 w-6'}`} />
+            {!iconOnly && <span>{label}</span>}
+          </Link>
+        </TooltipTrigger>
+        {iconOnly && (
+          <TooltipContent>
+            <p>{label}</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
+  );
+
+  return (
+    <header className="bg-background border-b border-border sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-2">
+        {/* Desktop Navigation */}
+        <div className="flex items-center justify-between">
+          {/* Logo Section */}
+          <div className="flex items-center space-x-4">
+            <Link href="/" className="flex items-center space-x-2">
+              <ClipboardCheckIcon className="h-8 w-8 text-primary" />
+              <span className="text-xl font-bold text-foreground hidden sm:inline">AppName</span>
+            </Link>
+            <Badge variant="secondary" className="hidden sm:inline-flex">Beta</Badge>
+          </div>
+
+          {/* Main Navigation */}
+          <nav className="hidden md:flex items-center space-x-4">
+            <NavItem href="/" icon={HomeIcon} label="Home" />
+            <SignedIn>
+              {/* Protected Routes */}
+              {isAdmin && (
+                <>
+                  <NavItem href="/dashboard" icon={BarChartIcon} label="Dashboard" />
+                  <NavItem href="/admin" icon={BarChartIcon} label="Admin" />
+                  <NavItem href="/user-management" icon={UserIcon} label="User Management" iconOnly />
+                </>
+              )}
+            </SignedIn>
+          </nav>
+
+          {/* Auth Section */}
+          <div className="flex items-center space-x-4">
+            <SignedOut>
+              <SignInButton>
+                <Button variant="default" size="sm">Sign In</Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <span className="text-sm font-medium text-foreground hidden sm:inline">
+                {user?.firstName || 'User'}
+              </span>
+              <SignOutButton>
+                <Button variant="outline" size="sm">Sign Out</Button>
+              </SignOutButton>
+            </SignedIn>
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      {isMenuOpen && (
+        <nav className="md:hidden bg-background border-t border-border p-4">
+          <div className="space-y-4">
+            <NavItem href="/" icon={HomeIcon} label="Home" />
+            <SignedIn>
+              {isAdmin && (
+                <>
+                  <NavItem href="/dashboard" icon={BarChartIcon} label="Dashboard" />
+                  <NavItem href="/admin" icon={BarChartIcon} label="Admin" />
+                  <NavItem href="/user-management" icon={UserIcon} label="User Management" />
+                </>
+              )}
+            </SignedIn>
+          </div>
+        </nav>
+      )}
+    </header>
+  );
+}
+```
+
+### Middleware Protection Pattern
+For `middleware.ts` in the root:
+
+```typescript
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+// Define protected routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+  "/admin(.*)",           // Protect all admin routes    
+]);
+
+// Define public routes that don't require authentication
+const isPublicRoute = createRouteMatcher([
+  "/",                          // Homepage
+  "/api/webhooks/clerk(.*)",    // Clerk webhooks
+  "/api/public/(.*)",           // Any public APIs
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, redirectToSignIn } = await auth();
+  
+  // Allow public routes
+  if (isPublicRoute(req)) {
+    return NextResponse.next();
+  }
+
+  // Redirect to sign-in if accessing protected route while not authenticated
+  if (!userId && isProtectedRoute(req)) {
+    return redirectToSignIn({ returnBackUrl: req.url });
+  }
+
+  // Allow authenticated users to access protected routes
+  if (userId && isProtectedRoute(req)) {
+    return NextResponse.next();
+  }
+
+  // Allow access by default for unmatched routes
+  return NextResponse.next();
+});
+
+export const config = {
+  matcher: [
+    "/((?!.*\\..*|_next).*)",    // Match all paths except static files
+    "/",                         // Match root
+    "/(api|trpc)(.*)",          // Match API routes
+  ]
+};
+```
+
+### Root Layout Pattern
+For `app/layout.tsx`:
+
+```typescript
+import { ClerkProvider } from "@clerk/nextjs";
+import Header from "@/components/header";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { getProfileByIdAction, createProfileAction } from "@/actions/profiles-actions";
+
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { userId } = await auth();
+  const user = await currentUser();
+  let isAdmin = false;
+
+  if (userId) {
+    // Check if profile exists and create if needed
+    const profileResult = await getProfileByIdAction(userId);
+    
+    if (!profileResult.data && user) {
+      try {
+        await createProfileAction({
+          userId: userId,
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          email: user.emailAddresses[0]?.emailAddress || "",
+          role: "user",
+          membership: "free"
+        });
+      } catch (error) {
+        console.error("Failed to create profile for user:", userId, error);
+      }
+    }
+    
+    const updatedProfileResult = await getProfileByIdAction(userId);
+    isAdmin = updatedProfileResult.data?.role === 'admin';
+  }
+
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          <Header isAdmin={isAdmin} />
+          <main className="pt-16">{children}</main>
+        </body>
+      </html>
+    </ClerkProvider>
+  );
+}
+```
+
+## Implementation Commands
+
+Install required dependencies:
+```powershell
+npm install @clerk/nextjs lucide-react @radix-ui/react-tooltip
+```
+
+## Key Features to Always Include
+
+1. **Responsive Design**
+   - Desktop and mobile navigation
+   - Collapsible menu for mobile
+   - Smooth transitions
+
+2. **Authentication Integration**
+   - Protected routes with Clerk
+   - Sign in/out functionality
+   - User role-based access control
+   - Automatic profile creation on first login
+
+3. **Navigation Components**
+   - Reusable NavItem component
+   - Tooltips for icon-only items
+   - Active state styling
+
+4. **Layout Structure**
+   - Sticky header
+   - Consistent spacing
+   - Flexible container system
+
+## Adding New Navigation Items
+
+```typescript
+<NavItem
+  href="/new-route"
+  icon={IconComponent}
+  label="New Route"
+  iconOnly={false}
+/>
+```
+
+## Protected Routes Pattern
+
+```typescript
+<SignedIn>
+  {isAdmin && (
+    <NavItem href="/admin-only" icon={AdminIcon} label="Admin" />
+  )}
+</SignedIn>
+```
+
+## Best Practices
+
+- Keep navigation items organized and minimal
+- Use consistent spacing and styling
+- Implement proper loading states
+- Handle authentication errors gracefully
+- Maintain clear role-based access control
+- Use semantic HTML elements
+- Ensure accessibility standards are met
+- Always use PowerShell commands for Windows environment

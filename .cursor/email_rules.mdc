@@ -1,0 +1,304 @@
+---
+alwaysApply: true
+---
+# Email Setup Rules
+
+This file provides guidance for setting up email functionality using Postmark and Next.js API routes.
+
+## Prerequisites
+
+- Next.js 14+ project
+- Postmark account with server API token
+- PowerShell environment for Windows
+
+## Required Dependencies
+
+Install Postmark library:
+```powershell
+npm install postmark
+```
+
+## Core Email Components
+
+### Email Utility Function
+Create `lib/sendEmailWithTemplate.ts`:
+
+```typescript
+import { ServerClient } from 'postmark';
+
+const client = new ServerClient(process.env.POSTMARK_SERVER_API_TOKEN as string);
+
+interface SendEmailWithTemplateParams {
+  to: string;
+  templateId: string;
+  templateModel: Record<string, string>;
+}
+
+export async function sendEmailWithTemplate({
+  to,
+  templateId,
+  templateModel,
+}: SendEmailWithTemplateParams) {
+  try {
+    const response = await client.sendEmailWithTemplate({
+      From: 'sender@example.com', // Replace with your actual sender email
+      To: to,
+      TemplateId: parseInt(templateId),
+      TemplateModel: templateModel,
+    });
+    return response;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
+}
+```
+
+### Email API Route Pattern
+Create `app/api/postmark/SendRegularEmail/route.ts`:
+
+```typescript
+import { sendEmailWithTemplate } from '@/lib/sendEmailWithTemplate';
+import { getAllProfilesAction } from '@/actions/profiles-actions';
+import { NextResponse } from 'next/server';
+import { MessageSendingResponse } from 'postmark/dist/client/models';
+
+export async function GET() {
+  try {
+    const users = await getAllProfilesAction(); // Fetch users from your database
+
+    const emailPromises = users?.data?.map((user) => {
+      if (!user.email) return Promise.resolve(null);
+      return sendEmailWithTemplate({
+        to: user.email,
+        templateId: process.env.POSTMARK_TEMPLATE_ID as string,
+        templateModel: { 
+          name: user.firstName || 'User',
+          email: user.email || '',
+        },
+      });
+    }).filter((promise): promise is Promise<MessageSendingResponse> => promise !== null);
+
+    if (emailPromises) {
+      await Promise.all(emailPromises);
+    }
+
+    return NextResponse.json({ message: 'Scheduled emails sent successfully' }, { status: 200 });
+  } catch (error) {
+    console.error('Scheduled email error:', error);
+    return NextResponse.json({ error: 'Error sending scheduled emails' }, { status: 500 });
+  }
+}
+```
+
+### Middleware Update Pattern
+Update `middleware.ts` to allow email API access:
+
+```typescript
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+const isProtectedRoute = createRouteMatcher([
+  "/admin(.*)",
+]);
+
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/api/webhooks/clerk(.*)",
+  "/api/postmark/SendRegularEmail", // Add email API route
+  "/api/public/(.*)",
+]);
+
+// ... rest of middleware code
+```
+
+## Required Environment Variables
+
+Add to `.env.local`:
+```
+POSTMARK_SERVER_API_TOKEN=your_postmark_server_api_token
+POSTMARK_TEMPLATE_ID=your_postmark_template_id
+```
+
+## Email Template Types
+
+### Welcome Email Template Model
+```typescript
+interface WelcomeEmailModel {
+  name: string;
+  email: string;
+  loginUrl?: string;
+  supportEmail?: string;
+}
+```
+
+### Notification Email Template Model
+```typescript
+interface NotificationEmailModel {
+  name: string;
+  subject: string;
+  message: string;
+  actionUrl?: string;
+  actionText?: string;
+}
+```
+
+### Password Reset Email Template Model
+```typescript
+interface PasswordResetEmailModel {
+  name: string;
+  resetUrl: string;
+  expiryTime: string;
+}
+```
+
+## Common Email Patterns
+
+### Send Individual Email
+```typescript
+export async function sendWelcomeEmail(userEmail: string, userName: string) {
+  return sendEmailWithTemplate({
+    to: userEmail,
+    templateId: process.env.POSTMARK_WELCOME_TEMPLATE_ID as string,
+    templateModel: {
+      name: userName,
+      email: userEmail,
+      loginUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+      supportEmail: process.env.SUPPORT_EMAIL || 'support@example.com'
+    },
+  });
+}
+```
+
+### Send Bulk Emails
+```typescript
+export async function sendBulkEmails(users: Array<{email: string, firstName: string}>, templateId: string) {
+  const emailPromises = users
+    .filter(user => user.email)
+    .map(user => 
+      sendEmailWithTemplate({
+        to: user.email,
+        templateId,
+        templateModel: {
+          name: user.firstName || 'User',
+          email: user.email,
+        },
+      })
+    );
+
+  return Promise.allSettled(emailPromises);
+}
+```
+
+### Email Queue Processing
+```typescript
+export async function processEmailQueue() {
+  try {
+    // Get pending emails from database
+    const pendingEmails = await getPendingEmailsFromDatabase();
+    
+    for (const email of pendingEmails) {
+      try {
+        await sendEmailWithTemplate({
+          to: email.recipient,
+          templateId: email.templateId,
+          templateModel: email.templateData,
+        });
+        
+        // Mark as sent in database
+        await markEmailAsSent(email.id);
+      } catch (error) {
+        // Mark as failed and retry later
+        await markEmailAsFailed(email.id, error.message);
+      }
+    }
+  } catch (error) {
+    console.error('Email queue processing error:', error);
+  }
+}
+```
+
+## Error Handling Patterns
+
+### Email Service Error Handler
+```typescript
+export class EmailError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public retryable: boolean = false
+  ) {
+    super(message);
+    this.name = 'EmailError';
+  }
+}
+
+export async function safeEmailSend(params: SendEmailWithTemplateParams) {
+  try {
+    return await sendEmailWithTemplate(params);
+  } catch (error) {
+    if (error.code === 422) {
+      throw new EmailError('Invalid email template or data', 'TEMPLATE_ERROR', false);
+    }
+    if (error.code >= 500) {
+      throw new EmailError('Email service temporarily unavailable', 'SERVICE_ERROR', true);
+    }
+    throw new EmailError('Unknown email error', 'UNKNOWN_ERROR', false);
+  }
+}
+```
+
+## Testing Email Functionality
+
+### Test API Route
+Create `app/api/postmark/test/route.ts`:
+
+```typescript
+import { sendEmailWithTemplate } from '@/lib/sendEmailWithTemplate';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    const result = await sendEmailWithTemplate({
+      to: 'test@example.com',
+      templateId: process.env.POSTMARK_TEMPLATE_ID as string,
+      templateModel: {
+        name: 'Test User',
+        email: 'test@example.com',
+      },
+    });
+
+    return NextResponse.json({ success: true, messageId: result.MessageID });
+  } catch (error) {
+    return NextResponse.json({ error: 'Test email failed' }, { status: 500 });
+  }
+}
+```
+
+## Best Practices
+
+1. **Always validate email addresses before sending**
+2. **Use environment variables for sensitive data**
+3. **Implement proper error handling and retry logic**
+4. **Log email sending attempts for debugging**
+5. **Use email templates instead of hardcoded content**
+6. **Respect rate limits and implement queuing for bulk emails**
+7. **Test email functionality in development with test email addresses**
+8. **Monitor email delivery rates and bounces**
+9. **Use PowerShell commands for Windows environment**
+
+## Security Considerations
+
+- Never expose Postmark API tokens in client-side code
+- Validate all template data to prevent injection attacks
+- Implement rate limiting for email sending endpoints
+- Use HTTPS for all email-related API routes
+- Sanitize user input before including in email templates
+
+## Common Issues and Solutions
+
+1. **Template not found**: Verify template ID in Postmark dashboard
+2. **Authentication failed**: Check POSTMARK_SERVER_API_TOKEN
+3. **Rate limiting**: Implement exponential backoff retry logic
+4. **Bounce handling**: Set up webhook for bounce notifications
+5. **Spam complaints**: Monitor sender reputation and content

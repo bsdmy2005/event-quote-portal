@@ -9,4 +9,4 @@ export const Providers = ({ children, ...props }: ThemeProviderProps) => {
       <TooltipProvider>{children}</TooltipProvider>
     </NextThemesProvider>
   );
-}; 
+};

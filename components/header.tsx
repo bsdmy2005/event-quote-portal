@@ -1,24 +1,36 @@
  "use client";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
-import { SignInButton, UserButton } from "@clerk/clerk-react";
-import { HeartIcon, CalendarIcon, UsersIcon, MessageSquareIcon, Menu, X, HomeIcon } from "lucide-react";
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { UsersIcon, MessageSquareIcon, Menu, X, HomeIcon, Building2, Wrench, Settings, Shield } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
 
   const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon },
+    { name: 'Agencies', href: '/agencies', icon: Building2 },
+    { name: 'Suppliers', href: '/suppliers', icon: Wrench },
     { name: 'Dashboard', href: '/dashboard', icon: MessageSquareIcon },
   ];
 
+  // Add organization management for signed-in users
+  const userNavigation = isSignedIn 
+    ? [...navigation, { name: 'Organization', href: '/organization', icon: Settings }]
+    : navigation;
+
+  // Add admin access for non-admin users
+  const userNavigationWithAdmin = isSignedIn && !isAdmin
+    ? [...userNavigation, { name: 'Admin Access', href: '/admin-access', icon: Shield }]
+    : userNavigation;
+
   // Add admin navigation if user is admin
   const fullNavigation = isSignedIn && isAdmin
-    ? [...navigation, { name: 'Admin', href: '/admin', icon: UsersIcon }]
-    : navigation;
+    ? [...userNavigation, { name: 'Admin', href: '/admin', icon: UsersIcon }]
+    : userNavigationWithAdmin;
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b fixed w-full z-50">
@@ -26,9 +38,13 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <HeartIcon className="h-6 w-6 text-primary" />
-              <span className="text-xl font-semibold">Your App</span>
+            <Link href="/" className="flex items-center space-x-3">
+              {/* Quote Portal Logo */}
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Quote Portal
+                </span>
+              </div>
             </Link>
           </div>
 
@@ -49,20 +65,18 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
             <SignedOut>
-              <SignInButton mode="modal">
-                <Button variant="outline">
-                  Sign In
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" asChild>
+                  <Link href="/sign-in">Sign In</Link>
                 </Button>
-              </SignInButton>
+                <Button asChild>
+                  <Link href="/sign-up">Sign Up</Link>
+                </Button>
+              </div>
             </SignedOut>
             <SignedIn>
               <UserButton
                 afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8"
-                  }
-                }}
               />
             </SignedIn>
 

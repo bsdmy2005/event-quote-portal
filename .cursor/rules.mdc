@@ -1,0 +1,100 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+Always plan out what you're going to do and let me know before making the changes. I need to confirm every single time.
+
+
+### Development
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+
+### Code Quality
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Run ESLint with auto-fix
+- `npm run types` - Run TypeScript type checking
+- `npm run format:write` - Format code with Prettier
+- `npm run clean` - Run both lint:fix and format:write
+
+### Database
+- `npx drizzle-kit push` - Push schema changes to database
+- `npx drizzle-kit generate` - Generate migration files
+- `npx drizzle-kit migrate` - Run migrations
+
+
+### Testing
+- `npm run test` - Run all tests (unit + e2e)
+- `npm run test:unit` - Run Jest unit tests
+- `npm run test:e2e` - Run Playwright e2e tests
+
+
+### Shadcn UI Components
+- `npx shadcn@latest add [component-name]` - Install new Shadcn UI components
+
+## Architecture
+
+This is a Next.js 15 SaaS template using the App Router with clear separation between authenticated and unauthenticated routes.
+
+### Route Structure
+- `/app/(unauthenticated)` - Public routes
+  - `(marketing)` - Landing pages, pricing, features
+  - `(auth)` - Login and signup flows
+- `/app/(authenticated)` - Protected routes requiring Clerk auth
+  - `dashboard` - Main application with account, billing, support sections
+- `/app/api` - API routes including paystack webhook handler
+
+### Key Patterns
+- **Server Actions** in `/actions` for data mutations (customers, paystack operations)
+- **Database Schema** in `/db/schema` using Drizzle ORM with PostgreSQL
+- **queries** in `/db/queries`
+- **UI Components** in `/components/ui` from Shadcn UI library
+- **Authentication** handled by Clerk middleware with protected route groups
+- **Payments** integrated via paystack with webhook handling
+
+### Data Flow
+1. Authentication state managed by Clerk (`@clerk/nextjs`)
+2. Customer data stored in PostgreSQL via Drizzle ORM
+3. paystack integration for subscription management
+4. Server actions handle all data mutations with proper auth checks
+
+### Environment Variables Required
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk public key
+- `CLERK_SECRET_KEY` - Clerk secret key
+- `paystack_SECRET_KEY` - paystack secret key
+- Database connection handled by Supabase CLI
+
+## Database Interaction Rules
+
+### MANDATORY: Actions and Queries Pattern
+
+**ALWAYS follow this separation:**
+- **Queries** (`/db/queries/`) = Pure data access functions (read/write to database)
+- **Actions** (`/actions/`) = Business logic + validation + UI updates + error handling
+
+
+### Database Interaction Rules
+
+1. **NEVER** call database directly from components or pages
+2. **ALWAYS** use actions for mutations (create, update, delete)
+3. **ALWAYS** use queries for data access (read operations)
+4. **ALWAYS** include `revalidatePath()` in actions that modify data
+5. **ALWAYS** return `ActionResult<T>` from actions for consistent error handling
+6. **ALWAYS** include try/catch blocks in both queries and actions
+7. **ALWAYS** use TypeScript types from schema (`InsertType`, `SelectType`)
+8. **NEVER** expose database errors to the client - wrap in generic messages
+
+### File Naming Conventions
+
+- Queries: `[entity]-queries.ts` (e.g., `profiles-queries.ts`, `customers-queries.ts`)
+- Actions: `[entity]-actions.ts` (e.g., `profiles-actions.ts`, `customers-actions.ts`)
+- Schema: `[entity]-schema.ts` (e.g., `profiles-schema.ts`, `customers-schema.ts`)
+
+- The actual SQL query should always be in the queries file, and the action file should always call the queries for the corresponding table.s
+```
+
+✅ **Always use the Actions → Queries → Database flow for all data operations.**
+- `CLERK_SECRET_KEY` - Clerk secret key
+- `paystack_SECRET_KEY` - paystack secret key
+- Database connection handled by Supabase CLI

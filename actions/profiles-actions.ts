@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import { createProfile, deleteProfile, getAllProfiles, getProfileById, updateProfile } from "@/db/queries/profiles-queries";
 import { InsertProfile, SelectProfile } from "@/db/schema/profiles-schema";
 import { ActionResult } from "@/types/actions/action-types";
@@ -50,5 +51,37 @@ export async function deleteProfileAction(userId: string): Promise<ActionResult<
     return { isSuccess: true, message: "Profile deleted successfully" };
   } catch (error) {
     return { isSuccess: false, message: "Failed to delete profile" };
+  }
+}
+
+export async function getProfileByUserIdAction(userId: string): Promise<ActionResult<SelectProfile | null>> {
+  try {
+    const profile = await getProfileById(userId);
+    return { isSuccess: true, message: "Profile retrieved successfully", data: profile };
+  } catch (error) {
+    return { isSuccess: true, message: "Profile not found", data: null };
+  }
+}
+
+export async function isAdmin(userId: string): Promise<boolean> {
+  try {
+    const profile = await getProfileById(userId);
+    return profile.role === 'admin';
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function getUserProfileAction(): Promise<ActionResult<SelectProfile>> {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return { isSuccess: false, message: "User not authenticated" };
+    }
+    
+    const profile = await getProfileById(userId);
+    return { isSuccess: true, message: "Profile retrieved successfully", data: profile };
+  } catch (error) {
+    return { isSuccess: false, message: "Failed to get profile" };
   }
 } 
