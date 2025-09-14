@@ -43,6 +43,19 @@ export const getAllAgencies = async (): Promise<SelectAgency[]> => {
   }
 };
 
+export const getPublishedAgencies = async (): Promise<SelectAgency[]> => {
+  try {
+    return await db
+      .select()
+      .from(agenciesTable)
+      .where(eq(agenciesTable.isPublished, true))
+      .orderBy(agenciesTable.name);
+  } catch (error) {
+    console.error("Error getting published agencies:", error);
+    throw new Error("Failed to get published agencies");
+  }
+};
+
 export const getAllAgenciesWithImages = async () => {
   try {
     const agencies = await db.select().from(agenciesTable).orderBy(agenciesTable.name);
@@ -71,6 +84,41 @@ export const getAllAgenciesWithImages = async () => {
   } catch (error) {
     console.error("Error getting agencies with images:", error);
     throw new Error("Failed to get agencies with images");
+  }
+};
+
+export const getPublishedAgenciesWithImages = async () => {
+  try {
+    const agencies = await db
+      .select()
+      .from(agenciesTable)
+      .where(eq(agenciesTable.isPublished, true))
+      .orderBy(agenciesTable.name);
+    
+    // Get featured images for each agency
+    const agenciesWithImages = await Promise.all(
+      agencies.map(async (agency) => {
+        const featuredImages = await db.query.imagesTable.findMany({
+          where: and(
+            eq(imagesTable.organizationId, agency.id),
+            eq(imagesTable.organizationType, "agency"),
+            eq(imagesTable.isFeatured, true)
+          ),
+          orderBy: [asc(imagesTable.sortOrder), desc(imagesTable.createdAt)],
+          limit: 1
+        });
+        
+        return {
+          ...agency,
+          featuredImage: featuredImages[0] || null
+        };
+      })
+    );
+    
+    return agenciesWithImages;
+  } catch (error) {
+    console.error("Error getting published agencies with images:", error);
+    throw new Error("Failed to get published agencies with images");
   }
 };
 
@@ -124,6 +172,40 @@ export const searchAgencies = async (query: string): Promise<SelectAgency[]> => 
   } catch (error) {
     console.error("Error searching agencies:", error);
     throw new Error("Failed to search agencies");
+  }
+};
+
+export const publishAgency = async (id: string): Promise<SelectAgency> => {
+  try {
+    const [publishedAgency] = await db.update(agenciesTable)
+      .set({ isPublished: true, updatedAt: new Date() })
+      .where(eq(agenciesTable.id, id))
+      .returning();
+    
+    if (!publishedAgency) {
+      throw new Error("Agency not found");
+    }
+    return publishedAgency as SelectAgency;
+  } catch (error) {
+    console.error("Error publishing agency:", error);
+    throw new Error("Failed to publish agency");
+  }
+};
+
+export const unpublishAgency = async (id: string): Promise<SelectAgency> => {
+  try {
+    const [unpublishedAgency] = await db.update(agenciesTable)
+      .set({ isPublished: false, updatedAt: new Date() })
+      .where(eq(agenciesTable.id, id))
+      .returning();
+    
+    if (!unpublishedAgency) {
+      throw new Error("Agency not found");
+    }
+    return unpublishedAgency as SelectAgency;
+  } catch (error) {
+    console.error("Error unpublishing agency:", error);
+    throw new Error("Failed to unpublish agency");
   }
 };
 

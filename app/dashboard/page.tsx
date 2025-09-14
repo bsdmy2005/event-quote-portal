@@ -14,6 +14,16 @@ export default async function DashboardPage() {
   const profileResult = await getProfileByIdAction(userId);
   const profile = profileResult.data;
 
+  // If user is an admin, redirect to admin page
+  if (profile && profile.role === "admin") {
+    redirect("/admin");
+  }
+
+  // If user is an agency or supplier admin, redirect to organization page
+  if (profile && (profile.role === "agency_admin" || profile.role === "supplier_admin")) {
+    redirect("/organization");
+  }
+
   // If user doesn't belong to any organization, they need to complete onboarding
   if (profile && !profile.agencyId && !profile.supplierId) {
     redirect("/onboard");

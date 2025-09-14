@@ -1,17 +1,14 @@
-import { withClerkMiddleware } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+import { authMiddleware } from "@clerk/nextjs/server";
 
-export default withClerkMiddleware((req) => {
-  const { pathname } = req.nextUrl;
-  
-  // Define public routes that don't require authentication
-  const publicRoutes = [
+export default authMiddleware({
+  // Array of public routes that don't require authentication
+  publicRoutes: [
     "/",
     "/agencies",
     "/suppliers", 
     "/sign-in",
     "/sign-up",
-    "/onboard",
+    "/onboard(.*)",
     "/invite",
     "/dashboard",
     "/api/webhooks/clerk",
@@ -20,19 +17,9 @@ export default withClerkMiddleware((req) => {
     "/api/inboundemail",
     "/api/test",
     "/dashboard/documents"
-  ];
-  
-  // Check if the current path is public
-  const isPublicRoute = publicRoutes.some(route => 
-    pathname === route || pathname.startsWith(route + "/")
-  );
-  
-  if (isPublicRoute) {
-    return NextResponse.next();
-  }
-  
-  // For protected routes, let Clerk handle authentication
-  return NextResponse.next();
+  ],
+  // Array of routes that can be accessed by authenticated users
+  ignoredRoutes: ["/api/webhook", "/api/public"],
 });
 
 export const config = {

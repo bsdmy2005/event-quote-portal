@@ -37,6 +37,7 @@ export async function createAgencyOnboardingAction(data: {
   }
   interestCategories: string[]
   about?: string
+  isPublished?: boolean
 }): Promise<ActionResult<any>> {
   try {
     const { userId } = await auth()
@@ -61,6 +62,7 @@ export async function createAgencyOnboardingAction(data: {
       location: data.location,
       interestCategories: data.interestCategories,
       about: data.about,
+      isPublished: data.isPublished ?? true,
       status: "active"
     })
 
@@ -98,6 +100,7 @@ export async function createSupplierOnboardingAction(data: {
   }
   serviceCategories: string[]
   servicesText?: string
+  isPublished?: boolean
 }): Promise<ActionResult<any>> {
   try {
     const { userId } = await auth()
@@ -121,7 +124,7 @@ export async function createSupplierOnboardingAction(data: {
       location: data.location,
       serviceCategories: data.serviceCategories,
       servicesText: data.servicesText,
-      isPublished: false, // Start as unpublished, admin can publish later
+      isPublished: data.isPublished ?? true,
       status: "active"
     })
 

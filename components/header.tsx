@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { SignInButton, UserButton } from "@clerk/nextjs";
-import { UsersIcon, MessageSquareIcon, Menu, X, HomeIcon, Building2, Wrench, Settings, Shield } from "lucide-react";
+import { UsersIcon, Menu, X, HomeIcon, Building2, Wrench, Settings } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -14,7 +14,6 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
     { name: 'Home', href: '/', icon: HomeIcon },
     { name: 'Agencies', href: '/agencies', icon: Building2 },
     { name: 'Suppliers', href: '/suppliers', icon: Wrench },
-    { name: 'Dashboard', href: '/dashboard', icon: MessageSquareIcon },
   ];
 
   // Add organization management for signed-in users
@@ -22,15 +21,10 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
     ? [...navigation, { name: 'Organization', href: '/organization', icon: Settings }]
     : navigation;
 
-  // Add admin access for non-admin users
-  const userNavigationWithAdmin = isSignedIn && !isAdmin
-    ? [...userNavigation, { name: 'Admin Access', href: '/admin-access', icon: Shield }]
-    : userNavigation;
-
   // Add admin navigation if user is admin
   const fullNavigation = isSignedIn && isAdmin
     ? [...userNavigation, { name: 'Admin', href: '/admin', icon: UsersIcon }]
-    : userNavigationWithAdmin;
+    : userNavigation;
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b fixed w-full z-50">

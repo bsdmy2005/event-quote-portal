@@ -9,6 +9,7 @@ export default function SignInPage() {
           <p className="text-gray-600">Sign in to your Quote Portal account</p>
         </div>
         <SignIn 
+          redirectUrl="/dashboard"
           appearance={{
             elements: {
               formButtonPrimary: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700",
@@ -20,7 +21,6 @@ export default function SignInPage() {
               footerActionLink: "text-blue-600 hover:text-blue-700"
             }
           }}
-          redirectUrl="/dashboard"
         />
       </div>
     </div>

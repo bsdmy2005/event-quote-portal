@@ -23,6 +23,7 @@ export const agenciesTable = pgTable("agencies", {
   }>(),
   interestCategories: json("interest_categories").$type<string[]>(),
   about: text("about"),
+  isPublished: boolean("is_published").default(false).notNull(),
   status: orgStatusEnum("status").default("active").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

@@ -9,14 +9,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, ArrowRight, Building2, MapPin, Globe, Phone, Mail } from "lucide-react"
 import { createAgencyOnboardingAction } from "@/actions/onboarding-actions"
+import { createImageAction } from "@/actions/image-galleries-actions"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { uploadImage } from "@/lib/supabase-storage"
 import { toast } from "sonner"
 
 export default function AgencyOnboardPage() {
   const router = useRouter()
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedImages, setSelectedImages] = useState<File[]>([])
   const [formData, setFormData] = useState({
     name: "",
     contactName: user?.fullName || "",
@@ -27,7 +32,8 @@ export default function AgencyOnboardPage() {
     province: "",
     country: "South Africa",
     interestCategories: [] as string[],
-    about: ""
+    about: "",
+    isPublished: true
   })
 
   const categories = [
@@ -62,10 +68,46 @@ export default function AgencyOnboardPage() {
           country: formData.country
         },
         interestCategories: formData.interestCategories,
-        about: formData.about
+        about: formData.about,
+        isPublished: formData.isPublished
       })
 
       if (result.isSuccess) {
+        // Upload images if any were selected
+        if (selectedImages.length > 0) {
+          try {
+            const uploadPromises = selectedImages.map(async (file) => {
+              // Upload to storage
+              const uploadResult = await uploadImage(file, "agency", result.data.id);
+              if (!uploadResult.success || !uploadResult.data) {
+                throw new Error(`Failed to upload ${file.name}`);
+              }
+              
+              // Create image record in database
+              const imageResult = await createImageAction({
+                organizationId: result.data.id,
+                organizationType: "agency",
+                fileName: file.name,
+                filePath: uploadResult.data.path,
+                fileUrl: uploadResult.data.url,
+                mimeType: uploadResult.data.type,
+                altText: file.name,
+                isFeatured: false
+              });
+              
+              if (!imageResult.isSuccess) {
+                throw new Error(`Failed to save image record for ${file.name}`);
+              }
+            });
+            
+            await Promise.all(uploadPromises);
+          } catch (imageError) {
+            console.error("Error uploading images:", imageError);
+            // Don't fail the entire operation if image upload fails
+            toast.error("Agency created successfully, but some images failed to upload. You can add them later.");
+          }
+        }
+        
         toast.success("Agency created successfully!")
         router.push("/onboard/invite?type=agency&orgId=" + result.data.id)
       } else {
@@ -247,6 +289,35 @@ export default function AgencyOnboardPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, about: e.target.value }))}
                   placeholder="Tell us about your agency, your experience, and what makes you unique..."
                   rows={4}
+                />
+              </div>
+
+              {/* Publication Visibility */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="isPublished">Make Agency Public</Label>
+                    <p className="text-sm text-gray-600">
+                      Allow your agency to be visible on the public agencies page
+                    </p>
+                  </div>
+                  <Switch
+                    id="isPublished"
+                    checked={formData.isPublished}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublished: checked }))}
+                  />
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div className="space-y-4">
+                <Label>Portfolio Images</Label>
+                <p className="text-sm text-gray-600">Upload images showcasing your work and events (optional)</p>
+                <ImageUpload
+                  selectedFiles={selectedImages}
+                  onFilesChange={setSelectedImages}
+                  disabled={isLoading}
+                  maxFiles={10}
                 />
               </div>
 
