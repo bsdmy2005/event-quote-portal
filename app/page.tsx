@@ -30,7 +30,7 @@ export default function HomePage() {
           <div className="text-center max-w-5xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-8">
               <Sparkles className="h-4 w-4" />
-              #1 Quote Platform for South African Events
+              #1 Quote Platform
             </div>
             
             <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
@@ -41,7 +41,7 @@ export default function HomePage() {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-              The complete B2B platform for South African event professionals. Send RFQs to multiple suppliers, 
+              The complete B2B platform for event professionals. Send RFQs to multiple suppliers, 
               streamline cost estimation, and generate qualified leads - all in one place.
             </p>
             
@@ -86,10 +86,10 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Trusted by South African Event Professionals
+              Trusted by Event Professionals
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join thousands of successful events across South Africa powered by our platform
+              Join thousands of successful events powered by our platform
             </p>
           </div>
           
@@ -106,14 +106,14 @@ export default function HomePage() {
                 <Wrench className="h-10 w-10 text-white" />
               </div>
               <div className="text-4xl font-bold text-gray-900 mb-2">20+</div>
-              <div className="text-gray-600 font-medium">SA Verified Suppliers</div>
+              <div className="text-gray-600 font-medium">Verified Suppliers</div>
             </div>
             <div className="text-center group">
               <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Award className="h-10 w-10 text-white" />
               </div>
               <div className="text-4xl font-bold text-gray-900 mb-2">5</div>
-              <div className="text-gray-600 font-medium">Top SA Agencies</div>
+              <div className="text-gray-600 font-medium">Top Agencies</div>
             </div>
             <div className="text-center group">
               <div className="bg-gradient-to-br from-orange-500 to-orange-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -121,57 +121,6 @@ export default function HomePage() {
               </div>
               <div className="text-4xl font-bold text-gray-900 mb-2">100%</div>
               <div className="text-gray-600 font-medium">South African</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* South African Business Focus Section */}
-      <div className="bg-gradient-to-r from-green-600 to-blue-600 py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-white mb-16">
-            <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
-              <MapPin className="h-4 w-4" />
-              Built for South African Business
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Connecting South African Event Professionals
-            </h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              From Cape Town to Johannesburg, we understand the unique needs of South African event businesses. 
-              Our platform is designed specifically for the local market with Rand pricing, local suppliers, and South African business practices.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center text-white">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Local Market Focus</h3>
-              <p className="text-blue-100">
-                Designed specifically for South African event industry with local suppliers, Rand pricing, and SA business practices.
-              </p>
-            </div>
-            
-            <div className="text-center text-white">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">SA Network</h3>
-              <p className="text-blue-100">
-                Connect with verified South African agencies and suppliers across all major cities and provinces.
-              </p>
-            </div>
-            
-            <div className="text-center text-white">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Local Expertise</h3>
-              <p className="text-blue-100">
-                Built by South Africans, for South Africans. We understand your business needs and local market dynamics.
-              </p>
             </div>
           </div>
         </div>
@@ -192,7 +141,7 @@ export default function HomePage() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From RFQ creation to cost estimation, we've built the complete B2B workflow for South African event professionals
+              From RFQ creation to cost estimation, we've built the complete B2B workflow for event professionals
             </p>
           </div>
 
@@ -204,7 +153,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Multi-Supplier RFQs</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Send RFQs to multiple South African suppliers simultaneously. Create detailed briefs with attachments, set deadlines, and manage responses all in one place.
+                  Send RFQs to multiple suppliers simultaneously. Create detailed briefs with attachments, set deadlines, and manage responses all in one place.
                 </p>
               </CardContent>
             </Card>
@@ -216,7 +165,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Streamlined Cost Estimation</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Compile Cost Estimates (CEs) efficiently. Receive PDF quotations from South African suppliers, compare pricing, and build comprehensive proposals faster.
+                  Compile Cost Estimates (CEs) efficiently. Receive PDF quotations from suppliers, compare pricing, and build comprehensive proposals faster.
                 </p>
               </CardContent>
             </Card>
@@ -228,7 +177,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Qualified Lead Generation</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  South African suppliers receive targeted RFQ invitations from verified agencies. No cold calling - just qualified leads with clear project requirements and deadlines.
+                  Suppliers receive targeted RFQ invitations from verified agencies. No cold calling - just qualified leads with clear project requirements and deadlines.
                 </p>
               </CardContent>
             </Card>
@@ -254,7 +203,7 @@ export default function HomePage() {
             </h2>
             
             <p className="text-xl md:text-2xl text-blue-100 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Join South African agencies and suppliers who've streamlined their procurement process. 
+              Join agencies and suppliers who've streamlined their procurement process. 
               Send RFQs, generate leads, and compile cost estimates faster than ever.
             </p>
             
