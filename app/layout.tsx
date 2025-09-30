@@ -3,7 +3,8 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import Header from "@/components/header";
-import { getProfileByIdAction, createProfileAction } from "@/actions/profiles-actions";
+import { getProfileByIdAction, createProfileAction, updateProfileAction } from "@/actions/profiles-actions";
+import { getOrgInviteByEmail, updateOrgInvite } from "@/db/queries/invites-queries";
 import { Providers } from "@/components/utilities/providers";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -25,14 +26,37 @@ export default async function RootLayout({
     // If profile doesn't exist, create one using Clerk user data
     if (!profileResult.data && user) {
       try {
+        const userEmail = user.emailAddresses[0]?.emailAddress || "";
+        
+        // Check if user has a pending invitation
+        const pendingInvite = await getOrgInviteByEmail(userEmail);
+        
+        let defaultRole = "agency_member";
+        let agencyId = null;
+        let supplierId = null;
+        
+        // If user has a valid pending invitation, use that data
+        if (pendingInvite && !pendingInvite.acceptedAt && pendingInvite.expiresAt > new Date()) {
+          defaultRole = pendingInvite.role;
+          if (pendingInvite.orgType === "agency") {
+            agencyId = pendingInvite.orgId;
+          } else {
+            supplierId = pendingInvite.orgId;
+          }
+          
+          // Mark invite as accepted
+          await updateOrgInvite(pendingInvite.id, { acceptedAt: new Date() });
+          console.log("User auto-assigned to organization via invitation:", pendingInvite.orgId);
+        }
+        
         await createProfileAction({
           userId: userId,
           firstName: user.firstName || "",
           lastName: user.lastName || "",
-          email: user.emailAddresses[0]?.emailAddress || "",
-          role: "agency_member", // Default to agency member role for new users
-          agencyId: null,
-          supplierId: null
+          email: userEmail,
+          role: defaultRole,
+          agencyId: agencyId,
+          supplierId: supplierId
         });
         console.log("Profile created for user:", userId);
       } catch (error) {

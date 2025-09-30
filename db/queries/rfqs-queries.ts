@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { rfqsTable, rfqInvitesTable, quotationsTable } from "../schema";
 import { eq, and, desc, asc } from "drizzle-orm";
+import { InsertRfq } from "../schema/rfqs-schema";
 
 // RFQ queries
 export async function getAllRfqs() {
@@ -83,4 +84,23 @@ export async function getQuotationsBySupplier(supplierId: string) {
     .from(quotationsTable)
     .where(eq(quotationsTable.supplierId, supplierId))
     .orderBy(desc(quotationsTable.submittedAt));
+}
+
+// CRUD operations for RFQs
+export async function createRfq(data: InsertRfq) {
+  const [newRfq] = await db.insert(rfqsTable).values(data).returning();
+  return newRfq;
+}
+
+export async function updateRfq(id: string, data: Partial<InsertRfq>) {
+  const [updatedRfq] = await db
+    .update(rfqsTable)
+    .set(data)
+    .where(eq(rfqsTable.id, id))
+    .returning();
+  return updatedRfq;
+}
+
+export async function deleteRfq(id: string) {
+  await db.delete(rfqsTable).where(eq(rfqsTable.id, id));
 }

@@ -16,6 +16,17 @@ export default authMiddleware({
     "/app/data/templates",
     "/api/inboundemail",
     "/api/test",
+    "/api/test-email",
+    "/api/test-postmark",
+    "/api/debug-postmark",
+    "/api/test-postmark-direct",
+    "/api/test-postmark-exact",
+    "/api/check-server",
+    "/api/test-template",
+    "/api/list-templates",
+    "/api/test-simple",
+    "/api/test-blackhole",
+    "/api/webhooks/postmark",
     "/dashboard/documents"
   ],
   // Array of routes that can be accessed by authenticated users

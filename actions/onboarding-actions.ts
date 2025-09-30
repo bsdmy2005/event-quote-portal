@@ -8,7 +8,9 @@ import {
   createAgency, 
   createSupplier, 
   updateAgency, 
-  updateSupplier 
+  updateSupplier,
+  getAgencyById,
+  getSupplierById
 } from "@/db/queries/organizations-queries"
 import { 
   getProfileById, 
@@ -21,7 +23,8 @@ import {
   getOrgInviteByTokenHash, 
   updateOrgInvite 
 } from "@/db/queries/invites-queries"
-import { generateTeamInviteEmail, generateWelcomeEmail } from "@/lib/email-templates"
+import { generateWelcomeEmail } from "@/lib/email-templates"
+import { sendTeamInviteEmail } from "@/lib/email-service"
 
 // Agency Onboarding
 export async function createAgencyOnboardingAction(data: {
@@ -184,7 +187,7 @@ export async function sendTeamInviteAction(data: {
       return { isSuccess: false, message: "User with this email already exists" }
     }
 
-    // Generate invite token
+    // Generate invite token (keep for compatibility but don't use in flow)
     const token = randomBytes(32).toString('hex')
     const tokenHash = require('crypto').createHash('sha256').update(token).digest('hex')
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
@@ -199,16 +202,28 @@ export async function sendTeamInviteAction(data: {
       expiresAt: expiresAt
     })
 
-    // TODO: Send email invitation using Postmark
-    // For now, we'll just log the email template (in production, this would be sent via email)
-    const emailTemplate = generateTeamInviteEmail(
-      "Organization Name", // TODO: Get actual organization name
-      data.orgType,
-      "Inviter Name", // TODO: Get actual inviter name
-      token,
-      data.role
-    )
-    console.log(`Email template for ${data.email}:`, emailTemplate.subject)
+    // Get organization details
+    const organization = data.orgType === "agency" 
+      ? await getAgencyById(data.orgId)
+      : await getSupplierById(data.orgId)
+
+    if (!organization) {
+      return { isSuccess: false, message: "Organization not found" }
+    }
+
+    // Get inviter name
+    const inviterName = userProfile.firstName && userProfile.lastName 
+      ? `${userProfile.firstName} ${userProfile.lastName}`
+      : userProfile.firstName || "Team Admin"
+
+    // Send email invitation using Postmark
+    await sendTeamInviteEmail({
+      to: data.email,
+      organizationName: organization.name,
+      organizationType: data.orgType,
+      inviterName: inviterName,
+      role: data.role
+    })
 
     return {
       isSuccess: true,

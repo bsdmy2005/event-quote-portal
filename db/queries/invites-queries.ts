@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { orgInvitesTable, InsertOrgInvite, SelectOrgInvite } from "../schema/invites-schema";
+import { orgInvitesTable, rfqInvitesTable, InsertOrgInvite, SelectOrgInvite, InsertRfqInvite, SelectRfqInvite } from "../schema/invites-schema";
 
 export const createOrgInvite = async (data: InsertOrgInvite): Promise<SelectOrgInvite> => {
   try {
@@ -29,7 +29,7 @@ export const getOrgInviteByTokenHash = async (tokenHash: string): Promise<Select
 export const updateOrgInvite = async (id: string, data: Partial<InsertOrgInvite>): Promise<SelectOrgInvite> => {
   try {
     const [updatedInvite] = await db.update(orgInvitesTable)
-      .set({ ...data, updatedAt: new Date() })
+      .set(data)
       .where(eq(orgInvitesTable.id, id))
       .returning();
     
@@ -52,5 +52,45 @@ export const getOrgInviteByEmail = async (email: string): Promise<SelectOrgInvit
   } catch (error) {
     console.error("Error getting organization invite by email:", error);
     throw new Error("Failed to get organization invite by email");
+  }
+};
+
+// RFQ Invite functions
+export const createRfqInvite = async (data: InsertRfqInvite): Promise<SelectRfqInvite> => {
+  try {
+    const [newInvite] = await db.insert(rfqInvitesTable).values(data).returning();
+    return newInvite as SelectRfqInvite;
+  } catch (error) {
+    console.error("Error creating RFQ invite:", error);
+    throw new Error("Failed to create RFQ invite");
+  }
+};
+
+export const getRfqInviteById = async (id: string): Promise<SelectRfqInvite | null> => {
+  try {
+    const invite = await db.query.rfqInvitesTable.findFirst({
+      where: eq(rfqInvitesTable.id, id)
+    });
+    return invite as SelectRfqInvite || null;
+  } catch (error) {
+    console.error("Error getting RFQ invite by ID:", error);
+    throw new Error("Failed to get RFQ invite");
+  }
+};
+
+export const updateRfqInvite = async (id: string, data: Partial<InsertRfqInvite>): Promise<SelectRfqInvite> => {
+  try {
+    const [updatedInvite] = await db.update(rfqInvitesTable)
+      .set(data)
+      .where(eq(rfqInvitesTable.id, id))
+      .returning();
+    
+    if (!updatedInvite) {
+      throw new Error("RFQ invite not found");
+    }
+    return updatedInvite as SelectRfqInvite;
+  } catch (error) {
+    console.error("Error updating RFQ invite:", error);
+    throw new Error("Failed to update RFQ invite");
   }
 };
