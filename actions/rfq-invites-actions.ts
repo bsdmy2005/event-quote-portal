@@ -6,11 +6,13 @@ import { revalidatePath } from "next/cache"
 import { 
   createRfqInvite, 
   getRfqInviteById,
-  updateRfqInvite,
+  updateRfqInvite
+} from "@/db/queries/invites-queries"
+import { 
+  getRfqById,
   getRfqInvitesByRfq,
   getRfqInvitesBySupplier 
-} from "@/db/queries/invites-queries"
-import { getRfqById } from "@/db/queries/rfqs-queries"
+} from "@/db/queries/rfqs-queries"
 import { getProfileById } from "@/db/queries/profiles-queries"
 import { InsertRfqInvite } from "@/db/schema/invites-schema"
 

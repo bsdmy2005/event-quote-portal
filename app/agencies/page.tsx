@@ -103,7 +103,7 @@ export default function AgenciesPage() {
               No agencies found
             </h2>
             <p className="text-muted-foreground">
-              We're working on adding more agencies to our platform.
+              We&apos;re working on adding more agencies to our platform.
             </p>
           </div>
         </div>

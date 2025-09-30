@@ -182,7 +182,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">No Gallery Images</h3>
                   <p className="text-muted-foreground">
-                    This agency hasn't uploaded any gallery images yet.
+                    This agency hasn&apos;t uploaded any gallery images yet.
                   </p>
                 </div>
               )}

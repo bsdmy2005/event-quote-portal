@@ -53,7 +53,7 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h2>
-              <p className="text-gray-600 text-lg">Welcome back! Here's what's happening with your platform.</p>
+              <p className="text-gray-600 text-lg">Welcome back! Here&apos;s what&apos;s happening with your platform.</p>
             </div>
             <div className="flex items-center space-x-3">
               <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300">

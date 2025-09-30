@@ -31,7 +31,7 @@ export function AgenciesHeader({
             Event Agencies
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Discover South Africa's leading corporate event agencies. 
+            Discover South Africa&apos;s leading corporate event agencies. 
             From brand activations to product launches, find the perfect partner for your next event.
           </p>
         </div>
