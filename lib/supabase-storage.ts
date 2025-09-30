@@ -319,7 +319,7 @@ export async function deleteQuotation(
 
 // Validate RFQ attachment file
 export function validateRfqAttachmentFile(file: File): { valid: boolean; error?: string } {
-  if (!FILE_LIMITS.ALLOWED_RFQ_TYPES.includes(file.type)) {
+  if (!FILE_LIMITS.ALLOWED_RFQ_TYPES.includes(file.type as any)) {
     return { valid: false, error: 'Invalid file type. Only PDF, DOC, DOCX, JPG, and PNG are allowed.' };
   }
 
@@ -332,7 +332,7 @@ export function validateRfqAttachmentFile(file: File): { valid: boolean; error?:
 
 // Validate quotation file
 export function validateQuotationFile(file: File): { valid: boolean; error?: string } {
-  if (!FILE_LIMITS.ALLOWED_QUOTATION_TYPES.includes(file.type)) {
+  if (!FILE_LIMITS.ALLOWED_QUOTATION_TYPES.includes(file.type as any)) {
     return { valid: false, error: 'Invalid file type. Only PDF files are allowed for quotations.' };
   }
 

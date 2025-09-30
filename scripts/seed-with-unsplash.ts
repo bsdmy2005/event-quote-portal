@@ -132,7 +132,7 @@ async function getImagesForCategories(categories: string[], type: 'supplier' | '
   } else {
     // For suppliers, get relevant images based on their service categories
     for (const category of categories.slice(0, 3)) { // Limit to first 3 categories
-      const keywords = IMAGE_KEYWORDS[category] || FALLBACK_KEYWORDS.supplier;
+      const keywords = IMAGE_KEYWORDS[category as keyof typeof IMAGE_KEYWORDS] || FALLBACK_KEYWORDS.supplier;
       const categoryImages = await searchUnsplashImages(keywords[0], 1);
       images.push(...categoryImages);
       
@@ -621,7 +621,7 @@ async function seedDatabase() {
     
     for (const agency of agencies) {
       console.log(`   📸 Fetching images for ${agency.name}...`);
-      const images = await getImagesForCategories(agency.interestCategories, 'agency');
+      const images = await getImagesForCategories(agency.interestCategories || [], 'agency');
       
       if (images.length > 0) {
         agency.logoUrl = images[0];
@@ -645,7 +645,7 @@ async function seedDatabase() {
     
     for (const supplier of suppliers) {
       console.log(`   📸 Fetching images for ${supplier.name}...`);
-      const images = await getImagesForCategories(supplier.serviceCategories, 'supplier');
+      const images = await getImagesForCategories(supplier.serviceCategories || [], 'supplier');
       
       if (images.length > 0) {
         supplier.logoUrl = images[0];

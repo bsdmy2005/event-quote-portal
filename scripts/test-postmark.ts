@@ -23,7 +23,7 @@ async function testPostmarkEmail() {
     console.log("📧 Message ID:", response.MessageID);
     console.log("📬 To:", response.To);
     console.log("📅 Submitted At:", response.SubmittedAt);
-    console.log("📊 Status:", response.Status);
+    console.log("📊 Status:", (response as any).Status);
     
     return response;
   } catch (error: any) {
