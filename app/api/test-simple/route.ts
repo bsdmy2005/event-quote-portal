@@ -18,8 +18,7 @@ export async function GET() {
       success: true,
       messageId: response.MessageID,
       to: response.To,
-      submittedAt: response.SubmittedAt,
-      from: response.From
+      submittedAt: response.SubmittedAt
     });
   } catch (error) {
     console.error("Simple test error:", error);

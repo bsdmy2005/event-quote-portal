@@ -88,14 +88,14 @@ export function CreateAgencyForm({ categories }: CreateAgencyFormProps) {
           try {
             const uploadPromises = selectedImages.map(async (file) => {
               // Upload to storage
-              const uploadResult = await uploadImage(file, "agency", result.data.id);
+              const uploadResult = await uploadImage(file, "agency", result.data!.id);
               if (!uploadResult.success || !uploadResult.data) {
                 throw new Error(uploadResult.error || "Upload failed");
               }
 
               // Create image record in database
               const imageData: NewImage = {
-                organizationId: result.data.id,
+                organizationId: result.data!.id,
                 organizationType: "agency",
                 fileName: file.name,
                 filePath: uploadResult.data.path,

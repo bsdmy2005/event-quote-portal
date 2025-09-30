@@ -54,7 +54,7 @@ export function SupplierDetail({ supplier }: SupplierDetailProps) {
     loadData();
   }, [supplier.id]);
 
-  const resolvedCategories = resolveCategoryNames(supplier.serviceCategories, categoriesMap);
+  const resolvedCategories = resolveCategoryNames(supplier.serviceCategories || [], categoriesMap);
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
@@ -250,11 +250,11 @@ export function SupplierDetail({ supplier }: SupplierDetailProps) {
             <CardContent className="p-6">
               <h3 className="text-xl font-bold text-foreground mb-4">Get In Touch</h3>
               <div className="space-y-4">
-                {supplier.website && (
+                {(supplier as any).website && (
                   <div className="flex items-center">
                     <Globe className="h-5 w-5 text-muted-foreground mr-3" />
                     <a 
-                      href={supplier.website}
+                      href={(supplier as any).website}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:text-primary/80 transition-colors"

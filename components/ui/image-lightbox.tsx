@@ -242,17 +242,6 @@ export function ImageLightbox({
                   src={currentImage.fileUrl}
                   alt={currentImage.altText || `Gallery image ${currentIndex + 1}`}
                   className="w-full h-full object-contain"
-                  style={{
-                    imageRendering: 'high-quality'
-                  }}
-                onLoad={() => {
-                  console.log('✅ Image loaded:', currentImage.id);
-                  setIsLoading(false);
-                }}
-                onLoadStart={() => {
-                  console.log('⏳ Image loading started:', currentImage.id);
-                  setIsLoading(true);
-                }}
                 fallbackSrc="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTAwQzE2NS4zNzMgMTAwIDEzNy41IDEyNy44NzMgMTM3LjUgMTYyLjVWMTM3LjVDMTM3LjUgMTcyLjEyNyAxNjUuMzczIDIwMCAyMDAgMjAwQzIzNC42MjcgMjAwIDI2Mi41IDE3Mi4xMjcgMjYyLjUgMTM3LjVWMTYyLjVDMjYyLjUgMTI3Ljg3MyAyMzQuNjI3IDEwMCAyMDAgMTAwWiIgZmlsbD0iIzYzNjY2QSIvPgo8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNjIuNSIgcj0iMjUiIGZpbGw9IiM2MzY2NkEiLz4KPHRleHQgeD0iMjAwIiB5PSIyNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2MzY2NkEiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjUwMCI+RXZlbnQgQWdlbmN5PC90ZXh0Pgo8L3N2Zz4K"
                 />
               </div>

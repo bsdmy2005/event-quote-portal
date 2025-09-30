@@ -44,7 +44,7 @@ export default function SuppliersPage() {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(supplier => 
         supplier.name.toLowerCase().includes(term) ||
-        supplier.description?.toLowerCase().includes(term) ||
+        (supplier as any).description?.toLowerCase().includes(term) ||
         supplier.location?.city.toLowerCase().includes(term) ||
         supplier.location?.province.toLowerCase().includes(term)
       );
@@ -53,7 +53,7 @@ export default function SuppliersPage() {
     // Category filter
     if (categoryFilter !== "all") {
       filtered = filtered.filter(supplier => 
-        supplier.categories?.some(cat => cat.toLowerCase().includes(categoryFilter.toLowerCase()))
+        (supplier as any).categories?.some((cat: string) => cat.toLowerCase().includes(categoryFilter.toLowerCase()))
       );
     }
 

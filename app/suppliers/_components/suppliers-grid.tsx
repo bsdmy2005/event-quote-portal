@@ -55,7 +55,7 @@ export function SuppliersGrid({ suppliers }: SuppliersGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {suppliers.map((supplier) => {
-        const resolvedCategories = resolveCategoryNames(supplier.serviceCategories, categoriesMap);
+        const resolvedCategories = resolveCategoryNames(supplier.serviceCategories || [], categoriesMap);
         
         return (
         <Card key={supplier.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden">
@@ -117,9 +117,9 @@ export function SuppliersGrid({ suppliers }: SuppliersGridProps) {
 
               <div className="flex items-center justify-between pt-4 border-t border-border">
                 <div className="flex space-x-3">
-                  {supplier.website && (
+                  {(supplier as any).website && (
                     <Button variant="ghost" size="sm" asChild>
-                      <a href={supplier.website} target="_blank" rel="noopener noreferrer">
+                      <a href={(supplier as any).website} target="_blank" rel="noopener noreferrer">
                         <Globe className="h-4 w-4" />
                       </a>
                     </Button>

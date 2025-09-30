@@ -30,6 +30,8 @@
     "@typescript-eslint/no-unused-expressions": "warn",
     "@typescript-eslint/no-empty-object-type": "warn",
     "@typescript-eslint/no-array-constructor": "warn",
-    "@typescript-eslint/no-this-alias": "warn"
+    "@typescript-eslint/no-this-alias": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react-hooks/exhaustive-deps": "warn"
   }
 }

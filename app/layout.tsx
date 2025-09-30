@@ -54,7 +54,7 @@ export default async function RootLayout({
           firstName: user.firstName || "",
           lastName: user.lastName || "",
           email: userEmail,
-          role: defaultRole,
+          role: defaultRole as "admin" | "agency_admin" | "agency_member" | "supplier_admin" | "supplier_member",
           agencyId: agencyId,
           supplierId: supplierId
         });

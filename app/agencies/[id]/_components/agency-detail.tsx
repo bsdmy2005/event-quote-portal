@@ -53,7 +53,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
     loadData();
   }, [agency.id]);
 
-  const resolvedCategories = resolveCategoryNames(agency.interestCategories, categoriesMap);
+  const resolvedCategories = resolveCategoryNames(agency.interestCategories || [], categoriesMap);
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);

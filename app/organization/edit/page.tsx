@@ -123,7 +123,7 @@ export default function EditOrganizationPage() {
         setIsPublished(published)
         toast.success(published ? "Supplier published successfully!" : "Supplier unpublished successfully!")
         // Update the organization state
-        setOrganization(prev => ({ ...prev, isPublished: published }))
+        setOrganization((prev: any) => ({ ...prev, isPublished: published }))
       } else {
         toast.error(result.message)
       }

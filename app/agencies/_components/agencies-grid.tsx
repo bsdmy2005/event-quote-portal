@@ -53,7 +53,7 @@ export function AgenciesGrid({ agencies }: AgenciesGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {agencies.map((agency) => {
-        const resolvedCategories = resolveCategoryNames(agency.interestCategories, categoriesMap);
+        const resolvedCategories = resolveCategoryNames(agency.interestCategories || [], categoriesMap);
         
         return (
         <Card key={agency.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden">

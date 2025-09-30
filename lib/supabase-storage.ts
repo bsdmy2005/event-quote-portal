@@ -163,12 +163,12 @@ export function generateQuotationPath(
 
 // Type guard to check if RFQ attachment file type is allowed
 function isAllowedRfqFileType(fileType: string): boolean {
-  return FILE_LIMITS.ALLOWED_RFQ_TYPES.includes(fileType);
+  return FILE_LIMITS.ALLOWED_RFQ_TYPES.includes(fileType as any);
 }
 
 // Type guard to check if quotation file type is allowed
 function isAllowedQuotationFileType(fileType: string): boolean {
-  return FILE_LIMITS.ALLOWED_QUOTATION_TYPES.includes(fileType);
+  return FILE_LIMITS.ALLOWED_QUOTATION_TYPES.includes(fileType as any);
 }
 
 // Upload RFQ attachment to Supabase storage
