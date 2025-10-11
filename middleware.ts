@@ -8,9 +8,9 @@ export default authMiddleware({
     "/suppliers", 
     "/sign-in",
     "/sign-up",
+    "/redirect",
     "/onboard(.*)",
     "/invite",
-    "/dashboard",
     "/api/webhooks/clerk",
     "/api/public",
     "/app/data/templates",
@@ -27,7 +27,6 @@ export default authMiddleware({
     "/api/test-simple",
     "/api/test-blackhole",
     "/api/webhooks/postmark",
-    "/dashboard/documents"
   ],
   // Array of routes that can be accessed by authenticated users
   ignoredRoutes: ["/api/webhook", "/api/public"],

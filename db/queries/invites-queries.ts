@@ -55,6 +55,30 @@ export const getOrgInviteByEmail = async (email: string): Promise<SelectOrgInvit
   }
 };
 
+export const getOrgInvitesByEmail = async (email: string): Promise<SelectOrgInvite[]> => {
+  try {
+    const invites = await db.query.orgInvitesTable.findMany({
+      where: eq(orgInvitesTable.email, email)
+    });
+    return invites as SelectOrgInvite[];
+  } catch (error) {
+    console.error("Error getting organization invites by email:", error);
+    throw new Error("Failed to get organization invites by email");
+  }
+};
+
+export const getOrgInvitesByOrganization = async (orgType: "agency" | "supplier", orgId: string): Promise<SelectOrgInvite[]> => {
+  try {
+    const invites = await db.query.orgInvitesTable.findMany({
+      where: eq(orgInvitesTable.orgId, orgId)
+    });
+    return invites as SelectOrgInvite[];
+  } catch (error) {
+    console.error("Error getting organization invites by organization:", error);
+    throw new Error("Failed to get organization invites by organization");
+  }
+};
+
 // RFQ Invite functions
 export const createRfqInvite = async (data: InsertRfqInvite): Promise<SelectRfqInvite> => {
   try {

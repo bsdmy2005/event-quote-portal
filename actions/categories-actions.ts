@@ -17,7 +17,7 @@ export async function createCategoryAction(data: InsertCategory): Promise<Action
   try {
     const newCategory = await createCategory(data);
     revalidatePath("/admin/categories");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Category created successfully", data: newCategory };
   } catch (error) {
     return { isSuccess: false, message: "Failed to create category" };
@@ -55,7 +55,7 @@ export async function updateCategoryAction(id: string, data: Partial<InsertCateg
   try {
     const updatedCategory = await updateCategory(id, data);
     revalidatePath("/admin/categories");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Category updated successfully", data: updatedCategory };
   } catch (error) {
     return { isSuccess: false, message: "Failed to update category" };
@@ -66,7 +66,7 @@ export async function deleteCategoryAction(id: string): Promise<ActionResult<voi
   try {
     await deleteCategory(id);
     revalidatePath("/admin/categories");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Category deleted successfully" };
   } catch (error) {
     return { isSuccess: false, message: "Failed to delete category" };

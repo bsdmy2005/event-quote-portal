@@ -21,7 +21,7 @@ export default async function NewSupplierPage() {
   // For now, just check if we can access admin actions
   const profile = await getAllCategoriesAction();
   if (!profile.isSuccess) {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   // Get categories for the form

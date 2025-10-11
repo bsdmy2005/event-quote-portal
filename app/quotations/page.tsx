@@ -20,11 +20,11 @@ export default async function QuotationsPage() {
   // Get user profile to check permissions
   const userProfile = await getProfileById(userId)
   if (!userProfile || !userProfile.supplierId) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   if (!["supplier_admin", "supplier_member"].includes(userProfile.role)) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   // TODO: Get actual quotations data

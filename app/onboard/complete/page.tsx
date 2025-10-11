@@ -12,7 +12,7 @@ export default function OnboardCompletePage() {
   useEffect(() => {
     // Redirect to dashboard after 5 seconds
     const timer = setTimeout(() => {
-      router.push("/dashboard")
+      router.push("/redirect")
     }, 5000)
 
     return () => clearTimeout(timer)
@@ -78,7 +78,7 @@ export default function OnboardCompletePage() {
                 <Button 
                   variant="outline" 
                   className="h-auto p-4 flex flex-col items-center gap-2"
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => router.push("/redirect")}
                 >
                   <Building2 className="h-6 w-6" />
                   <div className="text-center">
@@ -114,7 +114,7 @@ export default function OnboardCompletePage() {
             {/* Manual Redirect Button */}
             <Button 
               size="lg"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/organization")}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
             >
               Go to Dashboard

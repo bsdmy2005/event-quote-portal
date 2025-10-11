@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Building2, Wrench, UserPlus, Mail, Users, Trash2, Plus } from "lucide-react"
-import { getUserOrganizationAction, sendTeamInviteAction } from "@/actions/onboarding-actions"
+import { Building2, Wrench, UserPlus, Mail, Users, Trash2, Plus, RefreshCw } from "lucide-react"
+import { getUserOrganizationAction, sendTeamInviteAction, getTeamMembersAction, getPendingInvitationsAction } from "@/actions/onboarding-actions"
 import { OrganizationSidebar } from "@/components/ui/organization-sidebar"
 import { toast } from "sonner"
 
@@ -16,8 +16,11 @@ export default function TeamManagementPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingData, setIsLoadingData] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [organization, setOrganization] = useState<any>(null)
   const [orgType, setOrgType] = useState<"agency" | "supplier" | null>(null)
+  const [teamMembers, setTeamMembers] = useState<any[]>([])
+  const [pendingInvites, setPendingInvites] = useState<any[]>([])
   const [inviteForm, setInviteForm] = useState({
     email: "",
     role: ""
@@ -42,6 +45,20 @@ export default function TeamManagementPage() {
           const { organization: org, orgType: type } = result.data
           setOrganization(org)
           setOrgType(type)
+          
+          // Load team members and pending invitations
+          const [teamResult, invitesResult] = await Promise.all([
+            getTeamMembersAction(type, org.id),
+            getPendingInvitationsAction(type, org.id)
+          ])
+          
+          if (teamResult.isSuccess && teamResult.data) {
+            setTeamMembers(teamResult.data)
+          }
+          
+          if (invitesResult.isSuccess && invitesResult.data) {
+            setPendingInvites(invitesResult.data)
+          }
         } else {
           router.push("/onboard")
         }
@@ -55,6 +72,31 @@ export default function TeamManagementPage() {
 
     loadOrganization()
   }, [router])
+
+  const refreshData = async () => {
+    if (!organization || !orgType) return
+    
+    setIsRefreshing(true)
+    try {
+      const [teamResult, invitesResult] = await Promise.all([
+        getTeamMembersAction(orgType, organization.id),
+        getPendingInvitationsAction(orgType, organization.id)
+      ])
+      
+      if (teamResult.isSuccess && teamResult.data) {
+        setTeamMembers(teamResult.data)
+      }
+      
+      if (invitesResult.isSuccess && invitesResult.data) {
+        setPendingInvites(invitesResult.data)
+      }
+    } catch (error) {
+      console.error("Error refreshing data:", error)
+      toast.error("Failed to refresh data")
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -71,6 +113,12 @@ export default function TeamManagementPage() {
       if (result.isSuccess) {
         toast.success("Team invitation sent successfully!")
         setInviteForm({ email: "", role: "" })
+        
+        // Refresh pending invitations after sending new invitation
+        const invitesResult = await getPendingInvitationsAction(orgType!, organization.id)
+        if (invitesResult.isSuccess && invitesResult.data) {
+          setPendingInvites(invitesResult.data)
+        }
       } else {
         toast.error(result.message)
       }
@@ -199,43 +247,64 @@ export default function TeamManagementPage() {
             {/* Team Members */}
             <Card className="border-0 shadow-sm bg-white rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Current Team Members
-                </CardTitle>
-                <CardDescription>
-                  Manage existing team members and their roles
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Current Team Members
+                    </CardTitle>
+                    <CardDescription>
+                      Manage existing team members and their roles
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={refreshData}
+                    disabled={isRefreshing}
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {/* Placeholder for team members - this would be populated from actual data */}
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-semibold text-white">
-                            {organization.contactName?.charAt(0) || "A"}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{organization.contactName}</p>
-                          <p className="text-sm text-gray-500">{organization.email}</p>
+                  {teamMembers.length > 0 ? (
+                    teamMembers.map((member, index) => (
+                      <div key={member.userId || index} className="p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-semibold text-white">
+                                {member.firstName?.charAt(0) || member.email?.charAt(0) || "U"}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {member.firstName && member.lastName 
+                                  ? `${member.firstName} ${member.lastName}` 
+                                  : member.email}
+                              </p>
+                              <p className="text-sm text-gray-500">{member.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                              {member.role?.replace("_", " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                          {orgType === "agency" ? "Agency Admin" : "Supplier Admin"}
-                        </span>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <p>No team members yet</p>
+                      <p className="text-sm">Invite team members to get started</p>
                     </div>
-                  </div>
-
-                  <div className="text-center py-8 text-gray-500">
-                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <p>No additional team members yet</p>
-                    <p className="text-sm">Invite team members to get started</p>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -244,17 +313,63 @@ export default function TeamManagementPage() {
           {/* Pending Invitations */}
           <Card className="border-0 shadow-sm bg-white rounded-xl mt-8">
             <CardHeader>
-              <CardTitle>Pending Invitations</CardTitle>
-              <CardDescription>
-                Team members who have been invited but haven't joined yet
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Pending Invitations</CardTitle>
+                  <CardDescription>
+                    Team members who have been invited but haven't joined yet
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshData}
+                  disabled={isRefreshing}
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>No pending invitations</p>
-                <p className="text-sm">Invitations will appear here until they're accepted</p>
-              </div>
+              {pendingInvites.length > 0 ? (
+                <div className="space-y-4">
+                  {pendingInvites
+                    .filter(invite => !invite.acceptedAt && invite.expiresAt > new Date())
+                    .map((invite, index) => (
+                      <div key={invite.id || index} className="p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                              <Mail className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{invite.email}</p>
+                              <p className="text-sm text-gray-500">
+                                Invited as {invite.role?.replace("_", " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+                              Pending
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              Expires {new Date(invite.expiresAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p>No pending invitations</p>
+                  <p className="text-sm">Invitations will appear here until they're accepted</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </main>

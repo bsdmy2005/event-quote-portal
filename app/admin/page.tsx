@@ -24,7 +24,7 @@ export default async function AdminPage() {
   });
 
   if (profile?.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   // Get counts using actions

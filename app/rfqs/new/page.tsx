@@ -18,11 +18,11 @@ export default async function NewRfqPage() {
   // Get user profile to check permissions
   const userProfile = await getProfileById(userId)
   if (!userProfile || !userProfile.agencyId) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   if (!["agency_admin", "agency_member"].includes(userProfile.role)) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   return (

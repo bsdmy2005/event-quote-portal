@@ -26,7 +26,7 @@ export default async function CategoriesAdminPage() {
   });
 
   if (profile?.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   // Get counts using actions

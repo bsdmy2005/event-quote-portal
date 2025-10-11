@@ -21,11 +21,11 @@ export default async function ReceivedRfqsPage() {
   // Get user profile to check permissions
   const userProfile = await getProfileById(userId)
   if (!userProfile || !userProfile.supplierId) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   if (!["supplier_admin", "supplier_member"].includes(userProfile.role)) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   // Get RFQ invites for this supplier

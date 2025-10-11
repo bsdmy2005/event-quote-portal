@@ -12,7 +12,17 @@ export const createAgency = async (data: InsertAgency): Promise<SelectAgency> =>
     return newAgency as SelectAgency;
   } catch (error) {
     console.error("Error creating agency:", error);
-    throw new Error("Failed to create agency");
+    
+    // Check for duplicate email error (Postgres unique constraint violation)
+    if (error instanceof Error && 'code' in error) {
+      const pgError = error as any;
+      if (pgError.code === '23505' && pgError.constraint === 'agencies_email_unique') {
+        throw new Error(`An agency with the email "${data.email}" already exists. Please use a different email address.`);
+      }
+    }
+    
+    // For other errors, throw with more context
+    throw new Error(error instanceof Error ? error.message : "Failed to create agency");
   }
 };
 
@@ -216,7 +226,17 @@ export const createSupplier = async (data: InsertSupplier): Promise<SelectSuppli
     return newSupplier as SelectSupplier;
   } catch (error) {
     console.error("Error creating supplier:", error);
-    throw new Error("Failed to create supplier");
+    
+    // Check for duplicate email error (Postgres unique constraint violation)
+    if (error instanceof Error && 'code' in error) {
+      const pgError = error as any;
+      if (pgError.code === '23505' && pgError.constraint === 'suppliers_email_unique') {
+        throw new Error(`A supplier with the email "${data.email}" already exists. Please use a different email address.`);
+      }
+    }
+    
+    // For other errors, throw with more context
+    throw new Error(error instanceof Error ? error.message : "Failed to create supplier");
   }
 };
 

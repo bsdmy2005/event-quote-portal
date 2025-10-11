@@ -68,7 +68,7 @@ export async function createRfqAction(data: {
     const newRfq = await createRfq(rfqData)
     
     revalidatePath("/rfqs")
-    revalidatePath("/dashboard")
+    revalidatePath("/organization")
     
     return {
       isSuccess: true,
@@ -278,7 +278,7 @@ export async function deleteRfqAction(id: string): Promise<ActionResult<void>> {
     await deleteRfq(id)
     
     revalidatePath("/rfqs")
-    revalidatePath("/dashboard")
+    revalidatePath("/organization")
     
     return {
       isSuccess: true,
@@ -343,7 +343,7 @@ export async function sendRfqAction(
       if (supplier) {
         // Send email invitation
         try {
-          const rfqUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/rfqs/received/${invite.id}`
+          const rfqUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/rfqs/received/${invite.id}`
           await sendRfqInviteEmail({
             to: supplier.email,
             rfqTitle: existingRfq.title,

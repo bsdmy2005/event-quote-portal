@@ -82,4 +82,18 @@ export const getProfileWithOrganization = async (userId: string) => {
     console.error("Error getting profile with organization:", error);
     throw new Error("Failed to get profile with organization");
   }
+};
+
+export const getProfilesByOrganization = async (orgType: "agency" | "supplier", orgId: string) => {
+  try {
+    const profiles = await db.query.profilesTable.findMany({
+      where: orgType === "agency" 
+        ? eq(profilesTable.agencyId, orgId)
+        : eq(profilesTable.supplierId, orgId)
+    });
+    return profiles;
+  } catch (error) {
+    console.error("Error getting profiles by organization:", error);
+    throw new Error("Failed to get profiles by organization");
+  }
 }; 

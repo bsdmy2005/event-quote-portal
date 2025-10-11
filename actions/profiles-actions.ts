@@ -16,12 +16,13 @@ export async function createProfileAction(data: InsertProfile): Promise<ActionRe
   }
 }
 
-export async function getProfileByIdAction(userId: string): Promise<ActionResult<SelectProfile>> {
+export async function getProfileByIdAction(userId: string): Promise<ActionResult<SelectProfile | null>> {
   try {
     const profile = await getProfileById(userId);
     return { isSuccess: true, message: "Profile retrieved successfully", data: profile };
   } catch (error) {
-    return { isSuccess: false, message: "Failed to get profile" };
+    // If profile not found, return success with null data instead of error
+    return { isSuccess: true, message: "Profile not found", data: null };
   }
 }
 
@@ -72,7 +73,7 @@ export async function isAdmin(userId: string): Promise<boolean> {
   }
 }
 
-export async function getUserProfileAction(): Promise<ActionResult<SelectProfile>> {
+export async function getUserProfileAction(): Promise<ActionResult<SelectProfile | null>> {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -82,6 +83,7 @@ export async function getUserProfileAction(): Promise<ActionResult<SelectProfile
     const profile = await getProfileById(userId);
     return { isSuccess: true, message: "Profile retrieved successfully", data: profile };
   } catch (error) {
-    return { isSuccess: false, message: "Failed to get profile" };
+    // If profile not found, return success with null data instead of error
+    return { isSuccess: true, message: "Profile not found", data: null };
   }
 } 

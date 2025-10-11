@@ -41,7 +41,7 @@ export default async function RfqPage({ params }: RfqPageProps) {
   // Get user profile to check permissions
   const userProfile = await getProfileById(userId)
   if (!userProfile) {
-    redirect("/dashboard")
+    redirect("/organization")
   }
 
   // Get RFQ details

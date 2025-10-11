@@ -20,6 +20,7 @@ export default async function OrganizationPage() {
   const orgResult = await getUserOrganizationAction()
   
   if (!orgResult.isSuccess || !orgResult.data) {
+    // User doesn't have an organization, redirect to onboarding
     redirect("/onboard")
   }
 

@@ -34,11 +34,13 @@ export async function createAgencyAction(data: InsertAgency): Promise<ActionResu
   try {
     const newAgency = await createAgency(data);
     revalidatePath("/admin/agencies");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Agency created successfully", data: newAgency };
   } catch (error) {
     console.error("Error creating agency:", error);
-    return { isSuccess: false, message: "Failed to create agency" };
+    // Return user-friendly error message
+    const errorMessage = error instanceof Error ? error.message : "Failed to create agency. Please try again.";
+    return { isSuccess: false, message: errorMessage };
   }
 }
 
@@ -85,7 +87,7 @@ export async function updateAgencyAction(id: string, data: Partial<InsertAgency>
   try {
     const updatedAgency = await updateAgency(id, data);
     revalidatePath("/admin/agencies");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Agency updated successfully", data: updatedAgency };
   } catch (error) {
     return { isSuccess: false, message: "Failed to update agency" };
@@ -96,7 +98,7 @@ export async function deleteAgencyAction(id: string): Promise<ActionResult<void>
   try {
     await deleteAgency(id);
     revalidatePath("/admin/agencies");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Agency deleted successfully" };
   } catch (error) {
     return { isSuccess: false, message: "Failed to delete agency" };
@@ -117,10 +119,13 @@ export async function createSupplierAction(data: InsertSupplier): Promise<Action
   try {
     const newSupplier = await createSupplier(data);
     revalidatePath("/admin/suppliers");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Supplier created successfully", data: newSupplier };
   } catch (error) {
-    return { isSuccess: false, message: "Failed to create supplier" };
+    console.error("Error creating supplier:", error);
+    // Return user-friendly error message
+    const errorMessage = error instanceof Error ? error.message : "Failed to create supplier. Please try again.";
+    return { isSuccess: false, message: errorMessage };
   }
 }
 
@@ -167,7 +172,7 @@ export async function updateSupplierAction(id: string, data: Partial<InsertSuppl
   try {
     const updatedSupplier = await updateSupplier(id, data);
     revalidatePath("/admin/suppliers");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Supplier updated successfully", data: updatedSupplier };
   } catch (error) {
     return { isSuccess: false, message: "Failed to update supplier" };
@@ -178,7 +183,7 @@ export async function deleteSupplierAction(id: string): Promise<ActionResult<voi
   try {
     await deleteSupplier(id);
     revalidatePath("/admin/suppliers");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Supplier deleted successfully" };
   } catch (error) {
     return { isSuccess: false, message: "Failed to delete supplier" };
@@ -211,7 +216,7 @@ export async function publishSupplierAction(id: string): Promise<ActionResult<Se
   try {
     const publishedSupplier = await publishSupplier(id);
     revalidatePath("/admin/suppliers");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Supplier published successfully", data: publishedSupplier };
   } catch (error) {
     return { isSuccess: false, message: "Failed to publish supplier" };
@@ -222,7 +227,7 @@ export async function unpublishSupplierAction(id: string): Promise<ActionResult<
   try {
     const unpublishedSupplier = await unpublishSupplier(id);
     revalidatePath("/admin/suppliers");
-    revalidatePath("/dashboard");
+    revalidatePath("/organization");
     return { isSuccess: true, message: "Supplier unpublished successfully", data: unpublishedSupplier };
   } catch (error) {
     return { isSuccess: false, message: "Failed to unpublish supplier" };

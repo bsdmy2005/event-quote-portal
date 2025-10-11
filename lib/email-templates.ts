@@ -13,7 +13,7 @@ export function generateTeamInviteEmail(
 ): EmailTemplate {
   const roleDisplay = role.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())
   const orgTypeDisplay = organizationType === "agency" ? "Agency" : "Supplier"
-  const signUpUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/sign-up`
+  const signUpUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/sign-up`
   
   const subject = `You're invited to join ${organizationName} on Quote Portal`
   
@@ -136,7 +136,7 @@ export function generateWelcomeEmail(
   userName: string
 ): EmailTemplate {
   const orgTypeDisplay = organizationType === "agency" ? "Agency" : "Supplier"
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/dashboard`
+  const organizationUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/organization`
   
   const subject = `Welcome to Quote Portal - Your ${orgTypeDisplay} is ready!`
   
@@ -190,10 +190,10 @@ export function generateWelcomeEmail(
           </ul>
           
           <div style="text-align: center;">
-            <a href="${dashboardUrl}" class="button">Go to Dashboard</a>
+            <a href="${organizationUrl}" class="button">Go to Organization</a>
           </div>
           
-          <p>Need help getting started? Check out our <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/help">help center</a> or contact our support team.</p>
+          <p>Need help getting started? Check out our <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/help">help center</a> or contact our support team.</p>
           
           <p>We're excited to have you on board!</p>
           
@@ -231,7 +231,7 @@ ${organizationType === "agency" ? `
 - Start receiving RFQ invitations
 `}
 
-Go to your dashboard: ${dashboardUrl}
+Go to your organization: ${organizationUrl}
 
 Need help getting started? Check out our help center or contact our support team.
 

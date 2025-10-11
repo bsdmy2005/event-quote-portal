@@ -20,7 +20,7 @@ export default async function NewAgencyPage() {
   // Check if user is admin
   const profile = await getAllCategoriesAction(); // This will be replaced with proper profile check
   if (!profile.isSuccess) {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   // Get categories for the form

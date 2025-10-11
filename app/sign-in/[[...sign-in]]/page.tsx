@@ -9,7 +9,7 @@ export default function SignInPage() {
           <p className="text-gray-600">Sign in to your Quote Portal account</p>
         </div>
         <SignIn 
-          redirectUrl="/dashboard"
+          redirectUrl="/redirect"
           appearance={{
             elements: {
               formButtonPrimary: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700",

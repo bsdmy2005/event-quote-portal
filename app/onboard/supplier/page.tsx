@@ -22,6 +22,7 @@ export default function SupplierOnboardPage() {
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [formData, setFormData] = useState({
     name: "",
     contactName: user?.fullName || "",
@@ -54,6 +55,40 @@ export default function SupplierOnboardPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setValidationErrors({})
+
+    // Validate all required fields
+    const errors: Record<string, string> = {}
+    
+    if (!formData.name.trim()) {
+      errors.name = "Business name is required"
+    }
+    if (!formData.contactName.trim()) {
+      errors.contactName = "Contact name is required"
+    }
+    if (!formData.email.trim()) {
+      errors.email = "Email is required"
+    }
+    if (!formData.city.trim()) {
+      errors.city = "City is required"
+    }
+    if (!formData.province.trim()) {
+      errors.province = "Province is required"
+    }
+    if (formData.serviceCategories.length === 0) {
+      errors.serviceCategories = "Please select at least one service category"
+    }
+
+    // If there are validation errors, show them and stop
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors)
+      setIsLoading(false)
+      
+      // Show a general error message
+      const errorFields = Object.keys(errors)
+      toast.error(`Please complete the following fields: ${errorFields.join(", ")}`)
+      return
+    }
 
     try {
       const result = await createSupplierOnboardingAction({
@@ -70,6 +105,8 @@ export default function SupplierOnboardPage() {
         servicesText: formData.servicesText,
         isPublished: formData.isPublished
       })
+
+      console.log("Supplier creation result:", result)
 
       if (result.isSuccess) {
         // Upload images if any were selected
@@ -110,9 +147,11 @@ export default function SupplierOnboardPage() {
         toast.success("Supplier created successfully!")
         router.push("/onboard/invite?type=supplier&orgId=" + result.data.id)
       } else {
-        toast.error(result.message)
+        console.error("Supplier creation failed:", result.message)
+        toast.error(result.message || "Failed to create supplier")
       }
     } catch (error) {
+      console.error("Unexpected error creating supplier:", error)
       toast.error("Failed to create supplier. Please try again.")
     } finally {
       setIsLoading(false)
@@ -149,7 +188,7 @@ export default function SupplierOnboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               {/* Basic Information */}
               <div className="space-y-4">
                 <div>
@@ -157,10 +196,19 @@ export default function SupplierOnboardPage() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, name: e.target.value }))
+                      if (validationErrors.name) {
+                        setValidationErrors(prev => ({ ...prev, name: "" }))
+                      }
+                    }}
                     placeholder="Enter your business name"
+                    className={validationErrors.name ? "border-red-500 focus:border-red-500" : ""}
                     required
                   />
+                  {validationErrors.name && (
+                    <p className="text-sm text-red-600 mt-1">{validationErrors.name}</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,10 +217,19 @@ export default function SupplierOnboardPage() {
                     <Input
                       id="contactName"
                       value={formData.contactName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, contactName: e.target.value }))}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, contactName: e.target.value }))
+                        if (validationErrors.contactName) {
+                          setValidationErrors(prev => ({ ...prev, contactName: "" }))
+                        }
+                      }}
                       placeholder="Your full name"
+                      className={validationErrors.contactName ? "border-red-500 focus:border-red-500" : ""}
                       required
                     />
+                    {validationErrors.contactName && (
+                      <p className="text-sm text-red-600 mt-1">{validationErrors.contactName}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="email">Email *</Label>
@@ -180,10 +237,19 @@ export default function SupplierOnboardPage() {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, email: e.target.value }))
+                        if (validationErrors.email) {
+                          setValidationErrors(prev => ({ ...prev, email: "" }))
+                        }
+                      }}
                       placeholder="your@email.com"
+                      className={validationErrors.email ? "border-red-500 focus:border-red-500" : ""}
                       required
                     />
+                    {validationErrors.email && (
+                      <p className="text-sm text-red-600 mt-1">{validationErrors.email}</p>
+                    )}
                   </div>
                 </div>
 
@@ -210,18 +276,32 @@ export default function SupplierOnboardPage() {
                     <Input
                       id="city"
                       value={formData.city}
-                      onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, city: e.target.value }))
+                        if (validationErrors.city) {
+                          setValidationErrors(prev => ({ ...prev, city: "" }))
+                        }
+                      }}
                       placeholder="Cape Town"
+                      className={validationErrors.city ? "border-red-500 focus:border-red-500" : ""}
                       required
                     />
+                    {validationErrors.city && (
+                      <p className="text-sm text-red-600 mt-1">{validationErrors.city}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="province">Province *</Label>
                     <Select 
                       value={formData.province} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, province: value }))}
+                      onValueChange={(value) => {
+                        setFormData(prev => ({ ...prev, province: value }))
+                        if (validationErrors.province) {
+                          setValidationErrors(prev => ({ ...prev, province: "" }))
+                        }
+                      }}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className={validationErrors.province ? "border-red-500 focus:border-red-500" : ""}>
                         <SelectValue placeholder="Select province" />
                       </SelectTrigger>
                       <SelectContent>
@@ -236,6 +316,9 @@ export default function SupplierOnboardPage() {
                         <SelectItem value="North West">North West</SelectItem>
                       </SelectContent>
                     </Select>
+                    {validationErrors.province && (
+                      <p className="text-sm text-red-600 mt-1">{validationErrors.province}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="country">Country</Label>
@@ -250,8 +333,8 @@ export default function SupplierOnboardPage() {
 
               {/* Service Categories */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Service Categories</h3>
-                <p className="text-sm text-gray-600">Select the services you provide</p>
+                <h3 className="text-lg font-semibold">Service Categories *</h3>
+                <p className="text-sm text-gray-600">Select the services you provide (at least one required)</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {categories.map((category) => (
                     <Button
@@ -259,13 +342,21 @@ export default function SupplierOnboardPage() {
                       type="button"
                       variant={formData.serviceCategories.includes(category) ? "default" : "outline"}
                       size="sm"
-                      onClick={() => handleCategoryToggle(category)}
+                      onClick={() => {
+                        handleCategoryToggle(category)
+                        if (validationErrors.serviceCategories) {
+                          setValidationErrors(prev => ({ ...prev, serviceCategories: "" }))
+                        }
+                      }}
                       className="justify-start"
                     >
                       {category}
                     </Button>
                   ))}
                 </div>
+                {validationErrors.serviceCategories && (
+                  <p className="text-sm text-red-600">{validationErrors.serviceCategories}</p>
+                )}
               </div>
 
               {/* Services Description */}

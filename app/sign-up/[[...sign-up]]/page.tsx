@@ -30,7 +30,7 @@ export default function SignUpPage() {
           </div>
         </div>
         <SignUp 
-          redirectUrl="/onboard"
+          redirectUrl="/redirect"
           appearance={{
             elements: {
               formButtonPrimary: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700",

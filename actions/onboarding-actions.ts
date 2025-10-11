@@ -16,12 +16,15 @@ import {
   getProfileById, 
   updateProfile, 
   getProfileByEmail, 
-  getProfileWithOrganization 
+  getProfileWithOrganization,
+  getProfilesByOrganization
 } from "@/db/queries/profiles-queries"
 import { 
-  createOrgInvite, 
-  getOrgInviteByTokenHash, 
-  updateOrgInvite 
+  createOrgInvite,
+  getOrgInviteByTokenHash,
+  getOrgInvitesByEmail,
+  getOrgInvitesByOrganization,
+  updateOrgInvite
 } from "@/db/queries/invites-queries"
 import { generateWelcomeEmail } from "@/lib/email-templates"
 import { sendTeamInviteEmail } from "@/lib/email-service"
@@ -49,10 +52,37 @@ export async function createAgencyOnboardingAction(data: {
     }
 
     // Check if user already has an organization
-    const existingProfile = await getProfileById(userId)
+    let existingProfile;
+    try {
+      existingProfile = await getProfileById(userId)
+    } catch (error) {
+      existingProfile = null
+    }
 
     if (existingProfile?.agencyId || existingProfile?.supplierId) {
       return { isSuccess: false, message: "User already belongs to an organization" }
+    }
+
+    // If no profile exists, we need to create one first
+    if (!existingProfile) {
+      const { createProfile } = await import("@/db/queries/profiles-queries")
+      const { auth: getAuth } = await import("@clerk/nextjs/server")
+      const { user } = await getAuth()
+      
+      if (!user) {
+        return { isSuccess: false, message: "User information not available" }
+      }
+
+      const userEmail = user.emailAddresses[0]?.emailAddress || ""
+      existingProfile = await createProfile({
+        userId: userId,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: userEmail,
+        role: "agency_member",
+        agencyId: null,
+        supplierId: null
+      })
     }
 
     // Create the agency
@@ -76,7 +106,7 @@ export async function createAgencyOnboardingAction(data: {
       supplierId: null
     })
 
-    revalidatePath("/dashboard")
+    revalidatePath("/organization")
     revalidatePath("/agencies")
 
     return {
@@ -85,8 +115,11 @@ export async function createAgencyOnboardingAction(data: {
       data: newAgency
     }
   } catch (error) {
-    console.error("Error creating agency:", error)
-    return { isSuccess: false, message: "Failed to create agency" }
+    console.error("Error creating agency in onboarding action:", error)
+    
+    // Return user-friendly error message
+    const errorMessage = error instanceof Error ? error.message : "Failed to create agency. Please try again."
+    return { isSuccess: false, message: errorMessage }
   }
 }
 
@@ -107,15 +140,43 @@ export async function createSupplierOnboardingAction(data: {
 }): Promise<ActionResult<any>> {
   try {
     const { userId } = await auth()
+    
     if (!userId) {
       return { isSuccess: false, message: "User not authenticated" }
     }
 
     // Check if user already has an organization
-    const existingProfile = await getProfileById(userId)
+    let existingProfile;
+    try {
+      existingProfile = await getProfileById(userId)
+    } catch (error) {
+      existingProfile = null
+    }
 
     if (existingProfile?.agencyId || existingProfile?.supplierId) {
       return { isSuccess: false, message: "User already belongs to an organization" }
+    }
+
+    // If no profile exists, we need to create one first
+    if (!existingProfile) {
+      const { createProfile } = await import("@/db/queries/profiles-queries")
+      const { auth: getAuth } = await import("@clerk/nextjs/server")
+      const { user } = await getAuth()
+      
+      if (!user) {
+        return { isSuccess: false, message: "User information not available" }
+      }
+
+      const userEmail = user.emailAddresses[0]?.emailAddress || ""
+      existingProfile = await createProfile({
+        userId: userId,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: userEmail,
+        role: "supplier_member",
+        agencyId: null,
+        supplierId: null
+      })
     }
 
     // Create the supplier
@@ -138,7 +199,7 @@ export async function createSupplierOnboardingAction(data: {
       supplierId: newSupplier.id
     })
 
-    revalidatePath("/dashboard")
+    revalidatePath("/organization")
     revalidatePath("/suppliers")
 
     return {
@@ -147,8 +208,11 @@ export async function createSupplierOnboardingAction(data: {
       data: newSupplier
     }
   } catch (error) {
-    console.error("Error creating supplier:", error)
-    return { isSuccess: false, message: "Failed to create supplier" }
+    console.error("Error creating supplier in onboarding action:", error)
+    
+    // Return user-friendly error message
+    const errorMessage = error instanceof Error ? error.message : "Failed to create supplier. Please try again."
+    return { isSuccess: false, message: errorMessage }
   }
 }
 
@@ -283,7 +347,7 @@ export async function acceptTeamInviteAction(token: string): Promise<ActionResul
     // Mark invite as accepted
     await updateOrgInvite(invite.id, { acceptedAt: new Date() })
 
-    revalidatePath("/dashboard")
+    revalidatePath("/organization")
 
     return {
       isSuccess: true,
@@ -293,6 +357,141 @@ export async function acceptTeamInviteAction(token: string): Promise<ActionResul
   } catch (error) {
     console.error("Error accepting team invite:", error)
     return { isSuccess: false, message: "Failed to accept invitation" }
+  }
+}
+
+// Check for pending invitations by email
+export async function checkPendingInvitationsAction(userEmail: string): Promise<ActionResult<any>> {
+  try {
+    const pendingInvites = await getOrgInvitesByEmail(userEmail)
+    
+    if (!pendingInvites || pendingInvites.length === 0) {
+      return { isSuccess: false, message: "No pending invitations found" }
+    }
+
+    // Find the most recent valid invitation
+    const validInvite = pendingInvites.find(invite => 
+      !invite.acceptedAt && 
+      invite.expiresAt > new Date()
+    )
+
+    if (!validInvite) {
+      return { isSuccess: false, message: "No valid invitations found" }
+    }
+
+    return {
+      isSuccess: true,
+      message: "Pending invitation found",
+      data: validInvite
+    }
+  } catch (error) {
+    console.error("Error checking pending invitations:", error)
+    return { isSuccess: false, message: "Failed to check invitations" }
+  }
+}
+
+// Auto-accept invitation for user
+export async function autoAcceptInvitationAction(userId: string, userEmail: string): Promise<ActionResult<void>> {
+  try {
+    console.log("=== AUTO-ACCEPT DEBUG START ===");
+    console.log("UserId:", userId);
+    console.log("UserEmail:", userEmail);
+    
+    // Check for pending invitations
+    const inviteResult = await checkPendingInvitationsAction(userEmail)
+    console.log("Invite check result:", JSON.stringify(inviteResult, null, 2));
+    
+    if (!inviteResult.isSuccess || !inviteResult.data) {
+      console.log("No pending invitations found");
+      return { isSuccess: false, message: "No pending invitations found" }
+    }
+
+    const invite = inviteResult.data
+    console.log("Found invitation:", JSON.stringify(invite, null, 2));
+
+    // Get user profile
+    const userProfile = await getProfileById(userId)
+    console.log("User profile:", JSON.stringify(userProfile, null, 2));
+    
+    if (!userProfile) {
+      console.log("User profile not found");
+      return { isSuccess: false, message: "User profile not found" }
+    }
+
+    // Check if user already belongs to an organization
+    if (userProfile.agencyId || userProfile.supplierId) {
+      console.log("User already belongs to an organization");
+      return { isSuccess: false, message: "User already belongs to an organization" }
+    }
+
+    // Update user profile with organization info
+    const updateData = invite.orgType === "agency" 
+      ? { role: invite.role as any, agencyId: invite.orgId, supplierId: null }
+      : { role: invite.role as any, agencyId: null, supplierId: invite.orgId }
+
+    console.log("Updating profile with:", JSON.stringify(updateData, null, 2));
+    await updateProfile(userId, updateData)
+    console.log("Profile updated successfully");
+
+    // Mark invite as accepted
+    await updateOrgInvite(invite.id, { acceptedAt: new Date() })
+    console.log("Invite marked as accepted");
+
+    revalidatePath("/organization")
+
+    console.log("=== AUTO-ACCEPT DEBUG END ===");
+    return {
+      isSuccess: true,
+      message: "Invitation accepted automatically",
+      data: undefined
+    }
+  } catch (error) {
+    console.error("Error auto-accepting invitation:", error)
+    return { isSuccess: false, message: "Failed to accept invitation" }
+  }
+}
+
+// Get team members for an organization
+export async function getTeamMembersAction(orgType: "agency" | "supplier", orgId: string): Promise<ActionResult<any[]>> {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return { isSuccess: false, message: "User not authenticated" }
+    }
+
+    // Get all profiles that belong to this organization
+    const teamMembers = await getProfilesByOrganization(orgType, orgId)
+    
+    return {
+      isSuccess: true,
+      message: "Team members retrieved successfully",
+      data: teamMembers
+    }
+  } catch (error) {
+    console.error("Error getting team members:", error)
+    return { isSuccess: false, message: "Failed to get team members" }
+  }
+}
+
+// Get pending invitations for an organization
+export async function getPendingInvitationsAction(orgType: "agency" | "supplier", orgId: string): Promise<ActionResult<any[]>> {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return { isSuccess: false, message: "User not authenticated" }
+    }
+
+    // Get all pending invitations for this organization
+    const pendingInvites = await getOrgInvitesByOrganization(orgType, orgId)
+    
+    return {
+      isSuccess: true,
+      message: "Pending invitations retrieved successfully",
+      data: pendingInvites
+    }
+  } catch (error) {
+    console.error("Error getting pending invitations:", error)
+    return { isSuccess: false, message: "Failed to get pending invitations" }
   }
 }
 
@@ -311,6 +510,7 @@ export async function getUserOrganizationAction(): Promise<ActionResult<any>> {
     }
 
     const organization = userProfile.agency || userProfile.supplier
+    
     if (!organization) {
       return { isSuccess: false, message: "User does not belong to any organization" }
     }
@@ -404,7 +604,6 @@ export async function promoteToAdminAction(): Promise<ActionResult<void>> {
       supplierId: null
     })
 
-    revalidatePath("/dashboard")
     revalidatePath("/admin")
 
     return {
