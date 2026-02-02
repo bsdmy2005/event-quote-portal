@@ -14,7 +14,7 @@ import { ArrowLeft, ArrowRight, Wrench, MapPin, Globe, Phone, Mail } from "lucid
 import { createSupplierOnboardingAction } from "@/actions/onboarding-actions"
 import { createImageAction } from "@/actions/image-galleries-actions"
 import { ImageUpload } from "@/components/ui/image-upload"
-import { uploadImage } from "@/lib/supabase-storage"
+import { uploadImage } from "@/lib/r2-storage"
 import { toast } from "sonner"
 
 export default function SupplierOnboardPage() {

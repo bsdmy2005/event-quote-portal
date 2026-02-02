@@ -14,7 +14,7 @@ import { CalendarIcon, Plus, X, Upload, FileText } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { createRfqAction, updateRfqAttachmentsAction } from "@/actions/rfqs-actions"
-import { uploadRfqAttachment, validateRfqAttachmentFile } from "@/lib/supabase-storage"
+import { uploadRfqAttachment, validateRfqAttachmentFile } from "@/lib/r2-storage"
 import { toast } from "sonner"
 
 interface CreateRfqFormProps {

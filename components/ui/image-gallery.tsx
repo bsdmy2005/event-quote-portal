@@ -23,7 +23,7 @@ import {
   createImageAction,
   setFeaturedImageAction
 } from "@/actions/image-galleries-actions";
-import { uploadImage, deleteImage as deleteImageFromStorage, validateImageFile } from "@/lib/supabase-storage";
+import { uploadImage, deleteImage as deleteImageFromStorage, validateImageFile } from "@/lib/r2-storage";
 import { isUnsplashUrl } from "@/lib/unsplash-utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { ExternalImageUpload } from "@/components/ui/external-image-upload";

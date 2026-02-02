@@ -2,57 +2,63 @@
 
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { supabase, STORAGE_BUCKETS } from "@/lib/supabase-storage"
+import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3'
+import { STORAGE_FOLDERS } from "@/lib/r2-storage"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { RefreshCw, ExternalLink, Download } from "lucide-react"
+
+// Initialize R2 client for server-side use
+const r2Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+})
+
+const bucketName = process.env.R2_BUCKET_NAME!
+const publicUrl = process.env.R2_PUBLIC_URL!
+
+async function listFiles(prefix: string) {
+  try {
+    const command = new ListObjectsV2Command({
+      Bucket: bucketName,
+      Prefix: prefix,
+      MaxKeys: 100,
+    })
+    const response = await r2Client.send(command)
+    return { data: response.Contents || [], error: null }
+  } catch (error) {
+    console.error(`Error listing files in ${prefix}:`, error)
+    return { data: [], error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
 
 export default async function StorageDebugPage() {
   const { userId } = await auth()
-  
+
   if (!userId) {
     redirect("/sign-in")
   }
 
-  // Get all files from RFQ attachments bucket
-  const { data: rfqFiles, error: rfqError } = await supabase.storage
-    .from(STORAGE_BUCKETS.RFQ_ATTACHMENTS)
-    .list('', {
-      limit: 100,
-      offset: 0,
-    })
-
-  // Get all files from quotations bucket
-  const { data: quotationFiles, error: quotationError } = await supabase.storage
-    .from(STORAGE_BUCKETS.QUOTATIONS)
-    .list('', {
-      limit: 100,
-      offset: 0,
-    })
-
-  // Get all files from agency images bucket
-  const { data: agencyFiles, error: agencyError } = await supabase.storage
-    .from(STORAGE_BUCKETS.AGENCY_IMAGES)
-    .list('', {
-      limit: 100,
-      offset: 0,
-    })
-
-  // Get all files from supplier images bucket
-  const { data: supplierFiles, error: supplierError } = await supabase.storage
-    .from(STORAGE_BUCKETS.SUPPLIER_IMAGES)
-    .list('', {
-      limit: 100,
-      offset: 0,
-    })
+  // Get all files from each folder
+  const [rfqResult, quotationResult, agencyResult, supplierResult] = await Promise.all([
+    listFiles(STORAGE_FOLDERS.RFQ_ATTACHMENTS),
+    listFiles(STORAGE_FOLDERS.QUOTATIONS),
+    listFiles(STORAGE_FOLDERS.AGENCY_IMAGES),
+    listFiles(STORAGE_FOLDERS.SUPPLIER_IMAGES),
+  ])
 
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Supabase Storage Debug</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Cloudflare R2 Storage Debug</h1>
         <p className="text-gray-600 mt-2">
-          View all files uploaded to Supabase storage buckets
+          View all files uploaded to Cloudflare R2 storage
+        </p>
+        <p className="text-sm text-gray-500 mt-1">
+          Bucket: {bucketName} | Public URL: {publicUrl}
         </p>
       </div>
 
@@ -61,7 +67,7 @@ export default async function StorageDebugPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Badge variant="outline" className="mr-2">rfq-attachments</Badge>
+              <Badge variant="outline" className="mr-2">{STORAGE_FOLDERS.RFQ_ATTACHMENTS}</Badge>
               RFQ Attachments
             </CardTitle>
             <CardDescription>
@@ -69,37 +75,31 @@ export default async function StorageDebugPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {rfqError ? (
-              <p className="text-red-600">Error: {rfqError.message}</p>
+            {rfqResult.error ? (
+              <p className="text-red-600">Error: {rfqResult.error}</p>
             ) : (
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  Total files: {rfqFiles?.length || 0}
+                  Total files: {rfqResult.data.length}
                 </p>
-                {rfqFiles && rfqFiles.length > 0 ? (
+                {rfqResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {rfqFiles.map((file, index) => (
+                    {rfqResult.data.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-sm font-medium truncate">{file.Key}</p>
                           <p className="text-xs text-gray-500">
-                            {file.metadata?.size ? `${(file.metadata.size / 1024).toFixed(1)} KB` : 'Unknown size'}
+                            {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const url = supabase.storage
-                                .from(STORAGE_BUCKETS.RFQ_ATTACHMENTS)
-                                .getPublicUrl(file.name).data.publicUrl
-                              window.open(url, '_blank')
-                            }}
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <a
+                          href={`${publicUrl}/${file.Key}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                          View
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -115,7 +115,7 @@ export default async function StorageDebugPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Badge variant="outline" className="mr-2">quotations</Badge>
+              <Badge variant="outline" className="mr-2">{STORAGE_FOLDERS.QUOTATIONS}</Badge>
               Quotations
             </CardTitle>
             <CardDescription>
@@ -123,37 +123,31 @@ export default async function StorageDebugPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {quotationError ? (
-              <p className="text-red-600">Error: {quotationError.message}</p>
+            {quotationResult.error ? (
+              <p className="text-red-600">Error: {quotationResult.error}</p>
             ) : (
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  Total files: {quotationFiles?.length || 0}
+                  Total files: {quotationResult.data.length}
                 </p>
-                {quotationFiles && quotationFiles.length > 0 ? (
+                {quotationResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {quotationFiles.map((file, index) => (
+                    {quotationResult.data.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-sm font-medium truncate">{file.Key}</p>
                           <p className="text-xs text-gray-500">
-                            {file.metadata?.size ? `${(file.metadata.size / 1024).toFixed(1)} KB` : 'Unknown size'}
+                            {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const url = supabase.storage
-                                .from(STORAGE_BUCKETS.QUOTATIONS)
-                                .getPublicUrl(file.name).data.publicUrl
-                              window.open(url, '_blank')
-                            }}
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <a
+                          href={`${publicUrl}/${file.Key}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                          View
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -169,7 +163,7 @@ export default async function StorageDebugPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Badge variant="outline" className="mr-2">agency-images</Badge>
+              <Badge variant="outline" className="mr-2">{STORAGE_FOLDERS.AGENCY_IMAGES}</Badge>
               Agency Images
             </CardTitle>
             <CardDescription>
@@ -177,37 +171,31 @@ export default async function StorageDebugPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {agencyError ? (
-              <p className="text-red-600">Error: {agencyError.message}</p>
+            {agencyResult.error ? (
+              <p className="text-red-600">Error: {agencyResult.error}</p>
             ) : (
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  Total files: {agencyFiles?.length || 0}
+                  Total files: {agencyResult.data.length}
                 </p>
-                {agencyFiles && agencyFiles.length > 0 ? (
+                {agencyResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {agencyFiles.map((file, index) => (
+                    {agencyResult.data.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-sm font-medium truncate">{file.Key}</p>
                           <p className="text-xs text-gray-500">
-                            {file.metadata?.size ? `${(file.metadata.size / 1024).toFixed(1)} KB` : 'Unknown size'}
+                            {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const url = supabase.storage
-                                .from(STORAGE_BUCKETS.AGENCY_IMAGES)
-                                .getPublicUrl(file.name).data.publicUrl
-                              window.open(url, '_blank')
-                            }}
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <a
+                          href={`${publicUrl}/${file.Key}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                          View
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -223,7 +211,7 @@ export default async function StorageDebugPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Badge variant="outline" className="mr-2">supplier-images</Badge>
+              <Badge variant="outline" className="mr-2">{STORAGE_FOLDERS.SUPPLIER_IMAGES}</Badge>
               Supplier Images
             </CardTitle>
             <CardDescription>
@@ -231,37 +219,31 @@ export default async function StorageDebugPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {supplierError ? (
-              <p className="text-red-600">Error: {supplierError.message}</p>
+            {supplierResult.error ? (
+              <p className="text-red-600">Error: {supplierResult.error}</p>
             ) : (
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  Total files: {supplierFiles?.length || 0}
+                  Total files: {supplierResult.data.length}
                 </p>
-                {supplierFiles && supplierFiles.length > 0 ? (
+                {supplierResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {supplierFiles.map((file, index) => (
+                    {supplierResult.data.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-sm font-medium truncate">{file.Key}</p>
                           <p className="text-xs text-gray-500">
-                            {file.metadata?.size ? `${(file.metadata.size / 1024).toFixed(1)} KB` : 'Unknown size'}
+                            {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const url = supabase.storage
-                                .from(STORAGE_BUCKETS.SUPPLIER_IMAGES)
-                                .getPublicUrl(file.name).data.publicUrl
-                              window.open(url, '_blank')
-                            }}
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <a
+                          href={`${publicUrl}/${file.Key}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                          View
+                        </a>
                       </div>
                     ))}
                   </div>

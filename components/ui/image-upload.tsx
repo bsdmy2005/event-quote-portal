@@ -12,7 +12,7 @@ import {
   Loader2,
   ImageIcon
 } from "lucide-react";
-import { validateImageFile } from "@/lib/supabase-storage";
+import { validateImageFile } from "@/lib/r2-storage";
 
 interface ImageUploadProps {
   selectedFiles: File[];

@@ -26,7 +26,7 @@ import {
   getImagesByOrganizationAction,
   setFeaturedImageAction
 } from "@/actions/image-galleries-actions";
-import { uploadImage, deleteImage as deleteImageFromStorage, validateImageFile } from "@/lib/supabase-storage";
+import { uploadImage, deleteImage as deleteImageFromStorage, validateImageFile } from "@/lib/r2-storage";
 import type { Image, NewImage } from "@/db/schema";
 
 interface ImageManagerProps {

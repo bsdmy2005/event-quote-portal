@@ -15,7 +15,7 @@ import { createImageAction } from "@/actions/image-galleries-actions";
 import { Loader2 } from "lucide-react";
 import { SelectCategory } from "@/components/ui/select-category";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { uploadImage } from "@/lib/supabase-storage";
+import { uploadImage } from "@/lib/r2-storage";
 import type { NewImage } from "@/db/schema";
 
 const createAgencySchema = z.object({
