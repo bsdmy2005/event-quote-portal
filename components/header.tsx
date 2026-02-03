@@ -5,7 +5,7 @@ import { SignInButton, UserButton } from "@clerk/nextjs";
 import { UsersIcon, Menu, X, HomeIcon, Building2, Wrench, Settings, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { QouteLogo } from "@/components/ui/qoute-logo";
+import { QuoteLogo } from "@/components/ui/quote-logo";
 
 export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,9 +35,9 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <QouteLogo className="h-10 w-10" />
+              <QuoteLogo className="h-10 w-10" />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Qoute Portal
+                Quote Portal
               </span>
             </Link>
           </div>

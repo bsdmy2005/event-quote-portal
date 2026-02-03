@@ -15,7 +15,7 @@ export function generateTeamInviteEmail(
   const orgTypeDisplay = organizationType === "agency" ? "Agency" : "Supplier"
   const signUpUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/sign-up`
   
-  const subject = `You're invited to join ${organizationName} on Qoute Portal`
+  const subject = `You're invited to join ${organizationName} on Quote Portal`
   
   const html = `
     <!DOCTYPE html>
@@ -37,7 +37,7 @@ export function generateTeamInviteEmail(
     <body>
       <div class="container">
         <div class="header">
-          <h1>Welcome to Qoute Portal!</h1>
+          <h1>Welcome to Quote Portal!</h1>
           <p>You've been invited to join a team</p>
         </div>
         
@@ -46,11 +46,11 @@ export function generateTeamInviteEmail(
           
           <p>Hello!</p>
           
-          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> as a <strong>${roleDisplay}</strong> on Qoute Portal.</p>
+          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> as a <strong>${roleDisplay}</strong> on Quote Portal.</p>
           
           <div class="highlight">
-            <h3>What is Qoute Portal?</h3>
-            <p>Qoute Portal is the complete B2B platform for event professionals. ${orgTypeDisplay === "Agency" ? "Agencies can send RFQs to multiple suppliers, streamline cost estimation, and generate qualified leads." : "Suppliers can receive qualified RFQ invitations, submit quotations, and manage their service profiles."}</p>
+            <h3>What is Quote Portal?</h3>
+            <p>Quote Portal is the complete B2B platform for event professionals. ${orgTypeDisplay === "Agency" ? "Agencies can send RFQs to multiple suppliers, streamline cost estimation, and generate qualified leads." : "Suppliers can receive qualified RFQ invitations, submit quotations, and manage their service profiles."}</p>
           </div>
           
           <p>As a <strong>${roleDisplay}</strong>, you'll be able to:</p>
@@ -76,12 +76,12 @@ export function generateTeamInviteEmail(
           
           <p>If you have any questions, feel free to reach out to ${inviterName} or contact our support team.</p>
           
-          <p>Best regards,<br>The Qoute Portal Team</p>
+          <p>Best regards,<br>The Quote Portal Team</p>
         </div>
         
         <div class="footer">
-          <p>This email was sent by Qoute Portal. If you didn't expect this invitation, you can safely ignore this email.</p>
-          <p>© 2024 Qoute Portal. All rights reserved.</p>
+          <p>This email was sent by Quote Portal. If you didn't expect this invitation, you can safely ignore this email.</p>
+          <p>© 2024 Quote Portal. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -89,16 +89,16 @@ export function generateTeamInviteEmail(
   `
   
   const text = `
-Welcome to Qoute Portal!
+Welcome to Quote Portal!
 
 You've been invited to join ${organizationName}
 
 Hello!
 
-${inviterName} has invited you to join ${organizationName} as a ${roleDisplay} on Qoute Portal.
+${inviterName} has invited you to join ${organizationName} as a ${roleDisplay} on Quote Portal.
 
-What is Qoute Portal?
-Qoute Portal is the complete B2B platform for event professionals. ${orgTypeDisplay === "Agency" ? "Agencies can send RFQs to multiple suppliers, streamline cost estimation, and generate qualified leads." : "Suppliers can receive qualified RFQ invitations, submit quotations, and manage their service profiles."}
+What is Quote Portal?
+Quote Portal is the complete B2B platform for event professionals. ${orgTypeDisplay === "Agency" ? "Agencies can send RFQs to multiple suppliers, streamline cost estimation, and generate qualified leads." : "Suppliers can receive qualified RFQ invitations, submit quotations, and manage their service profiles."}
 
 As a ${roleDisplay}, you'll be able to:
 ${orgTypeDisplay === "Agency" ? `
@@ -120,11 +120,11 @@ Important: This invitation will expire in 7 days. If you don't have an account y
 If you have any questions, feel free to reach out to ${inviterName} or contact our support team.
 
 Best regards,
-The Qoute Portal Team
+The Quote Portal Team
 
 ---
-This email was sent by Qoute Portal. If you didn't expect this invitation, you can safely ignore this email.
-© 2024 Qoute Portal. All rights reserved.
+This email was sent by Quote Portal. If you didn't expect this invitation, you can safely ignore this email.
+© 2024 Quote Portal. All rights reserved.
   `
   
   return { subject, html, text }
@@ -138,7 +138,7 @@ export function generateWelcomeEmail(
   const orgTypeDisplay = organizationType === "agency" ? "Agency" : "Supplier"
   const organizationUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/organization`
   
-  const subject = `Welcome to Qoute Portal - Your ${orgTypeDisplay} is ready!`
+  const subject = `Welcome to Quote Portal - Your ${orgTypeDisplay} is ready!`
   
   const html = `
     <!DOCTYPE html>
@@ -160,18 +160,18 @@ export function generateWelcomeEmail(
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎉 Welcome to Qoute Portal!</h1>
+          <h1>🎉 Welcome to Quote Portal!</h1>
           <p>Your ${orgTypeDisplay} is ready to go</p>
         </div>
         
         <div class="content">
           <h2>Hello ${userName}!</h2>
           
-          <p>Congratulations! Your ${orgTypeDisplay} <strong>${organizationName}</strong> has been successfully created on Qoute Portal.</p>
+          <p>Congratulations! Your ${orgTypeDisplay} <strong>${organizationName}</strong> has been successfully created on Quote Portal.</p>
           
           <div class="highlight">
             <h3>What's Next?</h3>
-            <p>You're now ready to start using Qoute Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : "receive RFQ invitations and grow your business"}.</p>
+            <p>You're now ready to start using Quote Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : "receive RFQ invitations and grow your business"}.</p>
           </div>
           
           <p>Here's what you can do now:</p>
@@ -197,11 +197,11 @@ export function generateWelcomeEmail(
           
           <p>We're excited to have you on board!</p>
           
-          <p>Best regards,<br>The Qoute Portal Team</p>
+          <p>Best regards,<br>The Quote Portal Team</p>
         </div>
         
         <div class="footer">
-          <p>© 2024 Qoute Portal. All rights reserved.</p>
+          <p>© 2024 Quote Portal. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -209,14 +209,14 @@ export function generateWelcomeEmail(
   `
   
   const text = `
-🎉 Welcome to Qoute Portal!
+🎉 Welcome to Quote Portal!
 
 Hello ${userName}!
 
-Congratulations! Your ${orgTypeDisplay} ${organizationName} has been successfully created on Qoute Portal.
+Congratulations! Your ${orgTypeDisplay} ${organizationName} has been successfully created on Quote Portal.
 
 What's Next?
-You're now ready to start using Qoute Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : "receive RFQ invitations and grow your business"}.
+You're now ready to start using Quote Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : "receive RFQ invitations and grow your business"}.
 
 Here's what you can do now:
 ${organizationType === "agency" ? `
@@ -238,10 +238,10 @@ Need help getting started? Check out our help center or contact our support team
 We're excited to have you on board!
 
 Best regards,
-The Qoute Portal Team
+The Quote Portal Team
 
 ---
-© 2024 Qoute Portal. All rights reserved.
+© 2024 Quote Portal. All rights reserved.
   `
   
   return { subject, html, text }
@@ -318,12 +318,12 @@ export function generateRfqInviteEmail(
           
           <p>If you have any questions about this RFQ, please contact ${agencyName} directly.</p>
           
-          <p>Best regards,<br>The Qoute Portal Team</p>
+          <p>Best regards,<br>The Quote Portal Team</p>
         </div>
         
         <div class="footer">
-          <p>This email was sent by Qoute Portal. If you didn't expect this RFQ invitation, you can safely ignore this email.</p>
-          <p>© 2024 Qoute Portal. All rights reserved.</p>
+          <p>This email was sent by Quote Portal. If you didn't expect this RFQ invitation, you can safely ignore this email.</p>
+          <p>© 2024 Quote Portal. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -358,11 +358,11 @@ Important Notes:
 If you have any questions about this RFQ, please contact ${agencyName} directly.
 
 Best regards,
-The Qoute Portal Team
+The Quote Portal Team
 
 ---
-This email was sent by Qoute Portal. If you didn't expect this RFQ invitation, you can safely ignore this email.
-© 2024 Qoute Portal. All rights reserved.
+This email was sent by Quote Portal. If you didn't expect this RFQ invitation, you can safely ignore this email.
+© 2024 Quote Portal. All rights reserved.
   `
   
   return { subject, html, text }
@@ -431,12 +431,12 @@ export function generateQuotationReceivedEmail(
           
           <p>If you have any questions about this quotation, you can contact ${supplierName} directly or reach out to our support team.</p>
           
-          <p>Best regards,<br>The Qoute Portal Team</p>
+          <p>Best regards,<br>The Quote Portal Team</p>
         </div>
         
         <div class="footer">
-          <p>This email was sent by Qoute Portal. If you didn't expect this notification, please contact our support team.</p>
-          <p>© 2024 Qoute Portal. All rights reserved.</p>
+          <p>This email was sent by Quote Portal. If you didn't expect this notification, please contact our support team.</p>
+          <p>© 2024 Quote Portal. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -471,11 +471,11 @@ Next Steps:
 If you have any questions about this quotation, you can contact ${supplierName} directly or reach out to our support team.
 
 Best regards,
-The Qoute Portal Team
+The Quote Portal Team
 
 ---
-This email was sent by Qoute Portal. If you didn't expect this notification, please contact our support team.
-© 2024 Qoute Portal. All rights reserved.
+This email was sent by Quote Portal. If you didn't expect this notification, please contact our support team.
+© 2024 Quote Portal. All rights reserved.
   `
   
   return { subject, html, text }

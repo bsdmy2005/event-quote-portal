@@ -11,7 +11,7 @@ async function testPostmarkEmail() {
     const client = new postmark.ServerClient("8980da23-200b-4d90-bfab-622447676857");
 
     const response = await client.sendEmail({
-      "From": "invites@qouteportal.com",
+      "From": "invites@quoteportal.com",
       "To": "bereket@elenjicalsolutions.com",
       "Subject": "Hello from Postmark",
       "HtmlBody": "<strong>Hello</strong> dear Postmark user.",

@@ -1,4 +1,4 @@
-# qoute Portal — MVP 1.0 (Reduced) _with Agency Onboarding_
+# Quote Portal — MVP 1.0 (Reduced) _with Agency Onboarding_
 Lean, document‑driven workflow focusing on **Supplier ↔ Agency** engagement. No line‑item parsing or compliance vault in Phase I.
 
 ---

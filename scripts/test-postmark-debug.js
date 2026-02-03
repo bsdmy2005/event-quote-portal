@@ -20,17 +20,17 @@ async function testMultipleRecipients() {
       console.log(`📧 Testing: ${email}`);
       
       const response = await client.sendEmail({
-        "From": "invites@qouteportal.com",
+        "From": "invites@quoteportal.com",
         "To": email,
         "Subject": `Postmark Test - ${new Date().toISOString()}`,
         "HtmlBody": `
           <h2>Postmark Delivery Test</h2>
           <p><strong>Sent at:</strong> ${new Date().toISOString()}</p>
           <p><strong>To:</strong> ${email}</p>
-          <p><strong>From:</strong> invites@qouteportal.com</p>
+          <p><strong>From:</strong> invites@quoteportal.com</p>
           <p>If you receive this email, Postmark delivery is working!</p>
         `,
-        "TextBody": `Postmark Delivery Test\nSent at: ${new Date().toISOString()}\nTo: ${email}\nFrom: invites@qouteportal.com\n\nIf you receive this email, Postmark delivery is working!`,
+        "TextBody": `Postmark Delivery Test\nSent at: ${new Date().toISOString()}\nTo: ${email}\nFrom: invites@quoteportal.com\n\nIf you receive this email, Postmark delivery is working!`,
         "MessageStream": "outbound"
       });
 

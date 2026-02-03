@@ -486,7 +486,7 @@ export default function LogoShowcasePage() {
             Brand Identity
           </Badge>
           <h1 className="text-4xl font-bold text-slate-900 mb-4">
-            Qoute Portal Logo Variations
+            Quote Portal Logo Variations
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Select your preferred logo style. Each variation maintains the Q-portal concept
@@ -529,7 +529,7 @@ export default function LogoShowcasePage() {
               >
                 <Logo className="h-12 w-12" />
                 <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Qoute Portal
+                  Quote Portal
                 </span>
               </div>
             ))}
@@ -549,7 +549,7 @@ export default function LogoShowcasePage() {
               >
                 <Logo className="h-12 w-12" />
                 <span className="text-2xl font-bold text-white">
-                  Qoute Portal
+                  Quote Portal
                 </span>
               </div>
             ))}

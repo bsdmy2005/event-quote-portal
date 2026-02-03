@@ -1,10 +1,10 @@
-export function QouteLogo({ className = "h-8 w-8" }: { className?: string }) {
+export function QuoteLogo({ className = "h-8 w-8" }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 256 256"
       role="img"
-      aria-label="Qoute icon"
+      aria-label="Quote icon"
       className={className}
     >
       <defs>
