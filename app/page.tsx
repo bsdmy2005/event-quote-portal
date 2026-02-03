@@ -23,10 +23,15 @@ import {
   Rocket,
   Clock,
   X,
-  MapPin,
   FileCheck,
   Mail,
   CircleDollarSign,
+  GitCompare,
+  FileSearch,
+  Shield,
+  TrendingUp,
+  Handshake,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -146,6 +151,70 @@ const ROADMAP = [
   { phase: "Phase 2", title: "Building", features: ["Tenders", "Documents", "Messaging"], status: "building" },
   { phase: "Phase 3", title: "Planned", features: ["AI Tools", "Analytics"], status: "planned" },
   { phase: "Phase 4", title: "Future", features: ["Funding", "Payments"], status: "future" },
+];
+
+// AI Features - Detailed
+const AI_FEATURES = [
+  {
+    icon: Mail,
+    title: "Smart Email Drafting",
+    description: "AI-assisted communication with suppliers and stakeholders. Generate professional RFQ emails, follow-ups, and responses.",
+  },
+  {
+    icon: GitCompare,
+    title: "Workflow Comparison",
+    description: "Intelligent analysis of proposals and workflows. Compare multiple quotes side-by-side with AI-powered insights.",
+  },
+  {
+    icon: Calculator,
+    title: "CE Estimation",
+    description: "AI-powered cost estimate generation and validation. Get instant benchmarks against industry standards.",
+  },
+  {
+    icon: FileSearch,
+    title: "Document Analysis",
+    description: "Automated extraction and analysis of quotes, proposals, and contracts. Save hours on manual review.",
+  },
+];
+
+// Funding Marketplace Features
+const FUNDING_FEATURES = [
+  {
+    icon: FileCheck,
+    title: "PO-Based Funding",
+    description: "Unlock working capital based on approved purchase orders",
+  },
+  {
+    icon: Handshake,
+    title: "Investor Marketplace",
+    description: "Connect with funders looking to invest in verified projects",
+  },
+  {
+    icon: Shield,
+    title: "Platform-Verified",
+    description: "All projects vetted and approved through our platform",
+  },
+  {
+    icon: TrendingUp,
+    title: "Flexible Terms",
+    description: "Competitive financing options tailored to project timelines",
+  },
+];
+
+// Funding Process Steps
+const FUNDING_PROCESS = [
+  { step: 1, title: "Submit PO", description: "Upload approved purchase order" },
+  { step: 2, title: "Platform Review", description: "We verify and approve the project" },
+  { step: 3, title: "Funder Match", description: "Connect with interested financiers" },
+  { step: 4, title: "Get Funded", description: "Receive working capital" },
+];
+
+// Communication Features
+const COMMUNICATION_FEATURES = [
+  { title: "Centralized Messaging", description: "All stakeholder communication in one place" },
+  { title: "Thread Organization", description: "Conversations organized by project and RFQ" },
+  { title: "Document Sharing", description: "Share files directly in conversations" },
+  { title: "Notification Preferences", description: "Stay updated on what matters" },
 ];
 
 export default function HomePage() {
@@ -344,8 +413,190 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* AI-Powered Workflows Section */}
+      <section className="py-20 bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge className="bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/20 mb-4">
+              <Brain className="h-3.5 w-3.5 mr-1.5" />
+              Coming Soon
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              AI-Powered Workflows
+            </h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              Harness intelligent automation to streamline your event procurement processes
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {AI_FEATURES.map((feature) => (
+              <div
+                key={feature.title}
+                className="bg-slate-800 rounded-xl p-6 hover:bg-slate-700/80 transition-colors"
+              >
+                <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <feature.icon className="h-6 w-6 text-indigo-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Unified Communication Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+            {/* Left: Content */}
+            <div>
+              <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 mb-4">
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Coming Soon
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                Unified Communication Hub
+              </h2>
+              <p className="text-lg text-slate-600 mb-8">
+                Keep all stakeholder conversations organized in one place. No more scattered emails or missed messages between agencies, suppliers, consultants, and funders.
+              </p>
+
+              <div className="space-y-4">
+                {COMMUNICATION_FEATURES.map((feature) => (
+                  <div key={feature.title} className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-medium text-slate-900">{feature.title}</h4>
+                      <p className="text-sm text-slate-600">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Visual */}
+            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+              <div className="space-y-4">
+                {/* Sample conversation threads */}
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Building2 className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Agency → Suppliers</p>
+                      <p className="text-xs text-slate-500">RFQ #2024-089: AV Equipment</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 pl-11">Quote deadline extended to Friday...</p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <Briefcase className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Cost Consultant</p>
+                      <p className="text-xs text-slate-500">Budget Review: Corporate Launch</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 pl-11">Scope alignment complete, ready for...</p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                      <Landmark className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Funder Discussion</p>
+                      <p className="text-xs text-slate-500">PO Funding: Project #2024-045</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 pl-11">Terms approved, disbursement in 48h...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Funding Marketplace Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+            {/* Left: Content */}
+            <div className="text-white">
+              <Badge className="bg-white/20 text-white hover:bg-white/20 mb-4">
+                <Landmark className="h-3.5 w-3.5 mr-1.5" />
+                Coming Soon
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Funding Marketplace
+              </h2>
+              <p className="text-lg text-blue-100 mb-8">
+                Unlock working capital based on approved purchase orders. Connect event companies and suppliers with project financiers — all verified through our platform.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {FUNDING_FEATURES.map((feature) => (
+                  <div key={feature.title} className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-white">{feature.title}</h4>
+                      <p className="text-sm text-blue-200">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+              >
+                <Link href="/waitlist">
+                  <Bell className="mr-2 h-4 w-4" />
+                  Get Notified at Launch
+                </Link>
+              </Button>
+            </div>
+
+            {/* Right: Process Steps */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+              <h3 className="text-white font-semibold text-lg mb-6 text-center">
+                How It Works
+              </h3>
+
+              <div className="space-y-4">
+                {FUNDING_PROCESS.map((item) => (
+                  <div key={item.step} className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white font-bold flex-shrink-0">
+                      {item.step}
+                    </div>
+                    <div className="flex-1 bg-white/10 rounded-xl p-4">
+                      <h4 className="text-white font-medium">{item.title}</h4>
+                      <p className="text-blue-200 text-sm">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-white">
+      <section id="how-it-works" className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
