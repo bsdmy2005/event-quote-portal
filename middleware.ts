@@ -8,6 +8,7 @@ export default authMiddleware({
     "/logo-showcase",
     "/agencies",
     "/suppliers",
+    "/waitlist",
     "/sign-in",
     "/sign-up",
     "/redirect",
