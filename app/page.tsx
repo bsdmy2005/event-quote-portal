@@ -36,55 +36,67 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-// Who We Serve - 4 Stakeholders
+// Who We Serve - 4 Stakeholders (with expanded features)
 const STAKEHOLDERS = [
   {
     icon: Building2,
     title: "Event Agencies",
-    subtitle: "Streamline your procurement",
+    subtitle: "Streamline procurement & compile cost estimates",
     benefits: [
-      "Send RFQs to multiple suppliers at once",
-      "Compare quotes and build cost estimates",
-      "Manage projects from brief to closure",
+      "Send RFQs to multiple suppliers simultaneously",
+      "Compare quotes and compile cost estimates for consultants",
+      "Access document storage and centralized communication",
+      "Rate suppliers and build trusted relationships",
+      "Advertise your agency services on the platform",
     ],
-    cta: "For Agencies",
-    href: "/agencies",
+    cta: "Learn More",
+    href: "/features#agencies",
+    color: "blue",
   },
   {
     icon: Wrench,
     title: "Suppliers",
-    subtitle: "Get qualified leads",
+    subtitle: "Get qualified leads & respond to RFQs",
     benefits: [
-      "Receive targeted RFQ invitations",
-      "No cold calling - verified opportunities",
-      "Showcase your services to agencies",
+      "Receive targeted RFQ invitations from verified agencies",
+      "Respond to RFQs directly within the platform",
+      "Advertise your services and build your profile",
+      "Earn ratings and reviews to grow your reputation",
+      "Access PO-based funding for confirmed projects",
     ],
-    cta: "For Suppliers",
-    href: "/suppliers",
+    cta: "Learn More",
+    href: "/features#suppliers",
+    color: "green",
   },
   {
     icon: Briefcase,
     title: "Cost Consultants",
-    subtitle: "Align scope with budgets",
+    subtitle: "Issue RFQs to agencies & benchmark costs",
     benefits: [
-      "Review briefs and align deliverables",
-      "Benchmark costs against industry standards",
-      "Support project closure and reconciliation",
+      "Issue RFQs to multiple event agencies for projects",
+      "Compare agency proposals and select best fit",
+      "Review cost estimates with industry benchmarking",
+      "Align scope and budgets before procurement begins",
+      "Generate closure reports with efficiency insights",
     ],
-    cta: "For Consultants",
-    href: "/waitlist",
+    cta: "Learn More",
+    href: "/features#consultants",
+    color: "purple",
   },
   {
     icon: Landmark,
     title: "Funders",
-    subtitle: "Fund verified projects",
+    subtitle: "Fund verified POs & manage portfolio",
     benefits: [
-      "Access platform-vetted opportunities",
-      "PO-based funding with clear terms",
-      "Connect with event companies directly",
+      "Browse platform-verified purchase orders",
+      "Access risk analytics on agencies and suppliers",
+      "Connect directly with event companies",
+      "Structure flexible financing terms",
+      "Track and manage your funding portfolio",
     ],
-    cta: "For Funders",
-    href: "/waitlist",
+    cta: "Learn More",
+    href: "/features#funders",
+    color: "emerald",
   },
 ];
 
@@ -316,40 +328,55 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {STAKEHOLDERS.map((stakeholder) => (
-              <Card
-                key={stakeholder.title}
-                className="border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
-              >
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4">
-                    <stakeholder.icon className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                    {stakeholder.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 mb-4">{stakeholder.subtitle}</p>
-                  <ul className="space-y-2 mb-6">
-                    {stakeholder.benefits.map((benefit, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
-                        <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className="w-full justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
-                  >
-                    <Link href={stakeholder.href}>
-                      {stakeholder.cta}
-                      <ArrowRight className="ml-1 h-4 w-4" />
+            {STAKEHOLDERS.map((stakeholder) => {
+              const colorClasses = {
+                blue: { bg: "bg-blue-50", text: "text-blue-600", check: "text-blue-500" },
+                green: { bg: "bg-green-50", text: "text-green-600", check: "text-green-500" },
+                purple: { bg: "bg-purple-50", text: "text-purple-600", check: "text-purple-500" },
+                emerald: { bg: "bg-emerald-50", text: "text-emerald-600", check: "text-emerald-500" },
+              };
+              const colors = colorClasses[stakeholder.color as keyof typeof colorClasses];
+
+              return (
+                <Card
+                  key={stakeholder.title}
+                  className="border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+                >
+                  <CardContent className="p-6">
+                    <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center mb-4`}>
+                      <stakeholder.icon className={`h-6 w-6 ${colors.text}`} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                      {stakeholder.title}
+                    </h3>
+                    <p className="text-sm text-slate-500 mb-4">{stakeholder.subtitle}</p>
+                    <ul className="space-y-2 mb-4">
+                      {stakeholder.benefits.slice(0, 3).map((benefit, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
+                          <CheckCircle className={`h-4 w-4 ${colors.check} mt-0.5 flex-shrink-0`} />
+                          {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                    {stakeholder.benefits.length > 3 && (
+                      <p className="text-xs text-slate-400 mb-4">
+                        + {stakeholder.benefits.length - 3} more features
+                      </p>
+                    )}
+                    <Button
+                      asChild
+                      variant="ghost"
+                      className={`w-full justify-center ${colors.text} hover:${colors.bg} font-medium`}
+                    >
+                      <Link href={stakeholder.href}>
+                        {stakeholder.cta}
+                        <ArrowRight className="ml-1 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
