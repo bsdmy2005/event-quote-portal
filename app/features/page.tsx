@@ -521,11 +521,11 @@ export default function FeaturesPage() {
             <div className="flex flex-wrap justify-center gap-6 mt-10 text-sm text-blue-200">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
-                Free to join
+                Beta access available
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
-                Early access perks
+                Early adopter perks
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />

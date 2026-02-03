@@ -4,8 +4,10 @@ export default authMiddleware({
   // Array of public routes that don't require authentication
   publicRoutes: [
     "/",
+    "/features",
+    "/logo-showcase",
     "/agencies",
-    "/suppliers", 
+    "/suppliers",
     "/sign-in",
     "/sign-up",
     "/redirect",

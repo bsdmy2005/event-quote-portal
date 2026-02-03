@@ -300,15 +300,15 @@ export default function HomePage() {
             <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                Free to join
+                Beta access available
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                No credit card required
+                Shape the product
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                Early access perks
+                Early adopter perks
               </span>
             </div>
           </div>
@@ -778,11 +778,11 @@ export default function HomePage() {
             <div className="flex flex-wrap justify-center gap-6 mt-10 text-sm text-blue-200">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
-                Free to join
+                Beta access available
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
-                Early access perks
+                Early adopter perks
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />

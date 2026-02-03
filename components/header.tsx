@@ -2,9 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { SignInButton, UserButton } from "@clerk/nextjs";
-import { UsersIcon, Menu, X, HomeIcon, Building2, Wrench, Settings } from "lucide-react";
+import { UsersIcon, Menu, X, HomeIcon, Building2, Wrench, Settings, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { QouteLogo } from "@/components/ui/qoute-logo";
 
 export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +13,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
 
   const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon },
+    { name: 'Features', href: '/features', icon: Sparkles },
     { name: 'Agencies', href: '/agencies', icon: Building2 },
     { name: 'Suppliers', href: '/suppliers', icon: Wrench },
   ];
@@ -32,13 +34,11 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3">
-              {/* Quote Portal Logo */}
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Quote Portal
-                </span>
-              </div>
+            <Link href="/" className="flex items-center space-x-2">
+              <QouteLogo className="h-10 w-10" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Qoute Portal
+              </span>
             </Link>
           </div>
 
