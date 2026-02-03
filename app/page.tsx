@@ -316,9 +316,12 @@ export default function HomePage() {
       </section>
 
       {/* Who We Serve */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
+            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 mb-4">
+              Platform Ecosystem
+            </Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               Who We Serve
             </h2>
@@ -330,27 +333,62 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {STAKEHOLDERS.map((stakeholder) => {
               const colorClasses = {
-                blue: { bg: "bg-blue-50", text: "text-blue-600", check: "text-blue-500" },
-                green: { bg: "bg-green-50", text: "text-green-600", check: "text-green-500" },
-                purple: { bg: "bg-purple-50", text: "text-purple-600", check: "text-purple-500" },
-                emerald: { bg: "bg-emerald-50", text: "text-emerald-600", check: "text-emerald-500" },
+                blue: {
+                  bg: "bg-blue-50",
+                  bgDark: "bg-blue-600",
+                  text: "text-blue-600",
+                  check: "text-blue-500",
+                  border: "border-blue-200",
+                  hoverBg: "hover:bg-blue-50"
+                },
+                green: {
+                  bg: "bg-green-50",
+                  bgDark: "bg-green-600",
+                  text: "text-green-600",
+                  check: "text-green-500",
+                  border: "border-green-200",
+                  hoverBg: "hover:bg-green-50"
+                },
+                purple: {
+                  bg: "bg-purple-50",
+                  bgDark: "bg-purple-600",
+                  text: "text-purple-600",
+                  check: "text-purple-500",
+                  border: "border-purple-200",
+                  hoverBg: "hover:bg-purple-50"
+                },
+                emerald: {
+                  bg: "bg-emerald-50",
+                  bgDark: "bg-emerald-600",
+                  text: "text-emerald-600",
+                  check: "text-emerald-500",
+                  border: "border-emerald-200",
+                  hoverBg: "hover:bg-emerald-50"
+                },
               };
               const colors = colorClasses[stakeholder.color as keyof typeof colorClasses];
 
               return (
                 <Card
                   key={stakeholder.title}
-                  className="border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+                  className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden`}
                 >
-                  <CardContent className="p-6">
-                    <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center mb-4`}>
-                      <stakeholder.icon className={`h-6 w-6 ${colors.text}`} />
+                  {/* Colored header bar */}
+                  <div className={`${colors.bgDark} px-6 py-4`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <stakeholder.icon className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {stakeholder.title}
+                        </h3>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                      {stakeholder.title}
-                    </h3>
-                    <p className="text-sm text-slate-500 mb-4">{stakeholder.subtitle}</p>
-                    <ul className="space-y-2 mb-4">
+                  </div>
+                  <CardContent className="p-6">
+                    <p className="text-sm text-slate-600 mb-4 font-medium">{stakeholder.subtitle}</p>
+                    <ul className="space-y-2.5 mb-4">
                       {stakeholder.benefits.slice(0, 3).map((benefit, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
                           <CheckCircle className={`h-4 w-4 ${colors.check} mt-0.5 flex-shrink-0`} />
@@ -365,8 +403,8 @@ export default function HomePage() {
                     )}
                     <Button
                       asChild
-                      variant="ghost"
-                      className={`w-full justify-center ${colors.text} hover:${colors.bg} font-medium`}
+                      variant="outline"
+                      className={`w-full justify-center ${colors.text} ${colors.border} ${colors.hoverBg} font-medium`}
                     >
                       <Link href={stakeholder.href}>
                         {stakeholder.cta}
@@ -382,36 +420,40 @@ export default function HomePage() {
       </section>
 
       {/* Platform Capabilities */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <Badge className="bg-white/20 text-white hover:bg-white/20 mb-4">
+              <Zap className="h-3.5 w-3.5 mr-1.5" />
+              Core Platform
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Platform Capabilities
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <p className="text-lg text-blue-100 max-w-2xl mx-auto">
               Powerful tools for modern event procurement
             </p>
           </div>
 
           {/* Available Now */}
-          <div className="mb-12">
+          <div className="mb-16">
             <div className="flex items-center justify-center gap-2 mb-8">
-              <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5" />
+              <Badge className="bg-green-500 text-white hover:bg-green-500">
+                <span className="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse" />
                 Available Now
               </Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {AVAILABLE_FEATURES.map((feature) => (
-                <Card key={feature.title} className="border-0 shadow-sm bg-white">
+                <Card key={feature.title} className="border-0 shadow-xl bg-white/10 backdrop-blur-sm">
                   <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-6 w-6 text-blue-600" />
+                    <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <feature.icon className="h-7 w-7 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                    <h3 className="text-lg font-semibold text-white mb-2">
                       {feature.title}
                     </h3>
-                    <p className="text-sm text-slate-600">{feature.description}</p>
+                    <p className="text-sm text-blue-100">{feature.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -421,7 +463,7 @@ export default function HomePage() {
           {/* Coming Soon */}
           <div>
             <div className="flex items-center justify-center gap-2 mb-6">
-              <Badge variant="secondary" className="bg-slate-200 text-slate-600 hover:bg-slate-200">
+              <Badge className="bg-white/20 text-white hover:bg-white/20">
                 Coming Soon
               </Badge>
             </div>
@@ -429,9 +471,9 @@ export default function HomePage() {
               {COMING_FEATURES.map((feature) => (
                 <div
                   key={feature.title}
-                  className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2 text-sm text-slate-600"
+                  className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2.5 text-sm text-white hover:bg-white/20 transition-colors"
                 >
-                  <feature.icon className="h-4 w-4 text-slate-400" />
+                  <feature.icon className="h-4 w-4 text-blue-200" />
                   {feature.title}
                 </div>
               ))}
