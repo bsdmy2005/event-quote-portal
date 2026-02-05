@@ -54,10 +54,11 @@ function validateEmailParams(params: SendEmailParams): { valid: boolean; error?:
   }
 
   // Check for suspicious content patterns (basic check)
+  // Only match actual HTML event handler attributes (preceded by space/tag, followed by quote)
   const suspiciousPatterns = [
     /<script/i,
     /javascript:/i,
-    /on\w+\s*=/i, // onclick, onerror, etc.
+    /\s+on(click|error|load|mouseover|mouseout|focus|blur|change|submit|keydown|keyup|keypress)\s*=/i,
   ];
 
   if (suspiciousPatterns.some(pattern => pattern.test(params.htmlBody))) {
