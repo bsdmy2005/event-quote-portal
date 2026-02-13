@@ -36,7 +36,12 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <QuoteLogo className="h-10 w-10" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span
+                className="text-2xl font-bold bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: "linear-gradient(to right, var(--logo-from, #2563eb), var(--logo-to, #4f46e5))",
+                }}
+              >
                 Quote Portal
               </span>
             </Link>

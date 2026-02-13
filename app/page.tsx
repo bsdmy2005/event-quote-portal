@@ -35,6 +35,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { ThemeProvider, useTheme } from "@/app/lib/theme-context";
+import { ThemeSwitcher } from "@/app/components/landing/theme-switcher";
 
 // Who We Serve - 4 Stakeholders (with expanded features)
 const STAKEHOLDERS = [
@@ -51,7 +53,6 @@ const STAKEHOLDERS = [
     ],
     cta: "Learn More",
     href: "/features#agencies",
-    color: "blue",
   },
   {
     icon: Wrench,
@@ -66,7 +67,6 @@ const STAKEHOLDERS = [
     ],
     cta: "Learn More",
     href: "/features#suppliers",
-    color: "green",
   },
   {
     icon: Briefcase,
@@ -81,7 +81,6 @@ const STAKEHOLDERS = [
     ],
     cta: "Learn More",
     href: "/features#consultants",
-    color: "purple",
   },
   {
     icon: Landmark,
@@ -96,7 +95,6 @@ const STAKEHOLDERS = [
     ],
     cta: "Learn More",
     href: "/features#funders",
-    color: "emerald",
   },
 ];
 
@@ -229,14 +227,15 @@ const COMMUNICATION_FEATURES = [
   { title: "Notification Preferences", description: "Stay updated on what matters" },
 ];
 
-export default function HomePage() {
+function LandingContent() {
   const [showBanner, setShowBanner] = useState(true);
+  const { theme: t } = useTheme();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className={`min-h-screen ${t.pageBg}`}>
       {/* Beta Banner */}
       {showBanner && (
-        <div className="bg-blue-600 text-white py-2.5 px-4 relative">
+        <div className={`${t.bannerBg} ${t.bannerText} py-2.5 px-4 relative`}>
           <div className="container mx-auto flex items-center justify-center gap-3 text-sm">
             <span className="font-medium">
               We&apos;re in Beta — Join early for exclusive access
@@ -244,13 +243,13 @@ export default function HomePage() {
             <Button
               asChild
               size="sm"
-              className="bg-white text-blue-600 hover:bg-blue-50 h-7 px-3 text-xs font-semibold"
+              className={`${t.bannerBtn} h-7 px-3 text-xs font-semibold`}
             >
               <Link href="/waitlist">Join Waitlist</Link>
             </Button>
             <button
               onClick={() => setShowBanner(false)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/20 rounded"
+              className={`absolute right-4 top-1/2 -translate-y-1/2 p-1 ${t.bannerClose} rounded`}
               aria-label="Dismiss banner"
             >
               <X className="h-4 w-4" />
@@ -260,15 +259,15 @@ export default function HomePage() {
       )}
 
       {/* Hero Section */}
-      <section className="py-20 md:py-28 bg-gradient-to-b from-slate-50 to-white">
+      <section className={`py-20 md:py-28 ${t.heroBg}`}>
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight tracking-tight">
-              The Complete Event
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"> Procurement Platform</span>
+            <h1 className={`text-4xl md:text-6xl font-bold ${t.heroTitle} mb-6 leading-tight tracking-tight`}>
+              Your Event Industry
+              <span className={`${t.heroHighlight}`}> Quote Sourcing Assistant</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-2xl mx-auto">
+            <p className={`text-lg md:text-xl ${t.heroSubtext} mb-10 leading-relaxed max-w-2xl mx-auto`}>
               Connect event agencies, suppliers, cost consultants, and funders on one integrated platform.
               From quote to funding — streamlined.
             </p>
@@ -277,7 +276,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 asChild
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-12 text-base font-semibold"
+                className={`${t.heroPrimaryBtn} px-8 h-12 text-base font-semibold`}
               >
                 <Link href="/waitlist">
                   Join the Waitlist
@@ -288,7 +287,7 @@ export default function HomePage() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="border-slate-300 text-slate-700 hover:bg-slate-50 px-8 h-12 text-base font-semibold"
+                className={`${t.heroSecondaryBtn} px-8 h-12 text-base font-semibold`}
               >
                 <Link href="#how-it-works">
                   See How It Works
@@ -297,17 +296,17 @@ export default function HomePage() {
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+            <div className={`flex flex-wrap justify-center gap-6 text-sm ${t.heroTrustText}`}>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className={`h-4 w-4 ${t.heroTrustIcon}`} />
                 Beta access available
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className={`h-4 w-4 ${t.heroTrustIcon}`} />
                 Shape the product
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className={`h-4 w-4 ${t.heroTrustIcon}`} />
                 Early adopter perks
               </span>
             </div>
@@ -316,62 +315,28 @@ export default function HomePage() {
       </section>
 
       {/* Who We Serve */}
-      <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+      <section className={`py-20 ${t.lightBg}`}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 mb-4">
+            <Badge className={`${t.lightBadgeBg} ${t.lightBadgeText} hover:${t.lightBadgeBg} mb-4`}>
               Platform Ecosystem
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold ${t.lightTitle} mb-4`}>
               Who We Serve
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <p className={`text-lg ${t.lightSubtext} max-w-2xl mx-auto`}>
               One platform connecting every stakeholder in the event procurement ecosystem
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {STAKEHOLDERS.map((stakeholder) => {
-              const colorClasses = {
-                blue: {
-                  bg: "bg-blue-50",
-                  bgDark: "bg-blue-600",
-                  text: "text-blue-600",
-                  check: "text-blue-500",
-                  border: "border-blue-200",
-                  hoverBg: "hover:bg-blue-50"
-                },
-                green: {
-                  bg: "bg-green-50",
-                  bgDark: "bg-green-600",
-                  text: "text-green-600",
-                  check: "text-green-500",
-                  border: "border-green-200",
-                  hoverBg: "hover:bg-green-50"
-                },
-                purple: {
-                  bg: "bg-purple-50",
-                  bgDark: "bg-purple-600",
-                  text: "text-purple-600",
-                  check: "text-purple-500",
-                  border: "border-purple-200",
-                  hoverBg: "hover:bg-purple-50"
-                },
-                emerald: {
-                  bg: "bg-emerald-50",
-                  bgDark: "bg-emerald-600",
-                  text: "text-emerald-600",
-                  check: "text-emerald-500",
-                  border: "border-emerald-200",
-                  hoverBg: "hover:bg-emerald-50"
-                },
-              };
-              const colors = colorClasses[stakeholder.color as keyof typeof colorClasses];
+            {STAKEHOLDERS.map((stakeholder, index) => {
+              const colors = t.stakeholderColors[index];
 
               return (
                 <Card
                   key={stakeholder.title}
-                  className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden`}
+                  className={`${t.stakeholderCardBorder} ${t.cardShadow} transition-all duration-300 overflow-hidden`}
                 >
                   {/* Colored header bar */}
                   <div className={`${colors.bgDark} px-6 py-4`}>
@@ -387,10 +352,10 @@ export default function HomePage() {
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <p className="text-sm text-slate-600 mb-4 font-medium">{stakeholder.subtitle}</p>
+                    <p className={`text-sm ${t.cardSubtext} mb-4 font-medium`}>{stakeholder.subtitle}</p>
                     <ul className="space-y-2.5 mb-4">
                       {stakeholder.benefits.slice(0, 3).map((benefit, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
+                        <li key={idx} className={`flex items-start gap-2 text-sm ${t.cardSubtext}`}>
                           <CheckCircle className={`h-4 w-4 ${colors.check} mt-0.5 flex-shrink-0`} />
                           {benefit}
                         </li>
@@ -420,17 +385,17 @@ export default function HomePage() {
       </section>
 
       {/* Platform Capabilities */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700">
+      <section className={`py-20 ${t.gradientBg}`}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge className="bg-white/20 text-white hover:bg-white/20 mb-4">
+            <Badge className={`${t.gradientBadgeBg} ${t.gradientBadgeText} hover:${t.gradientBadgeBg} mb-4`}>
               <Zap className="h-3.5 w-3.5 mr-1.5" />
               Core Platform
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold ${t.gradientTitle} mb-4`}>
               Platform Capabilities
             </h2>
-            <p className="text-lg text-blue-100 max-w-2xl mx-auto">
+            <p className={`text-lg ${t.gradientSubtext} max-w-2xl mx-auto`}>
               Powerful tools for modern event procurement
             </p>
           </div>
@@ -438,22 +403,22 @@ export default function HomePage() {
           {/* Available Now */}
           <div className="mb-16">
             <div className="flex items-center justify-center gap-2 mb-8">
-              <Badge className="bg-green-500 text-white hover:bg-green-500">
+              <Badge className={`${t.gradientLiveBadgeBg} ${t.gradientLiveBadgeText} hover:${t.gradientLiveBadgeBg}`}>
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse" />
                 Available Now
               </Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {AVAILABLE_FEATURES.map((feature) => (
-                <Card key={feature.title} className="border-0 shadow-xl bg-white/10 backdrop-blur-sm">
+                <Card key={feature.title} className={`border-0 shadow-xl ${t.gradientCardBg}`}>
                   <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-7 w-7 text-white" />
+                    <div className={`w-14 h-14 ${t.gradientCardIconBg} rounded-xl flex items-center justify-center mx-auto mb-4`}>
+                      <feature.icon className={`h-7 w-7 ${t.gradientCardIconColor}`} />
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <h3 className={`text-lg font-semibold ${t.gradientCardTitle} mb-2`}>
                       {feature.title}
                     </h3>
-                    <p className="text-sm text-blue-100">{feature.description}</p>
+                    <p className={`text-sm ${t.gradientCardText}`}>{feature.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -463,7 +428,7 @@ export default function HomePage() {
           {/* Coming Soon */}
           <div>
             <div className="flex items-center justify-center gap-2 mb-6">
-              <Badge className="bg-white/20 text-white hover:bg-white/20">
+              <Badge className={`${t.gradientBadgeBg} ${t.gradientBadgeText} hover:${t.gradientBadgeBg}`}>
                 Coming Soon
               </Badge>
             </div>
@@ -471,9 +436,9 @@ export default function HomePage() {
               {COMING_FEATURES.map((feature) => (
                 <div
                   key={feature.title}
-                  className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2.5 text-sm text-white hover:bg-white/20 transition-colors"
+                  className={`inline-flex items-center gap-2 ${t.gradientPillBg} border ${t.gradientPillBorder} rounded-full px-4 py-2.5 text-sm ${t.gradientPillText} hover:bg-white/20 transition-colors`}
                 >
-                  <feature.icon className="h-4 w-4 text-blue-200" />
+                  <feature.icon className={`h-4 w-4 ${t.gradientPillIcon}`} />
                   {feature.title}
                 </div>
               ))}
@@ -483,17 +448,17 @@ export default function HomePage() {
       </section>
 
       {/* AI-Powered Workflows Section */}
-      <section className="py-20 bg-slate-900">
+      <section className={`py-20 ${t.darkBg}`}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge className="bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/20 mb-4">
+            <Badge className={`${t.darkBadgeBg} ${t.darkBadgeText} hover:${t.darkBadgeBg} mb-4`}>
               <Brain className="h-3.5 w-3.5 mr-1.5" />
               Coming Soon
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold ${t.darkTitle} mb-4`}>
               AI-Powered Workflows
             </h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            <p className={`text-lg ${t.darkSubtext} max-w-2xl mx-auto`}>
               Harness intelligent automation to streamline your event procurement processes
             </p>
           </div>
@@ -502,15 +467,15 @@ export default function HomePage() {
             {AI_FEATURES.map((feature) => (
               <div
                 key={feature.title}
-                className="bg-slate-800 rounded-xl p-6 hover:bg-slate-700/80 transition-colors"
+                className={`${t.darkCardBg} rounded-xl p-6 ${t.darkCardHover} transition-colors`}
               >
-                <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-indigo-400" />
+                <div className={`w-12 h-12 ${t.darkIconBg} rounded-xl flex items-center justify-center mb-4`}>
+                  <feature.icon className={`h-6 w-6 ${t.darkIconColor}`} />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className={`text-lg font-semibold ${t.darkCardTitle} mb-2`}>
                   {feature.title}
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className={`text-sm ${t.darkCardText} leading-relaxed`}>
                   {feature.description}
                 </p>
               </div>
@@ -520,29 +485,29 @@ export default function HomePage() {
       </section>
 
       {/* Unified Communication Section */}
-      <section className="py-20 bg-white">
+      <section className={`py-20 ${t.lightBg}`}>
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
             {/* Left: Content */}
             <div>
-              <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 mb-4">
+              <Badge className={`${t.lightBadgeBg} ${t.lightBadgeText} hover:${t.lightBadgeBg} mb-4`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Coming Soon
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              <h2 className={`text-3xl md:text-4xl font-bold ${t.lightTitle} mb-4`}>
                 Unified Communication Hub
               </h2>
-              <p className="text-lg text-slate-600 mb-8">
+              <p className={`text-lg ${t.lightSubtext} mb-8`}>
                 Keep all stakeholder conversations organized in one place. No more scattered emails or missed messages between agencies, suppliers, consultants, and funders.
               </p>
 
               <div className="space-y-4">
                 {COMMUNICATION_FEATURES.map((feature) => (
                   <div key={feature.title} className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className={`h-5 w-5 ${t.lightCheckIcon} mt-0.5 flex-shrink-0`} />
                     <div>
-                      <h4 className="font-medium text-slate-900">{feature.title}</h4>
-                      <p className="text-sm text-slate-600">{feature.description}</p>
+                      <h4 className={`font-medium ${t.lightTitle}`}>{feature.title}</h4>
+                      <p className={`text-sm ${t.lightSubtext}`}>{feature.description}</p>
                     </div>
                   </div>
                 ))}
@@ -550,46 +515,46 @@ export default function HomePage() {
             </div>
 
             {/* Right: Visual */}
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+            <div className={`${t.commVisualBg} rounded-2xl p-8 border ${t.commVisualBorder}`}>
               <div className="space-y-4">
                 {/* Sample conversation threads */}
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+                <div className={`${t.commCardBg} rounded-xl p-4 shadow-sm border ${t.commCardBorder}`}>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <Building2 className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-900">Agency → Suppliers</p>
-                      <p className="text-xs text-slate-500">RFQ #2024-089: AV Equipment</p>
+                      <p className={`text-sm font-medium ${t.lightTitle}`}>Agency → Suppliers</p>
+                      <p className={`text-xs ${t.lightSubtext}`}>RFQ #2024-089: AV Equipment</p>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 pl-11">Quote deadline extended to Friday...</p>
+                  <p className={`text-sm ${t.lightSubtext} pl-11`}>Quote deadline extended to Friday...</p>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+                <div className={`${t.commCardBg} rounded-xl p-4 shadow-sm border ${t.commCardBorder}`}>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                       <Briefcase className="h-4 w-4 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-900">Cost Consultant</p>
-                      <p className="text-xs text-slate-500">Budget Review: Corporate Launch</p>
+                      <p className={`text-sm font-medium ${t.lightTitle}`}>Cost Consultant</p>
+                      <p className={`text-xs ${t.lightSubtext}`}>Budget Review: Corporate Launch</p>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 pl-11">Scope alignment complete, ready for...</p>
+                  <p className={`text-sm ${t.lightSubtext} pl-11`}>Scope alignment complete, ready for...</p>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+                <div className={`${t.commCardBg} rounded-xl p-4 shadow-sm border ${t.commCardBorder}`}>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                       <Landmark className="h-4 w-4 text-purple-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-900">Funder Discussion</p>
-                      <p className="text-xs text-slate-500">PO Funding: Project #2024-045</p>
+                      <p className={`text-sm font-medium ${t.lightTitle}`}>Funder Discussion</p>
+                      <p className={`text-xs ${t.lightSubtext}`}>PO Funding: Project #2024-045</p>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 pl-11">Terms approved, disbursement in 48h...</p>
+                  <p className={`text-sm ${t.lightSubtext} pl-11`}>Terms approved, disbursement in 48h...</p>
                 </div>
               </div>
             </div>
@@ -598,31 +563,31 @@ export default function HomePage() {
       </section>
 
       {/* Funding Marketplace Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+      <section className={`py-20 ${t.fundingGradientBg}`}>
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
             {/* Left: Content */}
             <div className="text-white">
-              <Badge className="bg-white/20 text-white hover:bg-white/20 mb-4">
+              <Badge className={`${t.gradientBadgeBg} ${t.gradientBadgeText} hover:${t.gradientBadgeBg} mb-4`}>
                 <Landmark className="h-3.5 w-3.5 mr-1.5" />
                 Coming Soon
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Funding Marketplace
               </h2>
-              <p className="text-lg text-blue-100 mb-8">
+              <p className={`text-lg ${t.fundingSubtext} mb-8`}>
                 Unlock working capital based on approved purchase orders. Connect event companies and suppliers with project financiers — all verified through our platform.
               </p>
 
               <div className="space-y-4 mb-8">
                 {FUNDING_FEATURES.map((feature) => (
                   <div key={feature.title} className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className={`w-10 h-10 ${t.fundingIconBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
                       <feature.icon className="h-5 w-5 text-white" />
                     </div>
                     <div>
                       <h4 className="font-medium text-white">{feature.title}</h4>
-                      <p className="text-sm text-blue-200">{feature.description}</p>
+                      <p className={`text-sm ${t.fundingDetailText}`}>{feature.description}</p>
                     </div>
                   </div>
                 ))}
@@ -631,7 +596,7 @@ export default function HomePage() {
               <Button
                 asChild
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+                className={`${t.gradientBtn} ${t.gradientBtnText} font-semibold`}
               >
                 <Link href="/waitlist">
                   <Bell className="mr-2 h-4 w-4" />
@@ -641,7 +606,7 @@ export default function HomePage() {
             </div>
 
             {/* Right: Process Steps */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+            <div className={`${t.gradientCardBg} rounded-2xl p-8`}>
               <h3 className="text-white font-semibold text-lg mb-6 text-center">
                 How It Works
               </h3>
@@ -649,12 +614,12 @@ export default function HomePage() {
               <div className="space-y-4">
                 {FUNDING_PROCESS.map((item) => (
                   <div key={item.step} className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white font-bold flex-shrink-0">
+                    <div className={`w-10 h-10 rounded-full ${t.fundingStepCircle} flex items-center justify-center text-white font-bold flex-shrink-0`}>
                       {item.step}
                     </div>
-                    <div className="flex-1 bg-white/10 rounded-xl p-4">
+                    <div className={`flex-1 ${t.fundingStepBg} rounded-xl p-4`}>
                       <h4 className="text-white font-medium">{item.title}</h4>
-                      <p className="text-blue-200 text-sm">{item.description}</p>
+                      <p className={`${t.fundingDetailText} text-sm`}>{item.description}</p>
                     </div>
                   </div>
                 ))}
@@ -665,13 +630,13 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-slate-50">
+      <section id="how-it-works" className={`py-20 ${t.lightBg}`}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold ${t.lightTitle} mb-4`}>
               How It Works
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <p className={`text-lg ${t.lightSubtext} max-w-2xl mx-auto`}>
               A streamlined process from brief to project completion
             </p>
           </div>
@@ -681,18 +646,18 @@ export default function HomePage() {
               <div key={step.step} className="relative text-center">
                 {/* Connector line */}
                 {index < PROCESS_STEPS.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-slate-200" />
+                  <div className={`hidden md:block absolute top-8 left-1/2 w-full h-0.5 ${t.processConnector}`} />
                 )}
 
                 {/* Step number */}
-                <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold relative z-10">
+                <div className={`w-16 h-16 ${t.processStepBg} ${t.processStepText} rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold relative z-10`}>
                   {step.step}
                 </div>
 
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                <h3 className={`text-lg font-semibold ${t.lightTitle} mb-2`}>
                   {step.title}
                 </h3>
-                <p className="text-sm text-slate-600">
+                <p className={`text-sm ${t.lightSubtext}`}>
                   {step.description}
                 </p>
               </div>
@@ -702,13 +667,13 @@ export default function HomePage() {
       </section>
 
       {/* Roadmap */}
-      <section className="py-20 bg-slate-900">
+      <section className={`py-20 ${t.darkBg}`}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold ${t.darkTitle} mb-4`}>
               Our Roadmap
             </h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            <p className={`text-lg ${t.darkSubtext} max-w-2xl mx-auto`}>
               Building the future of event procurement
             </p>
           </div>
@@ -719,8 +684,8 @@ export default function HomePage() {
                 key={phase.phase}
                 className={`rounded-xl p-5 ${
                   phase.status === "live"
-                    ? "bg-blue-600"
-                    : "bg-slate-800"
+                    ? t.roadmapLiveBg
+                    : t.roadmapCardBg
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -728,21 +693,21 @@ export default function HomePage() {
                     {phase.phase}
                   </span>
                   {phase.status === "live" && (
-                    <Badge className="bg-white/20 text-white text-xs hover:bg-white/20">
+                    <Badge className={`${t.roadmapLiveBadge} text-xs`}>
                       Live
                     </Badge>
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-3">
+                <h3 className={`text-lg font-semibold ${t.darkTitle} mb-3`}>
                   {phase.title}
                 </h3>
                 <ul className="space-y-1.5">
                   {phase.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2 text-sm text-slate-300">
                       {phase.status === "live" ? (
-                        <CheckCircle className="h-3.5 w-3.5 text-green-400" />
+                        <CheckCircle className={`h-3.5 w-3.5 ${t.roadmapCheckColor}`} />
                       ) : (
-                        <Clock className="h-3.5 w-3.5 text-slate-500" />
+                        <Clock className={`h-3.5 w-3.5 ${t.roadmapClockColor}`} />
                       )}
                       {feature}
                     </li>
@@ -755,19 +720,19 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+      <section className={`py-20 ${t.ctaGradientBg}`}>
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className={`text-3xl md:text-4xl font-bold ${t.ctaTitle} mb-4`}>
               Ready to streamline your event procurement?
             </h2>
-            <p className="text-lg text-blue-100 mb-8">
+            <p className={`text-lg ${t.ctaSubtext} mb-8`}>
               Join our waitlist and be among the first to experience the platform.
             </p>
             <Button
               size="lg"
               asChild
-              className="bg-white text-blue-600 hover:bg-blue-50 px-8 h-12 text-base font-semibold"
+              className={`${t.ctaBtn} px-8 h-12 text-base font-semibold`}
             >
               <Link href="/waitlist">
                 Join the Waitlist
@@ -775,7 +740,7 @@ export default function HomePage() {
               </Link>
             </Button>
 
-            <div className="flex flex-wrap justify-center gap-6 mt-10 text-sm text-blue-200">
+            <div className={`flex flex-wrap justify-center gap-6 mt-10 text-sm ${t.ctaTrustText}`}>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
                 Beta access available
@@ -792,6 +757,16 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ThemeSwitcher />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <ThemeProvider>
+      <LandingContent />
+    </ThemeProvider>
   );
 }
