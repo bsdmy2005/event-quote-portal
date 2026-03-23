@@ -758,6 +758,31 @@ function LandingContent() {
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className={`py-10 ${t.darkBg} border-t border-slate-700/50`}>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className={`text-sm ${t.darkSubtext}`}>
+              &copy; {new Date().getFullYear()} Quote Portal. All rights reserved.
+            </p>
+            <nav className="flex flex-wrap items-center gap-6">
+              <Link href="/pricing" className={`text-sm ${t.darkSubtext} hover:text-white transition-colors`}>
+                Pricing
+              </Link>
+              <Link href="/terms" className={`text-sm ${t.darkSubtext} hover:text-white transition-colors`}>
+                Terms of Service
+              </Link>
+              <Link href="/privacy" className={`text-sm ${t.darkSubtext} hover:text-white transition-colors`}>
+                Privacy Policy
+              </Link>
+              <Link href="/refund" className={`text-sm ${t.darkSubtext} hover:text-white transition-colors`}>
+                Refund Policy
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </footer>
+
       <ThemeSwitcher />
     </div>
   );
