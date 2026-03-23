@@ -17,6 +17,7 @@ import { updateRfqAction, updateRfqAttachmentsAction } from "@/actions/rfqs-acti
 import { uploadRfqAttachment, validateRfqAttachmentFile } from "@/lib/r2-storage"
 import { toast } from "sonner"
 import { SelectRfq } from "@/db/schema/rfqs-schema"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 interface UploadedFile {
   id: string
@@ -166,8 +167,7 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
         deadlineAt: deadlineDate.toISOString()
       })
 
-      if (!result.isSuccess) {
-        toast.error(result.message)
+      if (!notifyActionResult(result, { errorMessage: "Failed to update RFQ", silentSuccess: true })) {
         return
       }
 
@@ -207,23 +207,26 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
       // Update RFQ with all attachment URLs (existing + new)
       if (attachmentsUrl.length !== (rfq.attachmentsUrl?.length || 0) || newFiles.length > 0) {
         const updateResult = await updateRfqAttachmentsAction(rfq.id, attachmentsUrl)
-        if (updateResult.isSuccess) {
+        if (notifyActionResult(updateResult, { silentSuccess: true })) {
           if (newFiles.length > 0) {
-            toast.success(`${newFiles.length} new file(s) uploaded successfully`)
+            notifyActionResult({ isSuccess: true, message: `${newFiles.length} new file(s) uploaded successfully` })
           }
           if (existingFiles.length !== (rfq.attachmentsUrl?.length || 0)) {
-            toast.success("File list updated successfully")
+            notifyActionResult({ isSuccess: true, message: "File list updated successfully" })
           }
         } else {
-          toast.error(`Failed to update RFQ with attachments: ${updateResult.message}`)
+          notifyActionResult(updateResult, {
+            errorMessage: `Failed to update RFQ with attachments: ${updateResult.message || "unknown error"}`,
+            silentSuccess: true,
+          })
         }
       }
 
-      toast.success("RFQ updated successfully")
+      notifyActionResult({ isSuccess: true, message: "RFQ updated successfully" })
       router.push(`/rfqs/${rfq.id}`)
     } catch (error) {
       console.error("Error updating RFQ:", error)
-      toast.error("Failed to update RFQ")
+      notifyUnexpectedError("update RFQ")
     } finally {
       setIsLoading(false)
     }
@@ -317,14 +320,14 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
             <h3 className="text-lg font-semibold">Attachments</h3>
             
             {/* Upload Status Debug Info */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Upload Status</h4>
-              <div className="text-xs text-gray-600 space-y-1">
+            <div className="bg-slate-100 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-slate-700 mb-2">Upload Status</h4>
+              <div className="text-xs text-slate-600 space-y-1">
                 <p><strong>Total Files:</strong> {uploadedFiles.length}</p>
                 <p><strong>Existing Files:</strong> {uploadedFiles.filter(f => f.url).length}</p>
                 <p><strong>New Files:</strong> {uploadedFiles.filter(f => !f.url).length}</p>
-                <p><strong>Storage Location:</strong> Supabase bucket: <code className="bg-gray-200 px-1 rounded">rfq-attachments</code></p>
-                <p><strong>Storage Path:</strong> <code className="bg-gray-200 px-1 rounded">rfq/{rfq.id}/</code></p>
+                <p><strong>Storage Location:</strong> Supabase bucket: <code className="bg-slate-200 px-1 rounded">rfq-attachments</code></p>
+                <p><strong>Storage Path:</strong> <code className="bg-slate-200 px-1 rounded">rfq/{rfq.id}/</code></p>
               </div>
             </div>
             

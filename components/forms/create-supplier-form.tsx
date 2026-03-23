@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { uploadImage } from "@/lib/r2-storage";
 import type { NewImage } from "@/db/schema";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const createSupplierSchema = z.object({
   name: z.string().min(1, "Supplier name is required"),
@@ -86,7 +87,7 @@ export function CreateSupplierForm({ categories }: CreateSupplierFormProps) {
 
       const result = await createSupplierAction(formData);
       
-      if (result.isSuccess && result.data) {
+      if (notifyActionResult(result, { successMessage: "Supplier created successfully", errorMessage: "Failed to create supplier" }) && result.data) {
         // Upload images if any were selected
         if (selectedImages.length > 0 && result.data) {
           try {
@@ -126,7 +127,8 @@ export function CreateSupplierForm({ categories }: CreateSupplierFormProps) {
       } else {
         setError(result.message || "Failed to create supplier");
       }
-    } catch (error) {
+    } catch {
+      notifyUnexpectedError("create supplier");
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);

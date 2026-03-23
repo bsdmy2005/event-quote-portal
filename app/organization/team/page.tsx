@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Building2, Wrench, UserPlus, Mail, Users, Trash2, Plus, RefreshCw } from "lucide-react"
 import { getUserOrganizationAction, sendTeamInviteAction, getTeamMembersAction, getPendingInvitationsAction } from "@/actions/onboarding-actions"
 import { OrganizationSidebar } from "@/components/ui/organization-sidebar"
-import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 export default function TeamManagementPage() {
   const router = useRouter()
@@ -18,7 +18,7 @@ export default function TeamManagementPage() {
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [organization, setOrganization] = useState<any>(null)
-  const [orgType, setOrgType] = useState<"agency" | "supplier" | null>(null)
+  const [orgType, setOrgType] = useState<"agency" | "supplier" | "cost_consultant" | null>(null)
   const [teamMembers, setTeamMembers] = useState<any[]>([])
   const [pendingInvites, setPendingInvites] = useState<any[]>([])
   const [inviteForm, setInviteForm] = useState({
@@ -26,7 +26,7 @@ export default function TeamManagementPage() {
     role: ""
   })
 
-  const roles = {
+  const roles: Record<string, { value: string; label: string }[]> = {
     agency: [
       { value: "agency_member", label: "Agency Member" },
       { value: "agency_admin", label: "Agency Admin" }
@@ -34,6 +34,10 @@ export default function TeamManagementPage() {
     supplier: [
       { value: "supplier_member", label: "Supplier Member" },
       { value: "supplier_admin", label: "Supplier Admin" }
+    ],
+    cost_consultant: [
+      { value: "cost_consultant_member", label: "Consultant Member" },
+      { value: "cost_consultant_admin", label: "Consultant Admin" }
     ]
   }
 
@@ -64,7 +68,7 @@ export default function TeamManagementPage() {
         }
       } catch (error) {
         console.error("Error loading organization:", error)
-        toast.error("Failed to load organization data")
+        notifyUnexpectedError("load organization data")
       } finally {
         setIsLoadingData(false)
       }
@@ -92,7 +96,7 @@ export default function TeamManagementPage() {
       }
     } catch (error) {
       console.error("Error refreshing data:", error)
-      toast.error("Failed to refresh data")
+      notifyUnexpectedError("refresh data")
     } finally {
       setIsRefreshing(false)
     }
@@ -110,8 +114,7 @@ export default function TeamManagementPage() {
         role: inviteForm.role
       })
 
-      if (result.isSuccess) {
-        toast.success("Team invitation sent successfully!")
+      if (notifyActionResult(result, { successMessage: "Team invitation sent successfully!" })) {
         setInviteForm({ email: "", role: "" })
         
         // Refresh pending invitations after sending new invitation
@@ -119,11 +122,9 @@ export default function TeamManagementPage() {
         if (invitesResult.isSuccess && invitesResult.data) {
           setPendingInvites(invitesResult.data)
         }
-      } else {
-        toast.error(result.message)
       }
-    } catch (error) {
-      toast.error("Failed to send invitation. Please try again.")
+    } catch {
+      notifyUnexpectedError("send invitation")
     } finally {
       setIsLoading(false)
     }
@@ -131,7 +132,7 @@ export default function TeamManagementPage() {
 
   if (isLoadingData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-slate-100 flex">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -144,7 +145,7 @@ export default function TeamManagementPage() {
 
   if (!organization || !orgType) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-slate-100 flex">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p>Organization not found. Please complete onboarding first.</p>
@@ -158,7 +159,7 @@ export default function TeamManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-100 flex">
       {/* Sidebar */}
       <OrganizationSidebar 
         orgType={orgType}
@@ -169,11 +170,11 @@ export default function TeamManagementPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-100 px-8 py-6 shadow-sm">
+        <header className="bg-white border-b border-slate-200 px-8 py-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Team Management</h2>
-              <p className="text-gray-600 text-lg">Manage your {orgType === "agency" ? "agency" : "supplier"} team members</p>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Team Management</h2>
+              <p className="text-slate-600 text-lg">Manage your {orgType === "agency" ? "agency" : orgType === "cost_consultant" ? "consulting" : "supplier"} team members</p>
             </div>
             <div className="flex items-center gap-3">
               {orgType === "agency" ? (
@@ -189,7 +190,7 @@ export default function TeamManagementPage() {
         <main className="flex-1 p-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Invite Team Member */}
-            <Card className="border-0 shadow-sm bg-white rounded-xl">
+            <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserPlus className="h-5 w-5" />
@@ -245,7 +246,7 @@ export default function TeamManagementPage() {
             </Card>
 
             {/* Team Members */}
-            <Card className="border-0 shadow-sm bg-white rounded-xl">
+            <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -273,7 +274,7 @@ export default function TeamManagementPage() {
                 <div className="space-y-4">
                   {teamMembers.length > 0 ? (
                     teamMembers.map((member, index) => (
-                      <div key={member.userId || index} className="p-4 border border-gray-200 rounded-lg">
+                      <div key={member.userId || index} className="p-4 border border-slate-200 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
@@ -282,12 +283,12 @@ export default function TeamManagementPage() {
                               </span>
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-slate-900">
                                 {member.firstName && member.lastName 
                                   ? `${member.firstName} ${member.lastName}` 
                                   : member.email}
                               </p>
-                              <p className="text-sm text-gray-500">{member.email}</p>
+                              <p className="text-sm text-slate-600">{member.email}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -299,8 +300,8 @@ export default function TeamManagementPage() {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <div className="text-center py-8 text-slate-600">
+                      <Users className="h-12 w-12 mx-auto mb-4 text-slate-400" />
                       <p>No team members yet</p>
                       <p className="text-sm">Invite team members to get started</p>
                     </div>
@@ -311,7 +312,7 @@ export default function TeamManagementPage() {
           </div>
 
           {/* Pending Invitations */}
-          <Card className="border-0 shadow-sm bg-white rounded-xl mt-8">
+          <Card className="border border-slate-200 shadow-sm bg-white rounded-xl mt-8">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -338,15 +339,15 @@ export default function TeamManagementPage() {
                   {pendingInvites
                     .filter(invite => !invite.acceptedAt && invite.expiresAt > new Date())
                     .map((invite, index) => (
-                      <div key={invite.id || index} className="p-4 border border-gray-200 rounded-lg">
+                      <div key={invite.id || index} className="p-4 border border-slate-200 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
                               <Mail className="h-5 w-5 text-white" />
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{invite.email}</p>
-                              <p className="text-sm text-gray-500">
+                              <p className="font-medium text-slate-900">{invite.email}</p>
+                              <p className="text-sm text-slate-600">
                                 Invited as {invite.role?.replace("_", " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
                               </p>
                             </div>
@@ -355,7 +356,7 @@ export default function TeamManagementPage() {
                             <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
                               Pending
                             </span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-slate-600">
                               Expires {new Date(invite.expiresAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -364,8 +365,8 @@ export default function TeamManagementPage() {
                     ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <div className="text-center py-8 text-slate-600">
+                  <Mail className="h-12 w-12 mx-auto mb-4 text-slate-400" />
                   <p>No pending invitations</p>
                   <p className="text-sm">Invitations will appear here until they're accepted</p>
                 </div>

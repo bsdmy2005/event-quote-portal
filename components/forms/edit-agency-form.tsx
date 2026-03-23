@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react";
 import { SelectCategory } from "@/components/ui/select-category";
 import { ImageGallery } from "@/components/ui/image-gallery";
 import { SelectAgency } from "@/db/schema/organizations-schema";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const editAgencySchema = z.object({
   name: z.string().min(1, "Agency name is required"),
@@ -99,13 +100,14 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
 
       const result = await updateAgencyAction(agency.id, formData);
       
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Agency updated successfully", errorMessage: "Failed to update agency" })) {
         router.push("/admin");
         router.refresh();
       } else {
         setError(result.message || "Failed to update agency");
       }
-    } catch (error) {
+    } catch {
+      notifyUnexpectedError("update agency");
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -122,7 +124,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="name" className="text-sm font-semibold text-slate-700">
             Agency Name
           </Label>
           <Input
@@ -130,7 +132,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
             {...register("name")}
             placeholder="e.g., EventPro Agency"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.name && (
             <p className="text-sm text-red-600 font-medium">{errors.name.message}</p>
@@ -138,7 +140,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="contactName" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="contactName" className="text-sm font-semibold text-slate-700">
             Contact Name
           </Label>
           <Input
@@ -146,7 +148,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
             {...register("contactName")}
             placeholder="e.g., John Doe"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.contactName && (
             <p className="text-sm text-red-600 font-medium">{errors.contactName.message}</p>
@@ -156,7 +158,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="email" className="text-sm font-semibold text-slate-700">
             Email
           </Label>
           <Input
@@ -165,7 +167,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
             {...register("email")}
             placeholder="contact@agency.com"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.email && (
             <p className="text-sm text-red-600 font-medium">{errors.email.message}</p>
@@ -173,7 +175,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="phone" className="text-sm font-semibold text-slate-700">
             Phone (Optional)
           </Label>
           <Input
@@ -181,7 +183,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
             {...register("phone")}
             placeholder="+27 11 123 4567 or 011 123 4567"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.phone && (
             <p className="text-sm text-red-600 font-medium">{errors.phone.message}</p>
@@ -190,7 +192,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="website" className="text-sm font-semibold text-gray-700">
+        <Label htmlFor="website" className="text-sm font-semibold text-slate-700">
           Website (Optional)
         </Label>
         <Input
@@ -198,7 +200,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
           {...register("website")}
           placeholder="example.com"
           disabled={isLoading}
-          className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+          className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
         />
         {errors.website && (
           <p className="text-sm text-red-600 font-medium">{errors.website.message}</p>
@@ -207,7 +209,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <Label htmlFor="street" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="street" className="text-sm font-semibold text-slate-700">
             Street Address
           </Label>
           <Input
@@ -215,7 +217,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
             {...register("location.street")}
             placeholder="123 Main Street"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.location?.street && (
             <p className="text-sm text-red-600 font-medium">{errors.location.street.message}</p>
@@ -224,7 +226,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
-            <Label htmlFor="suburb" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="suburb" className="text-sm font-semibold text-slate-700">
               Suburb
             </Label>
             <Input
@@ -232,7 +234,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
               {...register("location.suburb")}
               placeholder="Sandton"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.suburb && (
               <p className="text-sm text-red-600 font-medium">{errors.location.suburb.message}</p>
@@ -240,7 +242,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="city" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="city" className="text-sm font-semibold text-slate-700">
               City
             </Label>
             <Input
@@ -248,7 +250,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
               {...register("location.city")}
               placeholder="Johannesburg"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.city && (
               <p className="text-sm text-red-600 font-medium">{errors.location.city.message}</p>
@@ -258,7 +260,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-3">
-            <Label htmlFor="province" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="province" className="text-sm font-semibold text-slate-700">
               Province
             </Label>
             <Input
@@ -266,7 +268,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
               {...register("location.province")}
               placeholder="Gauteng"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.province && (
               <p className="text-sm text-red-600 font-medium">{errors.location.province.message}</p>
@@ -274,7 +276,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="postalCode" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="postalCode" className="text-sm font-semibold text-slate-700">
               Postal Code
             </Label>
             <Input
@@ -282,7 +284,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
               {...register("location.postalCode")}
               placeholder="2196"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.postalCode && (
               <p className="text-sm text-red-600 font-medium">{errors.location.postalCode.message}</p>
@@ -290,7 +292,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="country" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="country" className="text-sm font-semibold text-slate-700">
               Country
             </Label>
             <Input
@@ -298,7 +300,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
               {...register("location.country")}
               placeholder="South Africa"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.country && (
               <p className="text-sm text-red-600 font-medium">{errors.location.country.message}</p>
@@ -308,7 +310,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-semibold text-gray-700">
+        <Label className="text-sm font-semibold text-slate-700">
           Areas of Interest
         </Label>
         {safeCategories.length === 0 ? (
@@ -326,7 +328,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="about" className="text-sm font-semibold text-gray-700">
+        <Label htmlFor="about" className="text-sm font-semibold text-slate-700">
           About
         </Label>
         <Textarea
@@ -335,7 +337,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
           placeholder="Tell us about your agency..."
           rows={4}
           disabled={isLoading}
-          className="border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+          className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
         />
         {errors.about && (
           <p className="text-sm text-red-600 font-medium">{errors.about.message}</p>
@@ -343,7 +345,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-semibold text-gray-700">
+        <Label className="text-sm font-semibold text-slate-700">
           Images
         </Label>
         <ImageGallery
@@ -367,7 +369,7 @@ export function EditAgencyForm({ agency, categories }: EditAgencyFormProps) {
           variant="outline"
           onClick={() => router.push("/admin")}
           disabled={isLoading}
-          className="border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 rounded-lg px-6 py-3 font-semibold transition-all duration-200 h-12"
+          className="border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-100 rounded-lg px-6 py-3 font-semibold transition-all duration-200 h-12"
         >
           Cancel
         </Button>

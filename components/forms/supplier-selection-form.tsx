@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Search, Building2, MapPin, Phone, Mail, Check } from "lucide-react"
 import { getAllSuppliersAction } from "@/actions/organizations-actions"
-import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 interface Supplier {
   id: string
@@ -55,7 +55,7 @@ export function SupplierSelectionForm({
   const loadSuppliers = async () => {
     try {
       const result = await getAllSuppliersAction()
-      if (result.isSuccess && result.data) {
+      if (notifyActionResult(result, { errorMessage: "Failed to load suppliers", silentSuccess: true }) && result.data) {
         const supplierData = result.data as Supplier[]
         setSuppliers(supplierData)
         
@@ -64,12 +64,10 @@ export function SupplierSelectionForm({
           .flatMap(supplier => supplier.serviceCategories || [])
           .filter((category, index, self) => self.indexOf(category) === index)
         setCategories(allCategories)
-      } else {
-        toast.error("Failed to load suppliers")
       }
     } catch (error) {
       console.error("Error loading suppliers:", error)
-      toast.error("Failed to load suppliers")
+      notifyUnexpectedError("load suppliers")
     } finally {
       setIsLoading(false)
     }
@@ -137,7 +135,7 @@ export function SupplierSelectionForm({
           <div className="space-y-2">
             <Label htmlFor="search">Search Suppliers</Label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500" />
               <Input
                 id="search"
                 placeholder="Search by name, contact, or services..."
@@ -173,7 +171,7 @@ export function SupplierSelectionForm({
         </div>
 
         {/* Selection Summary */}
-        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-slate-100 rounded-lg">
           <span className="text-sm font-medium">
             {selectedSuppliers.length} supplier{selectedSuppliers.length !== 1 ? 's' : ''} selected
           </span>
@@ -189,7 +187,7 @@ export function SupplierSelectionForm({
         {/* Supplier List */}
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {filteredSuppliers.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-slate-600">
               No suppliers found matching your criteria
             </div>
           ) : (
@@ -199,7 +197,7 @@ export function SupplierSelectionForm({
                 className={`border rounded-lg p-4 cursor-pointer transition-colors ${
                   selectedSuppliers.includes(supplier.id)
                     ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-slate-200 hover:border-slate-300'
                 }`}
                 onClick={() => handleSupplierToggle(supplier.id)}
               >
@@ -211,21 +209,21 @@ export function SupplierSelectionForm({
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <Building2 className="h-4 w-4 text-gray-500" />
-                      <h3 className="font-medium text-gray-900">{supplier.name}</h3>
+                      <Building2 className="h-4 w-4 text-slate-600" />
+                      <h3 className="font-medium text-slate-900">{supplier.name}</h3>
                       {selectedSuppliers.includes(supplier.id) && (
                         <Check className="h-4 w-4 text-blue-500" />
                       )}
                     </div>
                     
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-slate-600 mt-1">
                       Contact: {supplier.contactName}
                     </p>
                     
                     {supplier.location && (
                       <div className="flex items-center space-x-1 mt-1">
-                        <MapPin className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500">
+                        <MapPin className="h-3 w-3 text-slate-500" />
+                        <span className="text-xs text-slate-600">
                           {supplier.location.city}, {supplier.location.province}
                         </span>
                       </div>
@@ -233,13 +231,13 @@ export function SupplierSelectionForm({
                     
                     <div className="flex items-center space-x-4 mt-2">
                       <div className="flex items-center space-x-1">
-                        <Mail className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500">{supplier.email}</span>
+                        <Mail className="h-3 w-3 text-slate-500" />
+                        <span className="text-xs text-slate-600">{supplier.email}</span>
                       </div>
                       {supplier.phone && (
                         <div className="flex items-center space-x-1">
-                          <Phone className="h-3 w-3 text-gray-400" />
-                          <span className="text-xs text-gray-500">{supplier.phone}</span>
+                          <Phone className="h-3 w-3 text-slate-500" />
+                          <span className="text-xs text-slate-600">{supplier.phone}</span>
                         </div>
                       )}
                     </div>

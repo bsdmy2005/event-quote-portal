@@ -109,7 +109,7 @@ export async function sendTeamInviteEmail({
 }: {
   to: string;
   organizationName: string;
-  organizationType: "agency" | "supplier";
+  organizationType: "agency" | "supplier" | "cost_consultant";
   inviterName: string;
   role: string;
 }) {

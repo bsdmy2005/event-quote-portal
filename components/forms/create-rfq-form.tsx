@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { createRfqAction, updateRfqAttachmentsAction } from "@/actions/rfqs-actions"
 import { uploadRfqAttachment, validateRfqAttachmentFile } from "@/lib/r2-storage"
 import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 interface CreateRfqFormProps {
   className?: string
@@ -44,7 +45,11 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
     title: "",
     clientName: "",
     venue: "",
-    scope: ""
+    scope: "",
+    projectType: "physical_event",
+    ndaRequired: false,
+    teaserSummary: "",
+    requiredServices: "",
   })
 
   const handleInputChange = (field: string, value: string) => {
@@ -52,6 +57,26 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
       ...prev,
       [field]: value
     }))
+  }
+
+  const formatDateForInput = (date?: Date) => {
+    if (!date) return ""
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
+
+  const parseDeadlineDate = (value: string) => {
+    if (!value) {
+      setDeadlineDate(undefined)
+      return
+    }
+    // Noon local time avoids edge-case timezone rollover on midnight.
+    const parsed = new Date(`${value}T12:00:00`)
+    if (!Number.isNaN(parsed.getTime())) {
+      setDeadlineDate(parsed)
+    }
   }
 
   const handleFileUpload = async (file: File): Promise<{ success: boolean; data?: UploadedFile; error?: string }> => {
@@ -107,12 +132,24 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
         eventDates: eventDates || undefined,
         venue: formData.venue || undefined,
         scope: formData.scope,
+        projectType: formData.projectType as any,
+        ndaRequired: formData.ndaRequired,
+        teaserSummary: formData.teaserSummary || undefined,
+        requiredServices: formData.requiredServices
+          ? formData.requiredServices.split(",").map(s => s.trim()).filter(Boolean)
+          : undefined,
         attachmentsUrl: [], // Will be updated after file uploads
         deadlineAt: deadlineDate.toISOString()
       })
 
-      if (!result.isSuccess || !result.data) {
-        toast.error(result.message)
+      if (
+        !notifyActionResult(result, {
+          successMessage: "RFQ created successfully",
+          errorMessage: "Failed to create RFQ",
+          silentSuccess: true,
+        }) ||
+        !result.data
+      ) {
         return
       }
 
@@ -142,19 +179,28 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
         // Update RFQ with attachment URLs if any were uploaded
         if (attachmentsUrl.length > 0) {
           const updateResult = await updateRfqAttachmentsAction(rfqId, attachmentsUrl)
-          if (updateResult.isSuccess) {
-            toast.success(`${attachmentsUrl.length} file(s) uploaded successfully`)
-          } else {
-            toast.error(`Failed to update RFQ with attachments: ${updateResult.message}`)
-          }
+          notifyActionResult(updateResult, {
+            successMessage: `${attachmentsUrl.length} file(s) uploaded successfully`,
+            errorMessage: `Failed to update RFQ with attachments: ${updateResult.message || "unknown error"}`,
+          })
         }
       }
 
-      toast.success("RFQ created successfully")
+      try {
+        localStorage.setItem("rfqCreationSuccess", JSON.stringify({
+          rfqId,
+          title: formData.title,
+          at: new Date().toISOString()
+        }))
+      } catch (e) {
+        // Non-blocking: local storage may be unavailable in some contexts.
+      }
+
+      notifyActionResult({ isSuccess: true, message: "RFQ created successfully" })
       router.push(`/rfqs/${rfqId}`)
     } catch (error) {
       console.error("Error creating RFQ:", error)
-      toast.error("Failed to create RFQ")
+      notifyUnexpectedError("create RFQ")
     } finally {
       setIsLoading(false)
     }
@@ -243,17 +289,66 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="projectType">Project Type</Label>
+              <select
+                id="projectType"
+                value={formData.projectType}
+                onChange={(e) => handleInputChange("projectType", e.target.value)}
+                className="w-full border rounded-md px-3 py-2"
+              >
+                <option value="physical_event">Physical Event</option>
+                <option value="digital_campaign">Digital Campaign</option>
+                <option value="brand_activation">Brand Activation</option>
+                <option value="conference_expo">Conference/Expo</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="requiredServices">Required Services (comma separated)</Label>
+              <Input
+                id="requiredServices"
+                placeholder="Venue, Catering, AV"
+                value={formData.requiredServices}
+                onChange={(e) => handleInputChange("requiredServices", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="teaserSummary">Teaser Summary (for marketplace)</Label>
+            <Textarea
+              id="teaserSummary"
+              placeholder="Short public summary shown before NDA acceptance"
+              value={formData.teaserSummary}
+              onChange={(e) => handleInputChange("teaserSummary", e.target.value)}
+              rows={3}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              id="ndaRequired"
+              type="checkbox"
+              checked={formData.ndaRequired}
+              onChange={(e) => setFormData(prev => ({ ...prev, ndaRequired: e.target.checked }))}
+            />
+            <Label htmlFor="ndaRequired">Require NDA before full brief access</Label>
+          </div>
+
           {/* Attachments */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Attachments</h3>
             
             {/* Upload Status Debug Info */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Upload Status</h4>
-              <div className="text-xs text-gray-600 space-y-1">
+            <div className="bg-slate-100 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-slate-700 mb-2">Upload Status</h4>
+              <div className="text-xs text-slate-600 space-y-1">
                 <p><strong>Selected Files:</strong> {uploadedFiles.length}</p>
-                <p><strong>Storage Location:</strong> Supabase bucket: <code className="bg-gray-200 px-1 rounded">rfq-attachments</code></p>
-                <p><strong>Storage Path:</strong> <code className="bg-gray-200 px-1 rounded">rfq/[rfq-id]/</code></p>
+                <p><strong>Storage Location:</strong> Supabase bucket: <code className="bg-slate-200 px-1 rounded">rfq-attachments</code></p>
+                <p><strong>Storage Path:</strong> <code className="bg-slate-200 px-1 rounded">rfq/[rfq-id]/</code></p>
                 <p><strong>File Types:</strong> PDF, DOC, DOCX, JPG, PNG (max 20MB each)</p>
               </div>
             </div>
@@ -274,6 +369,13 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
           {/* Deadline */}
           <div className="space-y-2">
             <Label>Response Deadline *</Label>
+            <Input
+              id="deadline-date-input"
+              type="date"
+              min={formatDateForInput(new Date())}
+              value={formatDateForInput(deadlineDate)}
+              onChange={(e) => parseDeadlineDate(e.target.value)}
+            />
             <Popover>
               <PopoverTrigger asChild>
                 <Button

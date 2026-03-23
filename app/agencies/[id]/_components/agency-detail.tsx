@@ -19,6 +19,7 @@ import { getCategoriesMap, resolveCategoryNames } from "@/lib/category-utils"
 import { getImagesByOrganizationAction } from "@/actions/image-galleries-actions"
 import { ImageLightbox } from "@/components/ui/image-lightbox"
 import Link from "next/link"
+import { notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 interface AgencyDetailProps {
   agency: SelectAgency & { featuredImage?: any }
@@ -46,6 +47,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
         }
       } catch (error) {
         console.error("Failed to load images:", error);
+        notifyUnexpectedError("load agency gallery images");
       } finally {
         setImagesLoading(false);
       }
@@ -103,7 +105,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* About Section */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-foreground mb-4">About {agency.name}</h2>
               <p className="text-muted-foreground leading-relaxed text-lg">
@@ -113,7 +115,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
           </Card>
 
           {/* Services Section */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-foreground mb-6">Our Services</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -128,13 +130,13 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
           </Card>
 
           {/* Gallery Section */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-foreground mb-6">Gallery</h2>
               {imagesLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-48 bg-gray-200 rounded-lg animate-pulse" />
+                    <div key={i} className="h-48 bg-slate-200 rounded-lg animate-pulse" />
                   ))}
                 </div>
               ) : images.length > 0 ? (
@@ -148,7 +150,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
                       <SmartImage
                         src={image.fileUrl}
                         alt={image.altText || `${agency.name} - Gallery Image`}
-                        className="w-full h-full object-contain bg-gray-100 group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain bg-slate-100 group-hover:scale-105 transition-transform duration-300"
                         fallbackSrc="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTAwQzE2NS4zNzMgMTAwIDEzNy41IDEyNy44NzMgMTM3LjUgMTYyLjVWMTM3LjVDMTM3LjUgMTcyLjEyNyAxNjUuMzczIDIwMCAyMDAgMjAwQzIzNC42MjcgMjAwIDI2Mi41IDE3Mi4xMjcgMjYyLjUgMTM3LjVWMTYyLjVDMjYyLjUgMTI3Ljg3MyAyMzQuNjI3IDEwMCAyMDAgMTAwWiIgZmlsbD0iIzYzNjY2QSIvPgo8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNjIuNSIgcj0iMjUiIGZpbGw9IiM2MzY2NkEiLz4KPHRleHQgeD0iMjAwIiB5PSIyNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2MzY2NkEiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjUwMCI+RXZlbnQgQWdlbmN5PC90ZXh0Pgo8L3N2Zz4K"
                       />
                       {image.isFeatured && (
@@ -168,7 +170,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <div className="bg-white/90 rounded-full p-2">
-                            <Award className="h-6 w-6 text-gray-800" />
+                            <Award className="h-6 w-6 text-slate-800" />
                           </div>
                         </div>
                       </div>
@@ -177,7 +179,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="text-gray-400 mb-4">
+                  <div className="text-slate-500 mb-4">
                     <Award className="h-12 w-12 mx-auto" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">No Gallery Images</h3>
@@ -190,7 +192,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
           </Card>
 
           {/* Why Choose Us */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-foreground mb-6">Why Choose {agency.name}?</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -229,7 +231,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Contact Card */}
-          <Card className="border-0 shadow-lg sticky top-8">
+          <Card className="border border-slate-200 shadow-lg sticky top-8">
             <CardContent className="p-6">
               <h3 className="text-xl font-bold text-foreground mb-4">Get In Touch</h3>
               <div className="space-y-4">
@@ -263,11 +265,11 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
           </Card>
 
           {/* Location Card */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-6">
               <h3 className="text-xl font-bold text-foreground mb-4">Location</h3>
               <div className="flex items-start">
-                <MapPin className="h-5 w-5 text-gray-400 mr-3 mt-0.5" />
+                <MapPin className="h-5 w-5 text-slate-500 mr-3 mt-0.5" />
                 <div>
                   <p className="font-medium text-foreground">
                     {agency.location?.city}, {agency.location?.province}
@@ -281,7 +283,7 @@ export function AgencyDetail({ agency }: AgencyDetailProps) {
           </Card>
 
           {/* Status Badge */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Status</span>

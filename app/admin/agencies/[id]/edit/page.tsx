@@ -49,7 +49,7 @@ export default async function EditAgencyPage({ params }: EditAgencyPageProps) {
   const suppliersCount = suppliersResult.isSuccess ? suppliersResult.data || [] : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-100 flex">
       {/* Sidebar */}
       <AdminSidebar 
         categoriesCount={categoriesCount.length}
@@ -61,23 +61,23 @@ export default async function EditAgencyPage({ params }: EditAgencyPageProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <header className="bg-white border-b border-slate-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" asChild className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+              <Button variant="ghost" asChild className="text-slate-500 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all duration-200">
                 <Link href="/admin/agencies">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Agencies
                 </Link>
               </Button>
-              <div className="h-6 w-px bg-gray-300" />
+              <div className="h-6 w-px bg-slate-300" />
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <Users className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Edit Agency</h2>
-                  <p className="text-gray-600">Update agency information and contact details</p>
+                  <h2 className="text-2xl font-bold text-slate-900">Edit Agency</h2>
+                  <p className="text-slate-600">Update agency information and contact details</p>
                 </div>
               </div>
             </div>
@@ -87,10 +87,10 @@ export default async function EditAgencyPage({ params }: EditAgencyPageProps) {
         {/* Edit Content */}
         <main className="flex-1 p-6">
           <div className="max-w-2xl">
-            <Card className="border-0 shadow-sm bg-white">
+            <Card className="border border-slate-200 shadow-sm bg-white">
               <CardHeader className="pb-6">
-                <CardTitle className="text-xl text-gray-900">Agency Details</CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardTitle className="text-xl text-slate-900">Agency Details</CardTitle>
+                <CardDescription className="text-slate-600">
                   Update the agency information and contact details
                 </CardDescription>
               </CardHeader>

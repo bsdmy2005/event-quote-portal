@@ -26,10 +26,10 @@ export default function OnboardCompletePage() {
             <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-10 w-10 text-white" />
             </div>
-            <CardTitle className="text-3xl font-bold text-gray-900 mb-4">
+            <CardTitle className="text-3xl font-bold text-slate-900 mb-4">
               Welcome to Quote Portal!
             </CardTitle>
-            <CardDescription className="text-lg text-gray-600">
+            <CardDescription className="text-lg text-slate-600">
               Your organization has been successfully created and you're all set to start using the platform.
             </CardDescription>
           </CardHeader>
@@ -37,15 +37,15 @@ export default function OnboardCompletePage() {
           <CardContent className="space-y-8">
             {/* Success Steps */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900">What's Next?</h3>
+              <h3 className="text-xl font-semibold text-slate-900">What's Next?</h3>
               <div className="grid gap-4">
                 <div className="flex items-center gap-4 p-4 bg-green-50 rounded-lg">
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                     <Building2 className="h-5 w-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-gray-900">Organization Created</div>
-                    <div className="text-sm text-gray-600">Your profile is ready and active</div>
+                    <div className="font-medium text-slate-900">Organization Created</div>
+                    <div className="text-sm text-slate-600">Your profile is ready and active</div>
                   </div>
                 </div>
                 
@@ -54,8 +54,8 @@ export default function OnboardCompletePage() {
                     <Users className="h-5 w-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-gray-900">Team Invitations</div>
-                    <div className="text-sm text-gray-600">Invite team members to collaborate</div>
+                    <div className="font-medium text-slate-900">Team Invitations</div>
+                    <div className="text-sm text-slate-600">Invite team members to collaborate</div>
                   </div>
                 </div>
                 
@@ -64,8 +64,8 @@ export default function OnboardCompletePage() {
                     <Calendar className="h-5 w-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-gray-900">Start Using the Platform</div>
-                    <div className="text-sm text-gray-600">Browse suppliers, send RFQs, or manage your profile</div>
+                    <div className="font-medium text-slate-900">Start Using the Platform</div>
+                    <div className="text-sm text-slate-600">Browse suppliers, send RFQs, or manage your profile</div>
                   </div>
                 </div>
               </div>
@@ -73,7 +73,7 @@ export default function OnboardCompletePage() {
 
             {/* Quick Actions */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900">Quick Actions</h3>
+              <h3 className="text-xl font-semibold text-slate-900">Quick Actions</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button 
                   variant="outline" 
@@ -83,7 +83,7 @@ export default function OnboardCompletePage() {
                   <Building2 className="h-6 w-6" />
                   <div className="text-center">
                     <div className="font-medium">Go to Dashboard</div>
-                    <div className="text-xs text-gray-500">Manage your organization</div>
+                    <div className="text-xs text-slate-600">Manage your organization</div>
                   </div>
                 </Button>
                 
@@ -95,7 +95,7 @@ export default function OnboardCompletePage() {
                   <Users className="h-6 w-6" />
                   <div className="text-center">
                     <div className="font-medium">Browse Directory</div>
-                    <div className="text-xs text-gray-500">Find agencies or suppliers</div>
+                    <div className="text-xs text-slate-600">Find agencies or suppliers</div>
                   </div>
                 </Button>
               </div>

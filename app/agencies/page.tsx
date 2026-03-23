@@ -6,6 +6,7 @@ import { AgenciesGrid } from "./_components/agencies-grid"
 import { AgenciesSkeleton } from "./_components/agencies-skeleton"
 import { AgenciesHeader } from "./_components/agencies-header"
 import { SelectAgency } from "@/db/schema"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 export default function AgenciesPage() {
   const [agencies, setAgencies] = useState<SelectAgency[]>([]);
@@ -26,11 +27,12 @@ export default function AgenciesPage() {
   const loadAgencies = async () => {
     try {
       const result = await getAgenciesAction();
-      if (result.isSuccess && result.data) {
+      if (notifyActionResult(result, { errorMessage: "Failed to load agencies", silentSuccess: true }) && result.data) {
         setAgencies(result.data);
       }
     } catch (error) {
       console.error("Error loading agencies:", error);
+      notifyUnexpectedError("load agencies");
     } finally {
       setLoading(false);
     }

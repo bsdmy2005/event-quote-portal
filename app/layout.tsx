@@ -106,7 +106,8 @@ export default async function RootLayout({
           <Providers
             attribute="class"
             defaultTheme="light"
-            enableSystem={true}
+            forcedTheme="light"
+            enableSystem={false}
             disableTransitionOnChange
           >
             <Header isAdmin={isAdmin} />

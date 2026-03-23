@@ -67,7 +67,7 @@ export const getOrgInvitesByEmail = async (email: string): Promise<SelectOrgInvi
   }
 };
 
-export const getOrgInvitesByOrganization = async (orgType: "agency" | "supplier", orgId: string): Promise<SelectOrgInvite[]> => {
+export const getOrgInvitesByOrganization = async (orgType: "agency" | "supplier" | "cost_consultant", orgId: string): Promise<SelectOrgInvite[]> => {
   try {
     const invites = await db.query.orgInvitesTable.findMany({
       where: eq(orgInvitesTable.orgId, orgId)

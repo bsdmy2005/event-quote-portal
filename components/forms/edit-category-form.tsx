@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { updateCategoryAction } from "@/actions/categories-actions";
 import { Loader2 } from "lucide-react";
 import { SelectCategory } from "@/db/schema/categories-schema";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const editCategorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
@@ -53,13 +54,14 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
     try {
       const result = await updateCategoryAction(category.id, data);
       
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Category updated successfully", errorMessage: "Failed to update category" })) {
         router.push("/admin");
         router.refresh();
       } else {
         setError(result.message || "Failed to update category");
       }
-    } catch (error) {
+    } catch {
+      notifyUnexpectedError("update category");
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -75,7 +77,7 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
       )}
 
       <div className="space-y-3">
-        <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+        <Label htmlFor="name" className="text-sm font-semibold text-slate-700">
           Category Name
         </Label>
         <Input
@@ -83,7 +85,7 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
           {...register("name")}
           placeholder="e.g., Catering Services"
           disabled={isLoading}
-          className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+          className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
         />
         {errors.name && (
           <p className="text-sm text-red-600 font-medium">{errors.name.message}</p>
@@ -104,7 +106,7 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
           variant="outline"
           onClick={() => router.push("/admin")}
           disabled={isLoading}
-          className="border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 rounded-lg px-6 py-3 font-semibold transition-all duration-200 h-12"
+          className="border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-100 rounded-lg px-6 py-3 font-semibold transition-all duration-200 h-12"
         >
           Cancel
         </Button>

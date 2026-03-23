@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AdminSidebar } from "@/components/ui/admin-sidebar";
 import { SelectAgency } from "@/db/schema";
+import { notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 export default function AgenciesAdminPage() {
   const [agencies, setAgencies] = useState<SelectAgency[]>([]);
@@ -54,6 +55,7 @@ export default function AgenciesAdminPage() {
       }
     } catch (error) {
       console.error("Error loading data:", error);
+      notifyUnexpectedError("load agencies admin data");
     } finally {
       setLoading(false);
     }
@@ -96,19 +98,19 @@ export default function AgenciesAdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading agencies...</p>
+          <p className="text-slate-700">Loading agencies...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-100 flex">
       {/* Sidebar */}
-      <AdminSidebar 
+      <AdminSidebar
         categoriesCount={categoriesCount}
         agenciesCount={agencies.length}
         suppliersCount={suppliersCount}
@@ -118,11 +120,11 @@ export default function AgenciesAdminPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-100 px-8 py-6 shadow-sm">
+        <header className="bg-white border-b border-slate-200 px-8 py-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Agencies Management</h2>
-              <p className="text-gray-600 text-lg">Manage event agencies and their profiles</p>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Agencies Management</h2>
+              <p className="text-slate-600 text-lg">Manage event agencies and their profiles</p>
             </div>
             <Button asChild className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-sm">
               <Link href="/admin/agencies/new">
@@ -174,14 +176,14 @@ function AgenciesList({
 }: AgenciesListProps) {
   if (allAgencies.length === 0) {
     return (
-      <Card className="border-0 shadow-sm bg-white rounded-xl">
+      <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
         <CardContent className="p-12">
           <div className="text-center">
             <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <Users className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No agencies yet</h3>
-            <p className="text-gray-500">Create your first event agency to get started</p>
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No agencies yet</h3>
+            <p className="text-slate-500">Create your first event agency to get started</p>
           </div>
         </CardContent>
       </Card>
@@ -191,13 +193,13 @@ function AgenciesList({
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
-      <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
             <Input
               placeholder="Search agencies by name, email, or location..."
-              className="pl-10"
+              className="pl-10 border-slate-300 text-slate-900 placeholder:text-slate-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -229,35 +231,35 @@ function AgenciesList({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-slate-200 shadow-sm bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Showing</p>
-                <p className="text-2xl font-bold text-gray-900">{agencies.length}</p>
-                <p className="text-xs text-gray-400">of {allAgencies.length} total</p>
+                <p className="text-sm font-medium text-slate-500">Showing</p>
+                <p className="text-2xl font-bold text-slate-900">{agencies.length}</p>
+                <p className="text-xs text-slate-500">of {allAgencies.length} total</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-slate-200 shadow-sm bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Active</p>
-                <p className="text-2xl font-bold text-green-600">{agencies.filter(a => a.status === 'active').length}</p>
+                <p className="text-sm font-medium text-slate-500">Active</p>
+                <p className="text-2xl font-bold text-green-700">{agencies.filter(a => a.status === 'active').length}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-slate-200 shadow-sm bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Inactive</p>
-                <p className="text-2xl font-bold text-orange-600">{agencies.filter(a => a.status === 'inactive').length}</p>
+                <p className="text-sm font-medium text-slate-500">Inactive</p>
+                <p className="text-2xl font-bold text-orange-700">{agencies.filter(a => a.status === 'inactive').length}</p>
               </div>
               <XCircle className="h-8 w-8 text-orange-600" />
             </div>
@@ -266,10 +268,10 @@ function AgenciesList({
       </div>
 
       {/* Agencies Table */}
-      <div className="bg-white border border-gray-100 rounded-xl shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-100">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">All Agencies</h3>
+            <h3 className="text-lg font-semibold text-slate-900">All Agencies</h3>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm">
                 <Eye className="h-4 w-4 mr-2" />
@@ -278,9 +280,9 @@ function AgenciesList({
             </div>
           </div>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-slate-100">
           {agencies.map((agency) => (
-            <div key={agency.id} className="px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
+            <div key={agency.id} className="px-6 py-4 hover:bg-slate-50 transition-colors duration-150">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="p-2.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-sm">
@@ -288,17 +290,17 @@ function AgenciesList({
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <h4 className="text-sm font-medium text-gray-900">{agency.name}</h4>
-                      <Badge 
+                      <h4 className="text-sm font-semibold text-slate-900">{agency.name}</h4>
+                      <Badge
                         variant={agency.status === 'active' ? 'default' : 'secondary'}
-                        className="text-xs capitalize"
+                        className={`text-xs capitalize ${agency.status === 'active' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-slate-100 text-slate-600 border-slate-200'}`}
                       >
                         {agency.status}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-500">{agency.contactName} • {agency.email}</p>
+                    <p className="text-sm text-slate-600">{agency.contactName} • {agency.email}</p>
                     {agency.location && (
-                      <p className="text-sm text-gray-500 flex items-center mt-1">
+                      <p className="text-sm text-slate-500 flex items-center mt-1">
                         <MapPin className="h-3 w-3 mr-1" />
                         {agency.location.city}, {agency.location.province}, {agency.location.country}
                       </p>
@@ -306,12 +308,12 @@ function AgenciesList({
                     {agency.interestCategories && agency.interestCategories.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {agency.interestCategories.slice(0, 3).map((category) => (
-                          <Badge key={category} variant="outline" className="text-xs">
+                          <Badge key={category} variant="outline" className="text-xs border-slate-300 text-slate-700">
                             {category}
                           </Badge>
                         ))}
                         {agency.interestCategories.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs border-slate-300 text-slate-700">
                             +{agency.interestCategories.length - 3} more
                           </Badge>
                         )}
@@ -320,12 +322,12 @@ function AgenciesList({
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                  <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
                     <Link href={`/agencies/${agency.id}`} target="_blank">
                       <Eye className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                  <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
                     <Link href={`/admin/agencies/${agency.id}/edit`}>
                       <Pencil className="h-4 w-4" />
                     </Link>

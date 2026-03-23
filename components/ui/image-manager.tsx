@@ -231,7 +231,7 @@ export default function ImageManager({ organizationId, organizationType }: Image
       )}
 
       {/* Upload Section */}
-      <Card className="border border-gray-200">
+      <Card className="border border-slate-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Upload className="h-5 w-5" />
@@ -240,7 +240,7 @@ export default function ImageManager({ organizationId, organizationType }: Image
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="file-upload" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="file-upload" className="text-sm font-medium text-slate-700">
               Choose Images
             </Label>
             <Input
@@ -251,7 +251,7 @@ export default function ImageManager({ organizationId, organizationType }: Image
               onChange={handleFileSelect}
               className="mt-1"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-slate-600 mt-1">
               Supported formats: JPEG, PNG, WebP. Max size: 10MB per file.
             </p>
           </div>
@@ -287,7 +287,7 @@ export default function ImageManager({ organizationId, organizationType }: Image
 
       {/* Images Grid */}
       {images.length > 0 && (
-        <Card className="border border-gray-200">
+        <Card className="border border-slate-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ImageIcon className="h-5 w-5" />
@@ -298,7 +298,7 @@ export default function ImageManager({ organizationId, organizationType }: Image
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image) => (
                 <div key={image.id} className="relative group">
-                  <div className="aspect-square rounded-lg overflow-hidden border border-gray-200">
+                  <div className="aspect-square rounded-lg overflow-hidden border border-slate-200">
                     <img
                       src={image.fileUrl}
                       alt={image.altText || image.fileName}
@@ -316,7 +316,7 @@ export default function ImageManager({ organizationId, organizationType }: Image
                                 setEditImageAltText(image.altText || "");
                                 setEditImageCaption(image.caption || "");
                               }}
-                              className="h-8 w-8 p-0 bg-white text-gray-700 hover:bg-gray-100"
+                              className="h-8 w-8 p-0 bg-white text-slate-700 hover:bg-slate-100"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -385,11 +385,11 @@ export default function ImageManager({ organizationId, organizationType }: Image
                   
                   {/* Image Info */}
                   <div className="mt-2 space-y-1">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-slate-900 truncate">
                       {image.fileName}
                     </p>
                     {image.altText && (
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-slate-600 truncate">
                         {image.altText}
                       </p>
                     )}
@@ -413,11 +413,11 @@ export default function ImageManager({ organizationId, organizationType }: Image
 
       {/* No Images Message */}
       {images.length === 0 && (
-        <Card className="border border-gray-200">
+        <Card className="border border-slate-200">
           <CardContent className="text-center py-12">
-            <ImageIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No images yet</h3>
-            <p className="text-gray-500 mb-4">Upload some images to showcase your work</p>
+            <ImageIcon className="h-12 w-12 mx-auto mb-4 text-slate-400" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No images yet</h3>
+            <p className="text-slate-600 mb-4">Upload some images to showcase your work</p>
           </CardContent>
         </Card>
       )}

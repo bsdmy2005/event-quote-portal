@@ -74,7 +74,8 @@ export const getProfileWithOrganization = async (userId: string) => {
       where: eq(profilesTable.userId, userId),
       with: {
         agency: true,
-        supplier: true
+        supplier: true,
+        costConsultant: true,
       }
     });
     return profile;
@@ -84,12 +85,20 @@ export const getProfileWithOrganization = async (userId: string) => {
   }
 };
 
-export const getProfilesByOrganization = async (orgType: "agency" | "supplier", orgId: string) => {
+export const getProfilesByOrganization = async (
+  orgType: "agency" | "supplier" | "cost_consultant",
+  orgId: string
+) => {
   try {
-    const profiles = await db.query.profilesTable.findMany({
-      where: orgType === "agency" 
+    const whereClause =
+      orgType === "agency"
         ? eq(profilesTable.agencyId, orgId)
-        : eq(profilesTable.supplierId, orgId)
+        : orgType === "supplier"
+          ? eq(profilesTable.supplierId, orgId)
+          : eq(profilesTable.costConsultantId, orgId);
+
+    const profiles = await db.query.profilesTable.findMany({
+      where: whereClause
     });
     return profiles;
   } catch (error) {

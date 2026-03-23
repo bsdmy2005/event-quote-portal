@@ -23,7 +23,7 @@ export function AgencyDetailSkeleton() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* About Section */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <Skeleton className="h-8 w-48 mb-4" />
               <Skeleton className="h-4 w-full mb-2" />
@@ -33,12 +33,12 @@ export function AgencyDetailSkeleton() {
           </Card>
 
           {/* Services Section */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <Skeleton className="h-8 w-32 mb-6" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                  <div key={i} className="flex items-center p-4 bg-slate-100 rounded-lg">
                     <Skeleton className="h-5 w-5 mr-3" />
                     <Skeleton className="h-4 w-32" />
                   </div>
@@ -48,7 +48,7 @@ export function AgencyDetailSkeleton() {
           </Card>
 
           {/* Why Choose Us */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-8">
               <Skeleton className="h-8 w-48 mb-6" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -67,7 +67,7 @@ export function AgencyDetailSkeleton() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Contact Card */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-6">
               <Skeleton className="h-6 w-32 mb-4" />
               <div className="space-y-4">
@@ -86,7 +86,7 @@ export function AgencyDetailSkeleton() {
           </Card>
 
           {/* Location Card */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-6">
               <Skeleton className="h-6 w-20 mb-4" />
               <div className="flex items-start">
@@ -100,7 +100,7 @@ export function AgencyDetailSkeleton() {
           </Card>
 
           {/* Status Badge */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border border-slate-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-12" />

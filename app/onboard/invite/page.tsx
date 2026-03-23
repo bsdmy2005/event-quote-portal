@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, ArrowRight, Users, Mail, Plus, X, CheckCircle } from "lucide-react"
 import { sendTeamInviteAction } from "@/actions/onboarding-actions"
-import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 interface TeamMember {
   email: string
@@ -19,14 +19,15 @@ interface TeamMember {
 export default function InvitePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const orgType = searchParams.get("type") as "agency" | "supplier"
+  const rawOrgType = searchParams.get("type")
+  const orgType = (rawOrgType === "cost-consultant" ? "cost_consultant" : rawOrgType) as "agency" | "supplier" | "cost_consultant"
   const orgId = searchParams.get("orgId")
   
   const [isLoading, setIsLoading] = useState(false)
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [currentMember, setCurrentMember] = useState<TeamMember>({
     email: "",
-    role: orgType === "agency" ? "agency_member" : "supplier_member"
+    role: orgType === "agency" ? "agency_member" : orgType === "supplier" ? "supplier_member" : "cost_consultant_member"
   })
 
   const roleOptions = orgType === "agency" 
@@ -34,9 +35,12 @@ export default function InvitePage() {
         { value: "agency_admin", label: "Agency Admin" },
         { value: "agency_member", label: "Agency Member" }
       ]
-    : [
+    : orgType === "supplier" ? [
         { value: "supplier_admin", label: "Supplier Admin" },
         { value: "supplier_member", label: "Supplier Member" }
+      ] : [
+        { value: "cost_consultant_admin", label: "Cost Consultant Admin" },
+        { value: "cost_consultant_member", label: "Cost Consultant Member" }
       ]
 
   const addTeamMember = () => {
@@ -44,7 +48,7 @@ export default function InvitePage() {
       setTeamMembers(prev => [...prev, currentMember])
       setCurrentMember({
         email: "",
-        role: orgType === "agency" ? "agency_member" : "supplier_member"
+        role: orgType === "agency" ? "agency_member" : orgType === "supplier" ? "supplier_member" : "cost_consultant_member"
       })
     }
   }
@@ -73,13 +77,23 @@ export default function InvitePage() {
       )
 
       const successCount = results.filter((r: any) => r.isSuccess).length
+      const failureCount = results.length - successCount
       if (successCount > 0) {
-        toast.success(`${successCount} invitation${successCount > 1 ? 's' : ''} sent successfully!`)
+        notifyActionResult({
+          isSuccess: true,
+          message: `${successCount} invitation${successCount > 1 ? "s" : ""} sent successfully!`,
+        })
+      }
+      if (failureCount > 0) {
+        notifyActionResult({
+          isSuccess: false,
+          message: `${failureCount} invitation${failureCount > 1 ? "s" : ""} failed to send.`,
+        })
       }
       
       router.push("/onboard/complete")
-    } catch (error) {
-      toast.error("Failed to send some invitations. You can invite team members later.")
+    } catch {
+      notifyUnexpectedError("send team invitations")
       router.push("/onboard/complete")
     } finally {
       setIsLoading(false)
@@ -112,9 +126,9 @@ export default function InvitePage() {
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Users className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Invite Your Team</h1>
-            <p className="text-gray-600">
-              Add team members to help manage your {orgType === "agency" ? "agency" : "supplier"} profile
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Invite Your Team</h1>
+              <p className="text-slate-600">
+              Add team members to help manage your {orgType === "agency" ? "agency" : orgType === "supplier" ? "supplier" : "cost consultant"} profile
             </p>
           </div>
         </div>
@@ -128,7 +142,7 @@ export default function InvitePage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Add Team Member Form */}
-            <div className="space-y-4 p-4 border-2 border-dashed border-gray-200 rounded-lg">
+            <div className="space-y-4 p-4 border-2 border-dashed border-slate-200 rounded-lg">
               <h3 className="font-semibold flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Team Member
@@ -182,12 +196,12 @@ export default function InvitePage() {
               <div className="space-y-3">
                 <h3 className="font-semibold">Team Members to Invite</h3>
                 {teamMembers.map((member, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 bg-slate-100 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <Mail className="h-4 w-4 text-gray-500" />
+                      <Mail className="h-4 w-4 text-slate-600" />
                       <div>
                         <div className="font-medium">{member.email}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-slate-600">
                           {roleOptions.find(r => r.value === member.role)?.label}
                         </div>
                       </div>

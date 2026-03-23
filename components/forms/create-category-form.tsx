@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createCategoryAction } from "@/actions/categories-actions";
 import { Loader2 } from "lucide-react";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const createCategorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
@@ -39,13 +40,14 @@ export function CreateCategoryForm() {
     try {
       const result = await createCategoryAction(data);
       
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Category created successfully", errorMessage: "Failed to create category" })) {
         router.push("/admin/categories");
         router.refresh();
       } else {
         setError(result.message || "Failed to create category");
       }
-    } catch (error) {
+    } catch {
+      notifyUnexpectedError("create category");
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);

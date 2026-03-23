@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Plus, Calendar, Building2, Users, FileText, Clock } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
+import { RfqCreationFlash } from "@/components/ui/rfq-creation-flash"
 
 export default async function RfqsPage() {
   const { userId } = await auth()
@@ -34,12 +35,14 @@ export default async function RfqsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "draft": return "bg-gray-100 text-gray-800"
+      case "draft": return "bg-slate-100 text-slate-800"
       case "sent": return "bg-blue-100 text-blue-800"
+      case "published": return "bg-indigo-100 text-indigo-800"
+      case "evaluation": return "bg-purple-100 text-purple-800"
       case "closed": return "bg-red-100 text-red-800"
       case "awarded": return "bg-green-100 text-green-800"
       case "not_awarded": return "bg-orange-100 text-orange-800"
-      default: return "bg-gray-100 text-gray-800"
+      default: return "bg-slate-100 text-slate-800"
     }
   }
 
@@ -47,6 +50,8 @@ export default async function RfqsPage() {
     switch (status) {
       case "draft": return "Draft"
       case "sent": return "Sent"
+      case "published": return "Published"
+      case "evaluation": return "Evaluation"
       case "closed": return "Closed"
       case "awarded": return "Awarded"
       case "not_awarded": return "Not Awarded"
@@ -56,13 +61,14 @@ export default async function RfqsPage() {
 
   return (
     <div className="flex-1">
+      <RfqCreationFlash />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">RFQs</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-slate-900">RFQs</h1>
+              <p className="text-slate-600 mt-2">
                 Manage your Request for Quotes and track supplier responses
               </p>
             </div>
@@ -79,9 +85,9 @@ export default async function RfqsPage() {
         {rfqs.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No RFQs yet</h3>
-              <p className="text-gray-600 mb-6">
+              <FileText className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 mb-2">No RFQs yet</h3>
+              <p className="text-slate-600 mb-6">
                 Create your first RFQ to start receiving quotations from suppliers
               </p>
               <Button asChild>
@@ -122,7 +128,7 @@ export default async function RfqsPage() {
                   <div className="space-y-4">
                     {/* Event Dates */}
                     {rfq.eventDates && (
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center space-x-4 text-sm text-slate-600">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
                           <span>
@@ -133,7 +139,7 @@ export default async function RfqsPage() {
                     )}
 
                     {/* Deadline */}
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-4 text-sm text-slate-600">
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
                         <span>
@@ -143,13 +149,13 @@ export default async function RfqsPage() {
                     </div>
 
                     {/* Scope Preview */}
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-slate-700">
                       <p className="line-clamp-2">{rfq.scope}</p>
                     </div>
 
                     {/* Attachments */}
                     {rfq.attachmentsUrl && rfq.attachmentsUrl.length > 0 && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <div className="flex items-center space-x-2 text-sm text-slate-600">
                         <FileText className="h-4 w-4" />
                         <span>{rfq.attachmentsUrl.length} attachment{rfq.attachmentsUrl.length !== 1 ? 's' : ''}</span>
                       </div>
@@ -157,7 +163,7 @@ export default async function RfqsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <div className="flex items-center space-x-2 text-sm text-slate-600">
                         <Users className="h-4 w-4" />
                         <span>Created {format(new Date(rfq.createdAt), "MMM d, yyyy")}</span>
                       </div>

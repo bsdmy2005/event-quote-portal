@@ -247,7 +247,7 @@ export function ImageGallery({ organizationId, organizationType, maxFiles = 10, 
       )}
 
       {/* Upload Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Upload className="h-4 w-4" />
@@ -283,7 +283,7 @@ export function ImageGallery({ organizationId, organizationType, maxFiles = 10, 
 
       {/* Images Grid */}
       {images.length > 0 && (
-        <div className="border border-gray-200 rounded-lg p-4">
+        <div className="border border-slate-200 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <ImageIcon className="h-4 w-4" />
             <span className="font-medium text-sm">Images ({images.length})</span>
@@ -292,7 +292,7 @@ export function ImageGallery({ organizationId, organizationType, maxFiles = 10, 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {images.map((image) => (
               <div key={image.id} className="relative group">
-                <div className="aspect-square rounded-lg overflow-hidden border border-gray-200">
+                <div className="aspect-square rounded-lg overflow-hidden border border-slate-200">
                   <img
                     src={image.fileUrl}
                     alt={image.altText || image.fileName}
@@ -310,7 +310,7 @@ export function ImageGallery({ organizationId, organizationType, maxFiles = 10, 
                               setEditImageAltText(image.altText || "");
                               setEditImageCaption(image.caption || "");
                             }}
-                            className="h-7 w-7 p-0 bg-white text-gray-700 hover:bg-gray-100"
+                            className="h-7 w-7 p-0 bg-white text-slate-700 hover:bg-slate-100"
                           >
                             <Edit className="h-3 w-3" />
                           </Button>
@@ -379,11 +379,11 @@ export function ImageGallery({ organizationId, organizationType, maxFiles = 10, 
                 
                 {/* Image Info */}
                 <div className="mt-1 space-y-1">
-                  <p className="text-xs font-medium text-gray-900 truncate">
+                  <p className="text-xs font-medium text-slate-900 truncate">
                     {image.fileName}
                   </p>
                   {image.altText && (
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-slate-600 truncate">
                       {image.altText}
                     </p>
                   )}
@@ -406,10 +406,10 @@ export function ImageGallery({ organizationId, organizationType, maxFiles = 10, 
 
       {/* No Images Message */}
       {images.length === 0 && (
-        <div className="border border-gray-200 rounded-lg p-8 text-center">
-          <ImageIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-          <h3 className="text-sm font-medium text-gray-900 mb-1">No images yet</h3>
-          <p className="text-xs text-gray-500">Upload some images to showcase your work</p>
+        <div className="border border-slate-200 rounded-lg p-8 text-center">
+          <ImageIcon className="h-8 w-8 mx-auto mb-2 text-slate-400" />
+          <h3 className="text-sm font-medium text-slate-900 mb-1">No images yet</h3>
+          <p className="text-xs text-slate-600">Upload some images to showcase your work</p>
         </div>
       )}
     </div>

@@ -7,7 +7,7 @@ export function SuppliersSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {Array.from({ length: 9 }).map((_, i) => (
-        <Card key={i} className="border-0 shadow-lg overflow-hidden">
+        <Card key={i} className="border border-slate-200 shadow-lg overflow-hidden">
           <Skeleton className="h-48 w-full" />
           <CardContent className="p-6">
             <div className="space-y-4">
@@ -25,7 +25,7 @@ export function SuppliersSkeleton() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                 <div className="flex space-x-3">
                   <Skeleton className="h-8 w-8 rounded" />
                   <Skeleton className="h-8 w-8 rounded" />

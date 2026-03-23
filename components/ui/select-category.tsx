@@ -60,7 +60,7 @@ export function SelectCategory({
   // If no categories, show a simple message
   if (safeCategories.length === 0) {
     return (
-      <div className="text-sm text-gray-500 p-3 border rounded bg-gray-50">
+      <div className="text-sm text-slate-600 p-3 border rounded bg-slate-100">
         No categories available
       </div>
     );
@@ -74,7 +74,7 @@ export function SelectCategory({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-11 border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50"
+            className="w-full justify-between h-11 border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-100"
             disabled={disabled}
           >
             {safeSelectedCategories.length === 0
@@ -83,21 +83,21 @@ export function SelectCategory({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 bg-white border border-gray-200 shadow-lg">
+        <PopoverContent className="w-full p-0 bg-white border border-slate-200 shadow-lg">
           <div className="p-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">Categories</Label>
+              <Label className="text-sm font-medium text-slate-700">Categories</Label>
               <ScrollArea className="h-48">
                 <div className="space-y-2">
                   {safeCategories.map((category) => (
-                    <div key={category.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 hover:border hover:border-gray-200 rounded-lg transition-all duration-150">
+                    <div key={category.id} className="flex items-center space-x-2 p-2 hover:bg-slate-100 hover:border hover:border-slate-200 rounded-lg transition-all duration-150">
                       <Checkbox
                         id={category.id}
                         checked={safeSelectedCategories.includes(category.id)}
                         onCheckedChange={(checked) => handleToggle(category.id, checked as boolean)}
                         className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
-                      <Label htmlFor={category.id} className="text-sm text-gray-700 cursor-pointer">
+                      <Label htmlFor={category.id} className="text-sm text-slate-700 cursor-pointer">
                         {category.name}
                       </Label>
                     </div>

@@ -229,7 +229,7 @@ export function ImageLightbox({
             {/* Image Container - Fixed Size Window */}
             <div className="w-full h-full flex items-center justify-center p-4">
               <div 
-                className="relative bg-gray-100 rounded-lg overflow-hidden shadow-lg"
+                className="relative bg-slate-100 rounded-lg overflow-hidden shadow-lg"
                 style={{
                   width: '80vw',
                   height: '60vh',
@@ -258,7 +258,7 @@ export function ImageLightbox({
           {/* Caption */}
           {(currentImage.caption || currentImage.altText) && (
             <div className="px-4 py-2 bg-gray-900 text-white border-t border-gray-700 flex-shrink-0">
-              <p className="text-sm text-center text-gray-300">
+              <p className="text-sm text-center text-slate-400">
                 {currentImage.caption || currentImage.altText}
               </p>
             </div>
@@ -278,7 +278,7 @@ export function ImageLightbox({
                     className={`relative flex-shrink-0 w-12 h-12 rounded overflow-hidden border-2 transition-all ${
                       index === currentIndex 
                         ? 'border-white shadow-lg ring-1 ring-white/50' 
-                        : 'border-gray-600 hover:border-gray-400'
+                        : 'border-gray-600 hover:border-slate-400'
                     }`}
                   >
                     <SmartImage

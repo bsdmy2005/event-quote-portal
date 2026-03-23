@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react";
 import { SelectCategory } from "@/components/ui/select-category";
 import { ImageGallery } from "@/components/ui/image-gallery";
 import { SelectSupplier } from "@/db/schema/organizations-schema";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const editSupplierSchema = z.object({
   name: z.string().min(1, "Supplier name is required"),
@@ -100,13 +101,14 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
 
       const result = await updateSupplierAction(supplier.id, formData);
       
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Supplier updated successfully", errorMessage: "Failed to update supplier" })) {
         router.push("/admin");
         router.refresh();
       } else {
         setError(result.message || "Failed to update supplier");
       }
-    } catch (error) {
+    } catch {
+      notifyUnexpectedError("update supplier");
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -123,7 +125,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="name" className="text-sm font-semibold text-slate-700">
             Supplier Name
           </Label>
           <Input
@@ -131,7 +133,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
             {...register("name")}
             placeholder="e.g., Premium Catering Co."
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.name && (
             <p className="text-sm text-red-600 font-medium">{errors.name.message}</p>
@@ -139,7 +141,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="contactName" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="contactName" className="text-sm font-semibold text-slate-700">
             Contact Name
           </Label>
           <Input
@@ -147,7 +149,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
             {...register("contactName")}
             placeholder="e.g., Jane Smith"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.contactName && (
             <p className="text-sm text-red-600 font-medium">{errors.contactName.message}</p>
@@ -157,7 +159,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="email" className="text-sm font-semibold text-slate-700">
             Email
           </Label>
           <Input
@@ -166,7 +168,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
             {...register("email")}
             placeholder="contact@supplier.com"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.email && (
             <p className="text-sm text-red-600 font-medium">{errors.email.message}</p>
@@ -174,7 +176,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="phone" className="text-sm font-semibold text-slate-700">
             Phone (Optional)
           </Label>
           <Input
@@ -182,7 +184,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
             {...register("phone")}
             placeholder="+27 11 123 4567 or 011 123 4567"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.phone && (
             <p className="text-sm text-red-600 font-medium">{errors.phone.message}</p>
@@ -191,7 +193,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="website" className="text-sm font-semibold text-gray-700">
+        <Label htmlFor="website" className="text-sm font-semibold text-slate-700">
           Website (Optional)
         </Label>
         <Input
@@ -199,7 +201,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
           {...register("website")}
           placeholder="example.com"
           disabled={isLoading}
-          className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+          className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
         />
         {errors.website && (
           <p className="text-sm text-red-600 font-medium">{errors.website.message}</p>
@@ -208,7 +210,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <Label htmlFor="street" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="street" className="text-sm font-semibold text-slate-700">
             Street Address
           </Label>
           <Input
@@ -216,7 +218,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
             {...register("location.street")}
             placeholder="123 Main Street"
             disabled={isLoading}
-            className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+            className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
           />
           {errors.location?.street && (
             <p className="text-sm text-red-600 font-medium">{errors.location.street.message}</p>
@@ -225,7 +227,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
-            <Label htmlFor="suburb" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="suburb" className="text-sm font-semibold text-slate-700">
               Suburb
             </Label>
             <Input
@@ -233,7 +235,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
               {...register("location.suburb")}
               placeholder="Sandton"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.suburb && (
               <p className="text-sm text-red-600 font-medium">{errors.location.suburb.message}</p>
@@ -241,7 +243,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="city" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="city" className="text-sm font-semibold text-slate-700">
               City
             </Label>
             <Input
@@ -249,7 +251,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
               {...register("location.city")}
               placeholder="Johannesburg"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.city && (
               <p className="text-sm text-red-600 font-medium">{errors.location.city.message}</p>
@@ -259,7 +261,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-3">
-            <Label htmlFor="province" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="province" className="text-sm font-semibold text-slate-700">
               Province
             </Label>
             <Input
@@ -267,7 +269,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
               {...register("location.province")}
               placeholder="Gauteng"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.province && (
               <p className="text-sm text-red-600 font-medium">{errors.location.province.message}</p>
@@ -275,7 +277,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="postalCode" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="postalCode" className="text-sm font-semibold text-slate-700">
               Postal Code
             </Label>
             <Input
@@ -283,7 +285,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
               {...register("location.postalCode")}
               placeholder="2196"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.postalCode && (
               <p className="text-sm text-red-600 font-medium">{errors.location.postalCode.message}</p>
@@ -291,7 +293,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="country" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="country" className="text-sm font-semibold text-slate-700">
               Country
             </Label>
             <Input
@@ -299,7 +301,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
               {...register("location.country")}
               placeholder="South Africa"
               disabled={isLoading}
-              className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+              className="h-11 border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
             />
             {errors.location?.country && (
               <p className="text-sm text-red-600 font-medium">{errors.location.country.message}</p>
@@ -309,7 +311,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-semibold text-gray-700">
+        <Label className="text-sm font-semibold text-slate-700">
           Service Categories
         </Label>
         {safeCategories.length === 0 ? (
@@ -327,7 +329,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="servicesText" className="text-sm font-semibold text-gray-700">
+        <Label htmlFor="servicesText" className="text-sm font-semibold text-slate-700">
           Services Description
         </Label>
         <Textarea
@@ -336,7 +338,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
           placeholder="Describe your services..."
           rows={4}
           disabled={isLoading}
-          className="border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300 focus:ring-blue-200"
+          className="border-slate-200 bg-white text-slate-900 placeholder:text-slate-500 focus:border-blue-300 focus:ring-blue-200"
         />
         {errors.servicesText && (
           <p className="text-sm text-red-600 font-medium">{errors.servicesText.message}</p>
@@ -344,7 +346,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-semibold text-gray-700">
+        <Label className="text-sm font-semibold text-slate-700">
           Images
         </Label>
         <ImageGallery
@@ -368,7 +370,7 @@ export function EditSupplierForm({ supplier, categories }: EditSupplierFormProps
           variant="outline"
           onClick={() => router.push("/admin")}
           disabled={isLoading}
-          className="border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 rounded-lg px-6 py-3 font-semibold transition-all duration-200 h-12"
+          className="border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-100 rounded-lg px-6 py-3 font-semibold transition-all duration-200 h-12"
         >
           Cancel
         </Button>

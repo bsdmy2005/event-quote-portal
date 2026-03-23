@@ -174,8 +174,8 @@ export function FileUpload({
       <div
         className={cn(
           "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
-          dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300",
-          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-gray-400"
+          dragActive ? "border-blue-500 bg-blue-50" : "border-slate-300",
+          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-slate-400"
         )}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -183,11 +183,11 @@ export function FileUpload({
         onDrop={handleDrop}
         onClick={() => !disabled && fileInputRef.current?.click()}
       >
-        <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-        <p className="text-sm font-medium text-gray-600 mb-1">
+        <Upload className="h-8 w-8 mx-auto mb-2 text-slate-500" />
+        <p className="text-sm font-medium text-slate-600 mb-1">
           {isUploading ? "Uploading..." : description}
         </p>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-slate-600">
           {allowedTypes.length > 0 && `Allowed: ${allowedTypes.join(', ')}`}
           {maxSize && ` • Max ${(maxSize / 1024 / 1024).toFixed(0)}MB per file`}
           {maxFiles && ` • Max ${maxFiles} files`}
@@ -216,10 +216,10 @@ export function FileUpload({
                     <div className="flex items-center space-x-3">
                       <span className="text-lg">{getFileIcon(file.type)}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-slate-900 truncate">
                           {file.name}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-slate-600">
                           {file.size > 0 ? formatFileSize(file.size) : 'Existing file'} • {file.type}
                           {file.url && <span className="ml-2 text-blue-600">• Existing</span>}
                         </p>

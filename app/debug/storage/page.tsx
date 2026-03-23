@@ -53,11 +53,11 @@ export default async function StorageDebugPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Cloudflare R2 Storage Debug</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-slate-900">Cloudflare R2 Storage Debug</h1>
+        <p className="text-slate-600 mt-2">
           View all files uploaded to Cloudflare R2 storage
         </p>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-slate-600 mt-1">
           Bucket: {bucketName} | Public URL: {publicUrl}
         </p>
       </div>
@@ -79,16 +79,16 @@ export default async function StorageDebugPage() {
               <p className="text-red-600">Error: {rfqResult.error}</p>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-600">
                   Total files: {rfqResult.data.length}
                 </p>
                 {rfqResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {rfqResult.data.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div key={index} className="flex items-center justify-between p-2 bg-slate-100 rounded">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{file.Key}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-slate-600">
                             {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
@@ -104,7 +104,7 @@ export default async function StorageDebugPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No files found</p>
+                  <p className="text-slate-600 text-sm">No files found</p>
                 )}
               </div>
             )}
@@ -127,16 +127,16 @@ export default async function StorageDebugPage() {
               <p className="text-red-600">Error: {quotationResult.error}</p>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-600">
                   Total files: {quotationResult.data.length}
                 </p>
                 {quotationResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {quotationResult.data.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div key={index} className="flex items-center justify-between p-2 bg-slate-100 rounded">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{file.Key}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-slate-600">
                             {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
@@ -152,7 +152,7 @@ export default async function StorageDebugPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No files found</p>
+                  <p className="text-slate-600 text-sm">No files found</p>
                 )}
               </div>
             )}
@@ -175,16 +175,16 @@ export default async function StorageDebugPage() {
               <p className="text-red-600">Error: {agencyResult.error}</p>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-600">
                   Total files: {agencyResult.data.length}
                 </p>
                 {agencyResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {agencyResult.data.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div key={index} className="flex items-center justify-between p-2 bg-slate-100 rounded">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{file.Key}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-slate-600">
                             {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
@@ -200,7 +200,7 @@ export default async function StorageDebugPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No files found</p>
+                  <p className="text-slate-600 text-sm">No files found</p>
                 )}
               </div>
             )}
@@ -223,16 +223,16 @@ export default async function StorageDebugPage() {
               <p className="text-red-600">Error: {supplierResult.error}</p>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-600">
                   Total files: {supplierResult.data.length}
                 </p>
                 {supplierResult.data.length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {supplierResult.data.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div key={index} className="flex items-center justify-between p-2 bg-slate-100 rounded">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{file.Key}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-slate-600">
                             {file.Size ? `${(file.Size / 1024).toFixed(1)} KB` : 'Unknown size'}
                           </p>
                         </div>
@@ -248,7 +248,7 @@ export default async function StorageDebugPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No files found</p>
+                  <p className="text-slate-600 text-sm">No files found</p>
                 )}
               </div>
             )}

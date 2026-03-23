@@ -38,7 +38,7 @@ export default async function ReceivedRfqsPage() {
       case "opened": return "bg-blue-100 text-blue-800"
       case "submitted": return "bg-green-100 text-green-800"
       case "closed": return "bg-red-100 text-red-800"
-      default: return "bg-gray-100 text-gray-800"
+      default: return "bg-slate-100 text-slate-800"
     }
   }
 
@@ -58,8 +58,8 @@ export default async function ReceivedRfqsPage() {
         {/* Header */}
         <div className="mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Received RFQs</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-3xl font-bold text-slate-900">Received RFQs</h1>
+            <p className="text-slate-600 mt-2">
               View and respond to RFQ invitations from agencies
             </p>
           </div>
@@ -69,9 +69,9 @@ export default async function ReceivedRfqsPage() {
         {invites.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No RFQ invitations yet</h3>
-              <p className="text-gray-600 mb-6">
+              <FileText className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 mb-2">No RFQ invitations yet</h3>
+              <p className="text-slate-600 mb-6">
                 You'll receive email notifications when agencies invite you to submit quotations
               </p>
             </CardContent>
@@ -106,7 +106,7 @@ export default async function ReceivedRfqsPage() {
                   <div className="space-y-4">
                     {/* Event Dates */}
                     {invite.rfq?.eventDates && (
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center space-x-4 text-sm text-slate-600">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
                           <span>
@@ -118,7 +118,7 @@ export default async function ReceivedRfqsPage() {
 
                     {/* Deadline */}
                     {invite.rfq?.deadlineAt && (
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center space-x-4 text-sm text-slate-600">
                         <div className="flex items-center">
                           <Clock className="h-4 w-4 mr-1" />
                           <span>
@@ -130,14 +130,14 @@ export default async function ReceivedRfqsPage() {
 
                     {/* Scope Preview */}
                     {invite.rfq?.scope && (
-                      <div className="text-sm text-gray-700">
+                      <div className="text-sm text-slate-700">
                         <p className="line-clamp-2">{invite.rfq.scope}</p>
                       </div>
                     )}
 
                     {/* Attachments */}
                     {invite.rfq?.attachmentsUrl && invite.rfq.attachmentsUrl.length > 0 && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <div className="flex items-center space-x-2 text-sm text-slate-600">
                         <FileText className="h-4 w-4" />
                         <span>{invite.rfq.attachmentsUrl.length} attachment{invite.rfq.attachmentsUrl.length !== 1 ? 's' : ''}</span>
                       </div>
@@ -145,7 +145,7 @@ export default async function ReceivedRfqsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <div className="flex items-center space-x-2 text-sm text-slate-600">
                         <span>Invited {format(new Date(invite.createdAt), "MMM d, yyyy")}</span>
                       </div>
                       <div className="flex items-center space-x-2">

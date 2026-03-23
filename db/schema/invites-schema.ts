@@ -1,11 +1,11 @@
- import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { rfqsTable } from "./rfqs-schema";
-import { suppliersTable, agenciesTable } from "./organizations-schema";
+import { suppliersTable, agenciesTable, costConsultantsTable } from "./organizations-schema";
 import { quotationsTable } from "./quotations-schema";
 
 export const inviteStatusEnum = pgEnum("invite_status", ["invited", "opened", "submitted", "closed"]);
-export const orgInviteTypeEnum = pgEnum("org_invite_type", ["agency", "supplier"]);
+export const orgInviteTypeEnum = pgEnum("org_invite_type", ["agency", "supplier", "cost_consultant"]);
 
 export const rfqInvitesTable = pgTable("rfq_invites", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -49,6 +49,10 @@ export const orgInvitesRelations = relations(orgInvitesTable, ({ one }) => ({
   supplier: one(suppliersTable, {
     fields: [orgInvitesTable.orgId],
     references: [suppliersTable.id],
+  }),
+  costConsultant: one(costConsultantsTable, {
+    fields: [orgInvitesTable.orgId],
+    references: [costConsultantsTable.id],
   }),
 }));
 

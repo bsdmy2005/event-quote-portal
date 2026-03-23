@@ -58,8 +58,8 @@ export default async function SendRfqPage({ params }: SendRfqPageProps) {
               </Link>
             </Button>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Send RFQ to Suppliers</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-slate-900">Send RFQ to Suppliers</h1>
+          <p className="text-slate-600 mt-2">
             Select suppliers to invite to this RFQ
           </p>
         </div>

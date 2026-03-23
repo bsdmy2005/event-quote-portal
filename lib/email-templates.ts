@@ -6,13 +6,18 @@ export interface EmailTemplate {
 
 export function generateTeamInviteEmail(
   organizationName: string,
-  organizationType: "agency" | "supplier",
+  organizationType: "agency" | "supplier" | "cost_consultant",
   inviterName: string,
   inviteToken: string, // Keep parameter for compatibility but don't use it
   role: string
 ): EmailTemplate {
   const roleDisplay = role.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())
-  const orgTypeDisplay = organizationType === "agency" ? "Agency" : "Supplier"
+  const orgTypeDisplay =
+    organizationType === "agency"
+      ? "Agency"
+      : organizationType === "supplier"
+        ? "Supplier"
+        : "Cost Consultant"
   const signUpUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/sign-up`
   
   const subject = `You're invited to join ${organizationName} on Quote Portal`
@@ -132,10 +137,15 @@ This email was sent by Quote Portal. If you didn't expect this invitation, you c
 
 export function generateWelcomeEmail(
   organizationName: string,
-  organizationType: "agency" | "supplier",
+  organizationType: "agency" | "supplier" | "cost_consultant",
   userName: string
 ): EmailTemplate {
-  const orgTypeDisplay = organizationType === "agency" ? "Agency" : "Supplier"
+  const orgTypeDisplay =
+    organizationType === "agency"
+      ? "Agency"
+      : organizationType === "supplier"
+        ? "Supplier"
+        : "Cost Consultant"
   const organizationUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/organization`
   
   const subject = `Welcome to Quote Portal - Your ${orgTypeDisplay} is ready!`
@@ -171,7 +181,7 @@ export function generateWelcomeEmail(
           
           <div class="highlight">
             <h3>What's Next?</h3>
-            <p>You're now ready to start using Quote Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : "receive RFQ invitations and grow your business"}.</p>
+            <p>You're now ready to start using Quote Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : organizationType === "supplier" ? "receive RFQ invitations and grow your business" : "manage briefs, evaluate agency submissions, and publish client-ready cost estimates"}.</p>
           </div>
           
           <p>Here's what you can do now:</p>
@@ -181,11 +191,16 @@ export function generateWelcomeEmail(
               <li>Create your first RFQ</li>
               <li>Invite team members to collaborate</li>
               <li>Manage your agency profile</li>
-            ` : `
+            ` : organizationType === "supplier" ? `
               <li>Complete your service profile</li>
               <li>Upload your business documents</li>
               <li>Invite team members to help</li>
               <li>Start receiving RFQ invitations</li>
+            ` : `
+              <li>Create and publish briefs for agencies</li>
+              <li>Evaluate agency submissions with weighted scoring</li>
+              <li>Generate consolidated cost estimates</li>
+              <li>Invite your consulting team</li>
             `}
           </ul>
           
@@ -216,7 +231,7 @@ Hello ${userName}!
 Congratulations! Your ${orgTypeDisplay} ${organizationName} has been successfully created on Quote Portal.
 
 What's Next?
-You're now ready to start using Quote Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : "receive RFQ invitations and grow your business"}.
+You're now ready to start using Quote Portal to ${organizationType === "agency" ? "connect with suppliers and manage your event procurement process" : organizationType === "supplier" ? "receive RFQ invitations and grow your business" : "manage briefs, evaluate agency submissions, and publish client-ready cost estimates"}.
 
 Here's what you can do now:
 ${organizationType === "agency" ? `
@@ -224,11 +239,16 @@ ${organizationType === "agency" ? `
 - Create your first RFQ
 - Invite team members to collaborate
 - Manage your agency profile
-` : `
+` : organizationType === "supplier" ? `
 - Complete your service profile
 - Upload your business documents
 - Invite team members to help
 - Start receiving RFQ invitations
+` : `
+- Create and publish briefs for agencies
+- Evaluate agency submissions with weighted scoring
+- Generate consolidated cost estimates
+- Invite your consulting team
 `}
 
 Go to your organization: ${organizationUrl}

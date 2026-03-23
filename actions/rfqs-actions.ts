@@ -11,7 +11,11 @@ import {
   updateRfq,
   deleteRfq,
   getRfqInvitesByRfq,
-  getRfqInvitesBySupplier
+  getRfqInvitesBySupplier,
+  getPublishedRfqsForSupplier,
+  publishRfq,
+  moveRfqToEvaluation,
+  closeRfq,
 } from "@/db/queries/rfqs-queries"
 import { 
   createRfqInvite
@@ -32,6 +36,23 @@ export async function createRfqAction(data: {
   }
   venue?: string
   scope: string
+  eventType?: string
+  projectType?: "physical_event" | "digital_campaign" | "brand_activation" | "conference_expo" | "hybrid" | "other"
+  issuerType?: "agency" | "cost_consultant" | "client"
+  issuerOrgId?: string
+  recipientType?: "supplier" | "agency"
+  budgetMin?: number
+  budgetMax?: number
+  locationCity?: string
+  locationProvince?: string
+  locationCountry?: string
+  requiredServices?: string[]
+  submissionTemplate?: Record<string, unknown>
+  ndaRequired?: boolean
+  teaserSummary?: string
+  fullBriefUrl?: string
+  audienceCount?: number
+  audienceDescription?: string
   attachmentsUrl?: string[]
   deadlineAt: string
 }): Promise<ActionResult<SelectRfq>> {
@@ -60,6 +81,23 @@ export async function createRfqAction(data: {
       eventDates: data.eventDates,
       venue: data.venue,
       scope: data.scope,
+      eventType: data.eventType,
+      projectType: data.projectType || "physical_event",
+      issuerType: data.issuerType || "agency",
+      issuerOrgId: data.issuerOrgId,
+      recipientType: data.recipientType || "supplier",
+      budgetMin: data.budgetMin ? String(data.budgetMin) : undefined,
+      budgetMax: data.budgetMax ? String(data.budgetMax) : undefined,
+      locationCity: data.locationCity,
+      locationProvince: data.locationProvince,
+      locationCountry: data.locationCountry,
+      requiredServices: data.requiredServices,
+      submissionTemplate: data.submissionTemplate,
+      ndaRequired: data.ndaRequired ?? false,
+      teaserSummary: data.teaserSummary,
+      fullBriefUrl: data.fullBriefUrl,
+      audienceCount: data.audienceCount,
+      audienceDescription: data.audienceDescription,
       attachmentsUrl: data.attachmentsUrl,
       deadlineAt: new Date(data.deadlineAt),
       status: "draft"
@@ -195,6 +233,7 @@ export async function updateRfqAction(
     attachmentsUrl: string[]
     deadlineAt: string
     status: "draft" | "sent" | "closed" | "awarded" | "not_awarded"
+      | "published" | "evaluation" | "cancelled"
   }>
 ): Promise<ActionResult<SelectRfq>> {
   try {
@@ -462,5 +501,82 @@ export async function updateRfqAttachmentsAction(
   } catch (error) {
     console.error("Error updating RFQ attachments:", error)
     return { isSuccess: false, message: "Failed to update RFQ attachments" }
+  }
+}
+
+export async function publishRfqAction(rfqId: string): Promise<ActionResult<SelectRfq>> {
+  try {
+    const { userId } = await auth();
+    if (!userId) return { isSuccess: false, message: "User not authenticated" };
+
+    const existing = await getRfqById(rfqId);
+    if (!existing) return { isSuccess: false, message: "RFQ not found" };
+
+    const profile = await getProfileById(userId);
+    if (!profile || profile.agencyId !== existing.agencyId) {
+      return { isSuccess: false, message: "You don't have permission to publish this RFQ" };
+    }
+
+    const row = await publishRfq(rfqId);
+    revalidatePath(`/rfqs/${rfqId}`);
+    revalidatePath(`/rfqs/marketplace`);
+    return { isSuccess: true, message: "RFQ published", data: row };
+  } catch (error) {
+    return { isSuccess: false, message: "Failed to publish RFQ" };
+  }
+}
+
+export async function startEvaluationAction(rfqId: string): Promise<ActionResult<SelectRfq>> {
+  try {
+    const { userId } = await auth();
+    if (!userId) return { isSuccess: false, message: "User not authenticated" };
+
+    const existing = await getRfqById(rfqId);
+    if (!existing) return { isSuccess: false, message: "RFQ not found" };
+
+    const profile = await getProfileById(userId);
+    if (!profile || profile.agencyId !== existing.agencyId) {
+      return { isSuccess: false, message: "You don't have permission to update this RFQ" };
+    }
+
+    const row = await moveRfqToEvaluation(rfqId);
+    revalidatePath(`/rfqs/${rfqId}`);
+    return { isSuccess: true, message: "RFQ moved to evaluation", data: row };
+  } catch (error) {
+    return { isSuccess: false, message: "Failed to start evaluation" };
+  }
+}
+
+export async function closeRfqAction(rfqId: string): Promise<ActionResult<SelectRfq>> {
+  try {
+    const { userId } = await auth();
+    if (!userId) return { isSuccess: false, message: "User not authenticated" };
+
+    const existing = await getRfqById(rfqId);
+    if (!existing) return { isSuccess: false, message: "RFQ not found" };
+
+    const profile = await getProfileById(userId);
+    if (!profile || profile.agencyId !== existing.agencyId) {
+      return { isSuccess: false, message: "You don't have permission to close this RFQ" };
+    }
+
+    const row = await closeRfq(rfqId);
+    revalidatePath(`/rfqs/${rfqId}`);
+    revalidatePath(`/rfqs`);
+    return { isSuccess: true, message: "RFQ closed", data: row };
+  } catch (error) {
+    return { isSuccess: false, message: "Failed to close RFQ" };
+  }
+}
+
+export async function getPublishedRfqsForSupplierAction(filters?: {
+  query?: string;
+  projectType?: string;
+}): Promise<ActionResult<SelectRfq[]>> {
+  try {
+    const rows = await getPublishedRfqsForSupplier(filters);
+    return { isSuccess: true, message: "Published RFQs fetched", data: rows };
+  } catch (error) {
+    return { isSuccess: false, message: "Failed to fetch marketplace RFQs", data: [] };
   }
 }

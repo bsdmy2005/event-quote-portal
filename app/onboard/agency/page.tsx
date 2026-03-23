@@ -15,7 +15,7 @@ import { createAgencyOnboardingAction } from "@/actions/onboarding-actions"
 import { createImageAction } from "@/actions/image-galleries-actions"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { uploadImage } from "@/lib/r2-storage"
-import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 export default function AgencyOnboardPage() {
   const router = useRouter()
@@ -72,7 +72,7 @@ export default function AgencyOnboardPage() {
         isPublished: formData.isPublished
       })
 
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Agency created successfully!", errorMessage: "Failed to create agency" })) {
         // Upload images if any were selected
         if (selectedImages.length > 0) {
           try {
@@ -104,17 +104,17 @@ export default function AgencyOnboardPage() {
           } catch (imageError) {
             console.error("Error uploading images:", imageError);
             // Don't fail the entire operation if image upload fails
-            toast.error("Agency created successfully, but some images failed to upload. You can add them later.");
+            notifyActionResult({
+              isSuccess: false,
+              message: "Agency created successfully, but some images failed to upload. You can add them later.",
+            });
           }
         }
         
-        toast.success("Agency created successfully!")
         router.push("/onboard/invite?type=agency&orgId=" + result.data.id)
-      } else {
-        toast.error(result.message)
       }
-    } catch (error) {
-      toast.error("Failed to create agency. Please try again.")
+    } catch {
+      notifyUnexpectedError("create agency")
     } finally {
       setIsLoading(false)
     }
@@ -137,8 +137,8 @@ export default function AgencyOnboardPage() {
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Building2 className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Your Agency</h1>
-            <p className="text-gray-600">Tell us about your agency to get started</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Your Agency</h1>
+            <p className="text-slate-600">Tell us about your agency to get started</p>
           </div>
         </div>
 
@@ -263,7 +263,7 @@ export default function AgencyOnboardPage() {
               {/* Interest Categories */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Event Categories</h3>
-                <p className="text-sm text-gray-600">Select the types of events you typically organize</p>
+                <p className="text-sm text-slate-600">Select the types of events you typically organize</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {categories.map((category) => (
                     <Button
@@ -297,7 +297,7 @@ export default function AgencyOnboardPage() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="isPublished">Make Agency Public</Label>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-slate-600">
                       Allow your agency to be visible on the public agencies page
                     </p>
                   </div>
@@ -312,7 +312,7 @@ export default function AgencyOnboardPage() {
               {/* Image Upload */}
               <div className="space-y-4">
                 <Label>Portfolio Images</Label>
-                <p className="text-sm text-gray-600">Upload images showcasing your work and events (optional)</p>
+                <p className="text-sm text-slate-600">Upload images showcasing your work and events (optional)</p>
                 <ImageUpload
                   selectedFiles={selectedImages}
                   onFilesChange={setSelectedImages}

@@ -5,7 +5,7 @@ import { rfqsTable } from "./rfqs-schema";
 import { rfqInvitesTable } from "./invites-schema";
 import { quotationsTable } from "./quotations-schema";
 
-export const orgTypeEnum = pgEnum("org_type", ["agency", "supplier"]);
+export const orgTypeEnum = pgEnum("org_type", ["agency", "supplier", "cost_consultant"]);
 export const orgStatusEnum = pgEnum("org_status", ["active", "inactive", "pending"]);
 
 export const agenciesTable = pgTable("agencies", {
@@ -51,6 +51,27 @@ export const suppliersTable = pgTable("suppliers", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const costConsultantsTable = pgTable("cost_consultants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  contactName: text("contact_name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone"),
+  logoUrl: text("logo_url"),
+  website: text("website"),
+  location: json("location").$type<{
+    city: string;
+    province: string;
+    country: string;
+  }>(),
+  serviceCategories: json("service_categories").$type<string[]>(),
+  about: text("about"),
+  isPublished: boolean("is_published").default(false).notNull(),
+  status: orgStatusEnum("status").default("active").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Relations
 export const agenciesRelations = relations(agenciesTable, ({ many }) => ({
   users: many(profilesTable),
@@ -63,7 +84,13 @@ export const suppliersRelations = relations(suppliersTable, ({ many }) => ({
   quotations: many(quotationsTable),
 }));
 
+export const costConsultantsRelations = relations(costConsultantsTable, ({ many }) => ({
+  users: many(profilesTable),
+}));
+
 export type InsertAgency = typeof agenciesTable.$inferInsert;
 export type SelectAgency = typeof agenciesTable.$inferSelect;
 export type InsertSupplier = typeof suppliersTable.$inferInsert;
 export type SelectSupplier = typeof suppliersTable.$inferSelect;
+export type InsertCostConsultant = typeof costConsultantsTable.$inferInsert;
+export type SelectCostConsultant = typeof costConsultantsTable.$inferSelect;

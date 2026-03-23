@@ -17,6 +17,7 @@ import { SelectCategory } from "@/components/ui/select-category";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { uploadImage } from "@/lib/r2-storage";
 import type { NewImage } from "@/db/schema";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const createAgencySchema = z.object({
   name: z.string().min(1, "Agency name is required"),
@@ -82,7 +83,7 @@ export function CreateAgencyForm({ categories }: CreateAgencyFormProps) {
 
       const result = await createAgencyAction(formData);
       
-      if (result.isSuccess && result.data) {
+      if (notifyActionResult(result, { successMessage: "Agency created successfully", errorMessage: "Failed to create agency" }) && result.data) {
         // Upload images if any were selected
         if (selectedImages.length > 0) {
           try {
@@ -122,7 +123,8 @@ export function CreateAgencyForm({ categories }: CreateAgencyFormProps) {
       } else {
         setError(result.message || "Failed to create agency");
       }
-    } catch (error) {
+    } catch {
+      notifyUnexpectedError("create agency");
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);

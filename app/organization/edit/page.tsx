@@ -14,14 +14,14 @@ import { getUserOrganizationAction, updateAgencyAction, updateSupplierAction } f
 import { publishSupplierAction, unpublishSupplierAction } from "@/actions/organizations-actions"
 import { OrganizationSidebar } from "@/components/ui/organization-sidebar"
 import ImageManager from "@/components/ui/image-manager"
-import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 export default function EditOrganizationPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [organization, setOrganization] = useState<any>(null)
-  const [orgType, setOrgType] = useState<"agency" | "supplier" | null>(null)
+  const [orgType, setOrgType] = useState<"agency" | "supplier" | "cost_consultant" | null>(null)
   const [isPublished, setIsPublished] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -38,7 +38,7 @@ export default function EditOrganizationPage() {
     servicesText: ""
   })
 
-  const categories = {
+  const categories: Record<string, string[]> = {
     agency: [
       "Corporate Events", "Weddings", "Conferences", "Trade Shows", "Product Launches",
       "Awards Ceremonies", "Team Building", "Gala Dinners", "Exhibitions", "Festivals",
@@ -49,6 +49,12 @@ export default function EditOrganizationPage() {
       "Videography", "Lighting", "Sound", "Staging", "Transportation", "Security",
       "Event Management", "Venue", "Equipment Rental", "Floral Design", "Printing",
       "Signage", "Tents & Structures", "Power & Electrical", "Other"
+    ],
+    cost_consultant: [
+      "Event Management", "Production & Staging", "Audio Visual", "Catering & Hospitality",
+      "Venue Sourcing", "Decor & Styling", "Entertainment", "Transportation & Logistics",
+      "Accommodation", "Marketing & Branding", "Digital & Virtual Events", "Security",
+      "Health & Safety", "Project Management", "Budget Advisory", "Other"
     ]
   }
 
@@ -81,7 +87,7 @@ export default function EditOrganizationPage() {
         }
       } catch (error) {
         console.error("Error loading organization:", error)
-        toast.error("Failed to load organization data")
+        notifyUnexpectedError("load organization data")
       } finally {
         setIsLoadingData(false)
       }
@@ -119,16 +125,16 @@ export default function EditOrganizationPage() {
         result = await unpublishSupplierAction(organization.id)
       }
 
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { 
+        successMessage: published ? "Supplier published successfully!" : "Supplier unpublished successfully!",
+        errorMessage: "Failed to update publication status",
+      })) {
         setIsPublished(published)
-        toast.success(published ? "Supplier published successfully!" : "Supplier unpublished successfully!")
         // Update the organization state
         setOrganization((prev: any) => ({ ...prev, isPublished: published }))
-      } else {
-        toast.error(result.message)
       }
-    } catch (error) {
-      toast.error("Failed to update publication status")
+    } catch {
+      notifyUnexpectedError("update publication status")
     }
   }
 
@@ -170,14 +176,11 @@ export default function EditOrganizationPage() {
         })
       }
 
-      if (result.isSuccess) {
-        toast.success("Organization updated successfully!")
+      if (notifyActionResult(result, { successMessage: "Organization updated successfully!" })) {
         router.push("/organization")
-      } else {
-        toast.error(result.message)
       }
-    } catch (error) {
-      toast.error("Failed to update organization. Please try again.")
+    } catch {
+      notifyUnexpectedError("update organization")
     } finally {
       setIsLoading(false)
     }
@@ -210,7 +213,7 @@ export default function EditOrganizationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-100 flex">
       {/* Sidebar */}
       <OrganizationSidebar 
         orgType={orgType}
@@ -221,11 +224,11 @@ export default function EditOrganizationPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-100 px-8 py-6 shadow-sm">
+        <header className="bg-white border-b border-slate-200 px-8 py-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Edit Organization</h2>
-              <p className="text-gray-600 text-lg">Update your {orgType === "agency" ? "agency" : "supplier"} profile and settings</p>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Edit Organization</h2>
+              <p className="text-slate-600 text-lg">Update your {orgType === "agency" ? "agency" : "supplier"} profile and settings</p>
             </div>
             <div className="flex items-center gap-3">
               {orgType === "agency" ? (
@@ -241,7 +244,7 @@ export default function EditOrganizationPage() {
         <main className="flex-1 p-8">
           <div className="space-y-8">
             {/* Organization Information */}
-            <Card className="border-0 shadow-sm bg-white rounded-xl">
+            <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
               <CardHeader>
                 <CardTitle>Organization Information</CardTitle>
                 <CardDescription>
@@ -356,18 +359,19 @@ export default function EditOrganizationPage() {
                     </div>
                   </div>
 
-                  {/* Categories */}
+                  {/* Categories (not applicable for cost consultants) */}
+                  {orgType !== "cost_consultant" && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">
                       {orgType === "agency" ? "Interest Categories" : "Service Categories"}
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {categories[orgType].map((category) => (
+                      {(categories[orgType] || []).map((category) => (
                         <Button
                           key={category}
                           type="button"
                           variant={
-                            (orgType === "agency" 
+                            (orgType === "agency"
                               ? formData.interestCategories.includes(category)
                               : formData.serviceCategories.includes(category)
                             ) ? "default" : "outline"
@@ -381,6 +385,7 @@ export default function EditOrganizationPage() {
                       ))}
                     </div>
                   </div>
+                  )}
 
                   {/* Description */}
                   <div className="space-y-4">
@@ -406,10 +411,10 @@ export default function EditOrganizationPage() {
                   {/* Publication Status (for suppliers only) */}
                   {orgType === "supplier" && (
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+                      <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-100">
                         <div>
                           <Label className="text-base font-medium">Public Visibility</Label>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-slate-600 mt-1">
                             {isPublished 
                               ? "Your supplier profile is visible to agencies on the public directory"
                               : "Your supplier profile is hidden from the public directory"
@@ -440,7 +445,7 @@ export default function EditOrganizationPage() {
             </Card>
 
             {/* Portfolio Images */}
-            <Card className="border-0 shadow-sm bg-white rounded-xl">
+            <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ImageIcon className="h-5 w-5" />

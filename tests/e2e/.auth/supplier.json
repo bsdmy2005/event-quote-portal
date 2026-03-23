@@ -1,0 +1,65 @@
+{
+  "cookies": [
+    {
+      "name": "_cfuvid",
+      "value": "jdsUp1Zcu0cgA1CBPkG_1YGaAY6J0e.ESEtq.8pbSkM-1772975510896-0.0.1.1-604800000",
+      "domain": ".ultimate-troll-66.clerk.accounts.dev",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "ysdDYUeaXC1B7ZGesJcve.xyIu4OvOWR2mACBeBBXe8-1772975510-1.0.1.1-2hXReK3ag7whMOn498FFkB5ystjBZcAVFSK_ItduFojdLo6tCKr6BEJ0snfYuU4EFDf6Dr3JUzQpks7FjCh1TRbf4Q94jF2j8GWj2Dzlt_k",
+      "domain": ".ultimate-troll-66.clerk.accounts.dev",
+      "path": "/",
+      "expires": 1772977310.935554,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__clerk_db_jwt",
+      "value": "dvb_3AfF2RMsP8bJ9oULlJHp7T2Koir",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1804511537,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__session",
+      "value": "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zMUJsdGhXVHkyZkJVZHFWa3BDU1k2VTR5WHIiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJleHAiOjE3NzI5NzU1OTcsImZ2YSI6WzAsLTFdLCJpYXQiOjE3NzI5NzU1MzcsImlzcyI6Imh0dHBzOi8vdWx0aW1hdGUtdHJvbGwtNjYuY2xlcmsuYWNjb3VudHMuZGV2IiwibmJmIjoxNzcyOTc1NTI3LCJzaWQiOiJzZXNzXzNBZkY1cEJBUEpSR2dublhaaENsbTlLT1JvayIsInN0cyI6ImFjdGl2ZSIsInN1YiI6InVzZXJfMzlFZ0kySkRqSm9wNDVyTVZMSEV0OURmM2tuIn0.c9Z0pztuFnTsvcKIbG3aiyBTxK40Svaix9NvzgNUBG07bhvdm42VAzF2J8CgSl7UJf5dpRCh_PswpZYpN461_HFwfCSFrmAjytSHoYU-R3WDL6h5L4stiIrMK00CTBvKiBT2enNQRFaEh8SV3rtF5iM1CLMmwAoUJpQKviF_5-Icyb078_LYJaz0MKQTy2OAnJ2avBAInC1c9oWMy0JtgecZCwWr-SXKYrM5JSDzY3DIG6SLV4uEtih3zib-oN90QdV8z0ctoVJUmlr75SOv4Q5Igw-Xa2z2mWCISMSG0UU4GBtZSCkWc5AYxNdoVJVibTBtEW6QI-Ia5RZDHEs-6Q",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1804511541,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__client_uat",
+      "value": "1772975537",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1804511537,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "clerk-db-jwt",
+          "value": "dvb_3AfF2RMsP8bJ9oULlJHp7T2Koir"
+        }
+      ]
+    }
+  ]
+}

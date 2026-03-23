@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { joinWaitlistAction } from "@/actions/waitlist-actions";
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 const INTEREST_OPTIONS = [
   { id: "rfqs", label: "Multi-Supplier RFQs" },
@@ -96,12 +97,13 @@ export default function WaitlistPage() {
         interests: selectedInterests.length > 0 ? selectedInterests : undefined,
       });
 
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Joined waitlist successfully" })) {
         setIsSuccess(true);
       } else {
         setError(result.message);
       }
     } catch {
+      notifyUnexpectedError("join waitlist");
       setError("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -116,10 +118,10 @@ export default function WaitlistPage() {
             <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8">
               <CheckCircle className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl font-bold text-slate-900 mb-4">
               You&apos;re on the List!
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-slate-600 mb-8">
               Thanks for joining our waitlist. We&apos;ll be in touch soon with
               exclusive early access to the platform.
             </p>
@@ -148,14 +150,14 @@ export default function WaitlistPage() {
               Join the Beta Waitlist
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
               Be First to Experience
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block">
                 The Future of Event Procurement
               </span>
             </h1>
 
-            <p className="text-xl text-gray-600 leading-relaxed">
+            <p className="text-xl text-slate-600 leading-relaxed">
               Join South Africa&apos;s only fully integrated platform connecting cost
               consultants, agencies, suppliers, and financiers.
             </p>
@@ -164,7 +166,7 @@ export default function WaitlistPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
             {/* Benefits Section */}
             <div className="space-y-8">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-slate-900">
                 Why Join Early?
               </h2>
 
@@ -175,10 +177,10 @@ export default function WaitlistPage() {
                       <benefit.icon className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-slate-900">
                         {benefit.title}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-slate-600">
                         {benefit.description}
                       </p>
                     </div>
@@ -188,23 +190,23 @@ export default function WaitlistPage() {
 
               {/* Who It's For */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-                <h3 className="font-semibold text-gray-900 mb-4">
+                <h3 className="font-semibold text-slate-900 mb-4">
                   Perfect For:
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-gray-700">
+                  <div className="flex items-center gap-2 text-slate-700">
                     <Building2 className="h-5 w-5 text-blue-500" />
                     <span>Event Agencies</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-700">
+                  <div className="flex items-center gap-2 text-slate-700">
                     <Wrench className="h-5 w-5 text-green-500" />
                     <span>Suppliers</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-700">
+                  <div className="flex items-center gap-2 text-slate-700">
                     <Briefcase className="h-5 w-5 text-purple-500" />
                     <span>Cost Consultants</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-700">
+                  <div className="flex items-center gap-2 text-slate-700">
                     <Landmark className="h-5 w-5 text-emerald-500" />
                     <span>Financiers</span>
                   </div>
@@ -213,11 +215,11 @@ export default function WaitlistPage() {
             </div>
 
             {/* Signup Form */}
-            <Card className="border-0 shadow-2xl">
+            <Card className="border border-slate-200 shadow-2xl">
               <CardContent className="p-8">
                 <div className="flex items-center gap-2 mb-6">
                   <Sparkles className="h-5 w-5 text-amber-500" />
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-slate-900">
                     Reserve Your Spot
                   </h2>
                 </div>
@@ -230,7 +232,7 @@ export default function WaitlistPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       Full Name *
                     </label>
                     <Input
@@ -244,7 +246,7 @@ export default function WaitlistPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       Email Address *
                     </label>
                     <Input
@@ -259,7 +261,7 @@ export default function WaitlistPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       Company Name
                     </label>
                     <Input
@@ -272,7 +274,7 @@ export default function WaitlistPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       I am a... *
                     </label>
                     <Select
@@ -297,7 +299,7 @@ export default function WaitlistPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <label className="block text-sm font-medium text-slate-700 mb-3">
                       I&apos;m interested in... (select all that apply)
                     </label>
                     <div className="space-y-3">
@@ -318,7 +320,7 @@ export default function WaitlistPage() {
                           />
                           <label
                             htmlFor={interest.id}
-                            className="text-sm text-gray-700 cursor-pointer"
+                            className="text-sm text-slate-700 cursor-pointer"
                           >
                             {interest.label}
                           </label>
@@ -356,7 +358,7 @@ export default function WaitlistPage() {
                     )}
                   </Button>
 
-                  <p className="text-xs text-center text-gray-500">
+                  <p className="text-xs text-center text-slate-600">
                     No spam, ever. We&apos;ll only contact you about early access
                     and important updates.
                   </p>

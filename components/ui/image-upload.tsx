@@ -71,7 +71,7 @@ export function ImageUpload({
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="image-upload" className="text-sm font-medium text-gray-700">
+        <Label htmlFor="image-upload" className="text-sm font-medium text-slate-700">
           Upload Images (Optional)
         </Label>
         <Input
@@ -83,7 +83,7 @@ export function ImageUpload({
           disabled={disabled}
           className="mt-1"
         />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-slate-600 mt-1">
           Supported formats: JPEG, PNG, WebP. Max size: 10MB per file. Max {maxFiles} files.
         </p>
       </div>
@@ -97,8 +97,8 @@ export function ImageUpload({
       {selectedFiles.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">
+            <ImageIcon className="h-4 w-4 text-slate-600" />
+            <span className="text-sm font-medium text-slate-700">
               Selected Images ({selectedFiles.length}/{maxFiles})
             </span>
           </div>

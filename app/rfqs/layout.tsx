@@ -3,7 +3,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { getProfileById } from "@/db/queries/profiles-queries"
-import { getAgencyById, getSupplierById } from "@/db/queries/organizations-queries"
+import { getAgencyById, getSupplierById, getCostConsultantById } from "@/db/queries/organizations-queries"
 import { OrganizationSidebar } from "@/components/ui/organization-sidebar"
 
 export default async function RfqsLayout({
@@ -24,7 +24,7 @@ export default async function RfqsLayout({
   }
 
   // Determine organization type and get organization details
-  let orgType: "agency" | "supplier" | null = null
+  let orgType: "agency" | "supplier" | "cost_consultant" | null = null
   let organizationName = ""
   let activeSection: 'overview' | 'edit' | 'team' | 'rfps' | 'quotations' | 'received-rfps' = 'rfps'
 
@@ -37,12 +37,16 @@ export default async function RfqsLayout({
     const supplier = await getSupplierById(userProfile.supplierId)
     organizationName = supplier?.name || "Supplier"
     activeSection = 'received-rfps'
+  } else if (userProfile.costConsultantId) {
+    orgType = "cost_consultant"
+    const consultant = await getCostConsultantById(userProfile.costConsultantId)
+    organizationName = consultant?.name || "Cost Consultant"
   } else {
     redirect("/onboard")
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-100 flex">
       {/* Sidebar */}
       <OrganizationSidebar 
         orgType={orgType}

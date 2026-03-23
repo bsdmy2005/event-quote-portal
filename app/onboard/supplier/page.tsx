@@ -16,6 +16,7 @@ import { createImageAction } from "@/actions/image-galleries-actions"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { uploadImage } from "@/lib/r2-storage"
 import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 export default function SupplierOnboardPage() {
   const router = useRouter()
@@ -108,7 +109,7 @@ export default function SupplierOnboardPage() {
 
       console.log("Supplier creation result:", result)
 
-      if (result.isSuccess) {
+      if (notifyActionResult(result, { successMessage: "Supplier created successfully!", errorMessage: "Failed to create supplier" })) {
         // Upload images if any were selected
         if (selectedImages.length > 0) {
           try {
@@ -140,19 +141,18 @@ export default function SupplierOnboardPage() {
           } catch (imageError) {
             console.error("Error uploading images:", imageError);
             // Don't fail the entire operation if image upload fails
-            toast.error("Supplier created successfully, but some images failed to upload. You can add them later.");
+            notifyActionResult({
+              isSuccess: false,
+              message: "Supplier created successfully, but some images failed to upload. You can add them later.",
+            });
           }
         }
-        
-        toast.success("Supplier created successfully!")
+
         router.push("/onboard/invite?type=supplier&orgId=" + result.data.id)
-      } else {
-        console.error("Supplier creation failed:", result.message)
-        toast.error(result.message || "Failed to create supplier")
       }
     } catch (error) {
       console.error("Unexpected error creating supplier:", error)
-      toast.error("Failed to create supplier. Please try again.")
+      notifyUnexpectedError("create supplier")
     } finally {
       setIsLoading(false)
     }
@@ -175,8 +175,8 @@ export default function SupplierOnboardPage() {
             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Wrench className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Your Supplier Profile</h1>
-            <p className="text-gray-600">Tell us about your services to start receiving RFQs</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Your Supplier Profile</h1>
+            <p className="text-slate-600">Tell us about your services to start receiving RFQs</p>
           </div>
         </div>
 
@@ -334,7 +334,7 @@ export default function SupplierOnboardPage() {
               {/* Service Categories */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Service Categories *</h3>
-                <p className="text-sm text-gray-600">Select the services you provide (at least one required)</p>
+                <p className="text-sm text-slate-600">Select the services you provide (at least one required)</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {categories.map((category) => (
                     <Button
@@ -376,7 +376,7 @@ export default function SupplierOnboardPage() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="isPublished">Make Supplier Public</Label>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-slate-600">
                       Allow your supplier profile to be visible on the public suppliers page
                     </p>
                   </div>
@@ -391,7 +391,7 @@ export default function SupplierOnboardPage() {
               {/* Image Upload */}
               <div className="space-y-4">
                 <Label>Portfolio Images</Label>
-                <p className="text-sm text-gray-600">Upload images showcasing your work and services (optional)</p>
+                <p className="text-sm text-slate-600">Upload images showcasing your work and services (optional)</p>
                 <ImageUpload
                   selectedFiles={selectedImages}
                   onFilesChange={setSelectedImages}

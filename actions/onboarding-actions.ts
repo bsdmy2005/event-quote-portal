@@ -7,10 +7,13 @@ import { randomBytes } from "crypto"
 import { 
   createAgency, 
   createSupplier, 
+  createCostConsultant,
   updateAgency, 
   updateSupplier,
+  updateCostConsultant,
   getAgencyById,
-  getSupplierById
+  getSupplierById,
+  getCostConsultantById
 } from "@/db/queries/organizations-queries"
 import { 
   getProfileById, 
@@ -59,7 +62,7 @@ export async function createAgencyOnboardingAction(data: {
       existingProfile = null
     }
 
-    if (existingProfile?.agencyId || existingProfile?.supplierId) {
+    if (existingProfile?.agencyId || existingProfile?.supplierId || existingProfile?.costConsultantId) {
       return { isSuccess: false, message: "User already belongs to an organization" }
     }
 
@@ -81,7 +84,8 @@ export async function createAgencyOnboardingAction(data: {
         email: userEmail,
         role: "agency_member",
         agencyId: null,
-        supplierId: null
+        supplierId: null,
+        costConsultantId: null
       })
     }
 
@@ -103,7 +107,8 @@ export async function createAgencyOnboardingAction(data: {
     await updateProfile(userId, {
       role: "agency_admin",
       agencyId: newAgency.id,
-      supplierId: null
+      supplierId: null,
+      costConsultantId: null
     })
 
     revalidatePath("/organization")
@@ -153,7 +158,7 @@ export async function createSupplierOnboardingAction(data: {
       existingProfile = null
     }
 
-    if (existingProfile?.agencyId || existingProfile?.supplierId) {
+    if (existingProfile?.agencyId || existingProfile?.supplierId || existingProfile?.costConsultantId) {
       return { isSuccess: false, message: "User already belongs to an organization" }
     }
 
@@ -175,7 +180,8 @@ export async function createSupplierOnboardingAction(data: {
         email: userEmail,
         role: "supplier_member",
         agencyId: null,
-        supplierId: null
+        supplierId: null,
+        costConsultantId: null
       })
     }
 
@@ -196,7 +202,8 @@ export async function createSupplierOnboardingAction(data: {
     await updateProfile(userId, {
       role: "supplier_admin",
       agencyId: null,
-      supplierId: newSupplier.id
+      supplierId: newSupplier.id,
+      costConsultantId: null
     })
 
     revalidatePath("/organization")
@@ -216,9 +223,97 @@ export async function createSupplierOnboardingAction(data: {
   }
 }
 
+// Cost Consultant Onboarding
+export async function createCostConsultantOnboardingAction(data: {
+  name: string
+  contactName: string
+  email: string
+  phone?: string
+  website?: string
+  location: {
+    city: string
+    province: string
+    country: string
+  }
+  serviceCategories: string[]
+  about?: string
+  isPublished?: boolean
+}): Promise<ActionResult<any>> {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return { isSuccess: false, message: "User not authenticated" }
+    }
+
+    let existingProfile
+    try {
+      existingProfile = await getProfileById(userId)
+    } catch {
+      existingProfile = null
+    }
+
+    if (existingProfile?.agencyId || existingProfile?.supplierId || existingProfile?.costConsultantId) {
+      return { isSuccess: false, message: "User already belongs to an organization" }
+    }
+
+    if (!existingProfile) {
+      const { createProfile } = await import("@/db/queries/profiles-queries")
+      const { auth: getAuth } = await import("@clerk/nextjs/server")
+      const { user } = await getAuth()
+      if (!user) {
+        return { isSuccess: false, message: "User information not available" }
+      }
+
+      const userEmail = user.emailAddresses[0]?.emailAddress || ""
+      existingProfile = await createProfile({
+        userId,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: userEmail,
+        role: "cost_consultant_member",
+        agencyId: null,
+        supplierId: null,
+        costConsultantId: null,
+      })
+    }
+
+    const newConsultant = await createCostConsultant({
+      name: data.name,
+      contactName: data.contactName,
+      email: data.email,
+      phone: data.phone,
+      website: data.website,
+      location: data.location,
+      serviceCategories: data.serviceCategories,
+      about: data.about,
+      isPublished: data.isPublished ?? true,
+      status: "active",
+    })
+
+    await updateProfile(userId, {
+      role: "cost_consultant_admin",
+      agencyId: null,
+      supplierId: null,
+      costConsultantId: newConsultant.id,
+    })
+
+    revalidatePath("/organization")
+
+    return {
+      isSuccess: true,
+      message: "Cost consultant created successfully",
+      data: newConsultant,
+    }
+  } catch (error) {
+    console.error("Error creating cost consultant in onboarding action:", error)
+    const errorMessage = error instanceof Error ? error.message : "Failed to create cost consultant"
+    return { isSuccess: false, message: errorMessage }
+  }
+}
+
 // Team Invitation
 export async function sendTeamInviteAction(data: {
-  orgType: "agency" | "supplier"
+  orgType: "agency" | "supplier" | "cost_consultant"
   orgId: string
   email: string
   role: string
@@ -238,7 +333,8 @@ export async function sendTeamInviteAction(data: {
 
     // Check if user is admin of the organization
     const isOrgAdmin = (data.orgType === "agency" && userProfile.agencyId === data.orgId && userProfile.role === "agency_admin") ||
-                      (data.orgType === "supplier" && userProfile.supplierId === data.orgId && userProfile.role === "supplier_admin")
+                      (data.orgType === "supplier" && userProfile.supplierId === data.orgId && userProfile.role === "supplier_admin") ||
+                      (data.orgType === "cost_consultant" && userProfile.costConsultantId === data.orgId && userProfile.role === "cost_consultant_admin")
 
     if (!isOrgAdmin) {
       return { isSuccess: false, message: "You don't have permission to invite users to this organization" }
@@ -269,7 +365,9 @@ export async function sendTeamInviteAction(data: {
     // Get organization details
     const organization = data.orgType === "agency" 
       ? await getAgencyById(data.orgId)
-      : await getSupplierById(data.orgId)
+      : data.orgType === "supplier"
+        ? await getSupplierById(data.orgId)
+        : await getCostConsultantById(data.orgId)
 
     if (!organization) {
       return { isSuccess: false, message: "Organization not found" }
@@ -333,14 +431,16 @@ export async function acceptTeamInviteAction(token: string): Promise<ActionResul
     }
 
     // Check if user already belongs to an organization
-    if (userProfile.agencyId || userProfile.supplierId) {
+    if (userProfile.agencyId || userProfile.supplierId || userProfile.costConsultantId) {
       return { isSuccess: false, message: "User already belongs to an organization" }
     }
 
     // Update user profile
-    const updateData = invite.orgType === "agency" 
-      ? { role: invite.role as any, agencyId: invite.orgId, supplierId: null }
-      : { role: invite.role as any, agencyId: null, supplierId: invite.orgId }
+    const updateData = invite.orgType === "agency"
+      ? { role: invite.role as any, agencyId: invite.orgId, supplierId: null, costConsultantId: null }
+      : invite.orgType === "supplier"
+        ? { role: invite.role as any, agencyId: null, supplierId: invite.orgId, costConsultantId: null }
+        : { role: invite.role as any, agencyId: null, supplierId: null, costConsultantId: invite.orgId }
 
     await updateProfile(userId, updateData)
 
@@ -419,15 +519,17 @@ export async function autoAcceptInvitationAction(userId: string, userEmail: stri
     }
 
     // Check if user already belongs to an organization
-    if (userProfile.agencyId || userProfile.supplierId) {
+    if (userProfile.agencyId || userProfile.supplierId || userProfile.costConsultantId) {
       console.log("User already belongs to an organization");
       return { isSuccess: false, message: "User already belongs to an organization" }
     }
 
     // Update user profile with organization info
-    const updateData = invite.orgType === "agency" 
-      ? { role: invite.role as any, agencyId: invite.orgId, supplierId: null }
-      : { role: invite.role as any, agencyId: null, supplierId: invite.orgId }
+    const updateData = invite.orgType === "agency"
+      ? { role: invite.role as any, agencyId: invite.orgId, supplierId: null, costConsultantId: null }
+      : invite.orgType === "supplier"
+        ? { role: invite.role as any, agencyId: null, supplierId: invite.orgId, costConsultantId: null }
+        : { role: invite.role as any, agencyId: null, supplierId: null, costConsultantId: invite.orgId }
 
     console.log("Updating profile with:", JSON.stringify(updateData, null, 2));
     await updateProfile(userId, updateData)
@@ -452,7 +554,7 @@ export async function autoAcceptInvitationAction(userId: string, userEmail: stri
 }
 
 // Get team members for an organization
-export async function getTeamMembersAction(orgType: "agency" | "supplier", orgId: string): Promise<ActionResult<any[]>> {
+export async function getTeamMembersAction(orgType: "agency" | "supplier" | "cost_consultant", orgId: string): Promise<ActionResult<any[]>> {
   try {
     const { userId } = await auth()
     if (!userId) {
@@ -474,7 +576,7 @@ export async function getTeamMembersAction(orgType: "agency" | "supplier", orgId
 }
 
 // Get pending invitations for an organization
-export async function getPendingInvitationsAction(orgType: "agency" | "supplier", orgId: string): Promise<ActionResult<any[]>> {
+export async function getPendingInvitationsAction(orgType: "agency" | "supplier" | "cost_consultant", orgId: string): Promise<ActionResult<any[]>> {
   try {
     const { userId } = await auth()
     if (!userId) {
@@ -509,7 +611,7 @@ export async function getUserOrganizationAction(): Promise<ActionResult<any>> {
       return { isSuccess: false, message: "User profile not found" }
     }
 
-    const organization = userProfile.agency || userProfile.supplier
+    const organization = userProfile.agency || userProfile.supplier || userProfile.costConsultant
     
     if (!organization) {
       return { isSuccess: false, message: "User does not belong to any organization" }
@@ -521,7 +623,7 @@ export async function getUserOrganizationAction(): Promise<ActionResult<any>> {
       data: {
         organization,
         userRole: userProfile.role,
-        orgType: userProfile.agency ? "agency" : "supplier"
+        orgType: userProfile.agency ? "agency" : userProfile.supplier ? "supplier" : "cost_consultant"
       }
     }
   } catch (error) {
@@ -589,6 +691,32 @@ export async function updateSupplierAction(id: string, data: any): Promise<Actio
   }
 }
 
+export async function updateCostConsultantAction(id: string, data: any): Promise<ActionResult<any>> {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return { isSuccess: false, message: "User not authenticated" }
+    }
+
+    const userProfile = await getProfileById(userId)
+    if (!userProfile || userProfile.costConsultantId !== id || !userProfile.role.includes("admin")) {
+      return { isSuccess: false, message: "You don't have permission to update this cost consultant" }
+    }
+
+    const updated = await updateCostConsultant(id, data)
+    revalidatePath("/organization")
+
+    return {
+      isSuccess: true,
+      message: "Cost consultant updated successfully",
+      data: updated
+    }
+  } catch (error) {
+    console.error("Error updating cost consultant:", error)
+    return { isSuccess: false, message: "Failed to update cost consultant" }
+  }
+}
+
 // Admin access action (for development/testing purposes)
 export async function promoteToAdminAction(): Promise<ActionResult<void>> {
   try {
@@ -601,7 +729,8 @@ export async function promoteToAdminAction(): Promise<ActionResult<void>> {
     await updateProfile(userId, {
       role: "admin",
       agencyId: null,
-      supplierId: null
+      supplierId: null,
+      costConsultantId: null
     })
 
     revalidatePath("/admin")

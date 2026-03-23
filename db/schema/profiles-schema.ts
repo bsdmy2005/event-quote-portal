@@ -1,13 +1,15 @@
 import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { agenciesTable, suppliersTable } from "./organizations-schema";
+import { agenciesTable, suppliersTable, costConsultantsTable } from "./organizations-schema";
 
 export const userRoleEnum = pgEnum("user_role", [
   "admin", 
   "agency_admin", 
   "agency_member", 
   "supplier_admin", 
-  "supplier_member"
+  "supplier_member",
+  "cost_consultant_admin",
+  "cost_consultant_member"
 ]);
 
 export const profilesTable = pgTable("profiles", {
@@ -18,6 +20,7 @@ export const profilesTable = pgTable("profiles", {
   role: userRoleEnum("role").default("agency_member").notNull(),
   agencyId: uuid("agency_id"),
   supplierId: uuid("supplier_id"),
+  costConsultantId: uuid("cost_consultant_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -31,6 +34,10 @@ export const profilesRelations = relations(profilesTable, ({ one }) => ({
   supplier: one(suppliersTable, {
     fields: [profilesTable.supplierId],
     references: [suppliersTable.id],
+  }),
+  costConsultant: one(costConsultantsTable, {
+    fields: [profilesTable.costConsultantId],
+    references: [costConsultantsTable.id],
   }),
 }));
 

@@ -13,6 +13,7 @@ import { Building2, Calendar, Clock, FileText, Users, Mail, Send } from "lucide-
 import { format } from "date-fns"
 import { toast } from "sonner"
 import { SelectRfq } from "@/db/schema/rfqs-schema"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 interface SendRfqFormProps {
   rfq: SelectRfq
@@ -34,9 +35,12 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
       const result = await getAllSuppliersAction()
       if (result.isSuccess && result.data) {
         setSuppliers(result.data)
+      } else {
+        notifyActionResult(result, { errorMessage: "Failed to load suppliers" })
       }
     } catch (error) {
       console.error("Error loading suppliers:", error)
+      notifyUnexpectedError("load suppliers")
     }
   }
 
@@ -55,16 +59,18 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
     try {
       // Send RFQ to selected suppliers
       const result = await sendRfqAction(rfq.id, selectedSuppliers)
-      
-      if (result.isSuccess) {
-        toast.success(`RFQ sent to ${selectedSuppliers.length} supplier(s) successfully`)
+
+      if (
+        notifyActionResult(result, {
+          successMessage: `RFQ sent to ${selectedSuppliers.length} supplier(s) successfully`,
+          errorMessage: "Failed to send RFQ",
+        })
+      ) {
         router.push(`/rfqs/${rfq.id}`)
-      } else {
-        toast.error(result.message)
       }
     } catch (error) {
       console.error("Error sending RFQ:", error)
-      toast.error("Failed to send RFQ")
+      notifyUnexpectedError("send RFQ")
     } finally {
       setIsLoading(false)
     }
@@ -86,12 +92,12 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-medium text-gray-900">{rfq.title}</h3>
-                <p className="text-sm text-gray-600">Client: {rfq.clientName}</p>
+                <h3 className="font-medium text-slate-900">{rfq.title}</h3>
+                <p className="text-sm text-slate-600">Client: {rfq.clientName}</p>
               </div>
 
               {rfq.eventDates && (
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-slate-600">
                   <Calendar className="h-4 w-4" />
                   <span>
                     {new Date(rfq.eventDates.start).toLocaleDateString()} - {new Date(rfq.eventDates.end).toLocaleDateString()}
@@ -100,19 +106,19 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
               )}
 
               {rfq.venue && (
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-slate-600">
                   <Building2 className="h-4 w-4" />
                   <span>{rfq.venue}</span>
                 </div>
               )}
 
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Clock className="h-4 w-4" />
                 <span>Deadline: {format(new Date(rfq.deadlineAt), "PPP 'at' p")}</span>
               </div>
 
               {rfq.attachmentsUrl && rfq.attachmentsUrl.length > 0 && (
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-slate-600">
                   <FileText className="h-4 w-4" />
                   <span>{rfq.attachmentsUrl.length} attachment(s)</span>
                 </div>
@@ -121,8 +127,8 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
               <Separator />
 
               <div className="text-sm">
-                <p className="font-medium text-gray-900 mb-2">Project Scope:</p>
-                <p className="text-gray-600 line-clamp-4">{rfq.scope}</p>
+                <p className="font-medium text-slate-900 mb-2">Project Scope:</p>
+                <p className="text-slate-600 line-clamp-4">{rfq.scope}</p>
               </div>
             </CardContent>
           </Card>
@@ -139,10 +145,10 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
               <CardContent>
                 <div className="space-y-3">
                   {selectedSuppliersData.map((supplier) => (
-                    <div key={supplier.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={supplier.id} className="flex items-center justify-between p-3 bg-slate-100 rounded-lg">
                       <div>
                         <p className="font-medium text-sm">{supplier.name}</p>
-                        <p className="text-xs text-gray-500">{supplier.contactName}</p>
+                        <p className="text-xs text-slate-600">{supplier.contactName}</p>
                       </div>
                       <Badge variant="outline" className="text-xs">
                         {supplier.serviceCategories?.length || 0} services

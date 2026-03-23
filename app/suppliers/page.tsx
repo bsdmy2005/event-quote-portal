@@ -6,6 +6,7 @@ import { SuppliersGrid } from "./_components/suppliers-grid"
 import { SuppliersSkeleton } from "./_components/suppliers-skeleton"
 import { SuppliersHeader } from "./_components/suppliers-header"
 import { SelectSupplier } from "@/db/schema"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback";
 
 export default function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<SelectSupplier[]>([]);
@@ -26,11 +27,12 @@ export default function SuppliersPage() {
   const loadSuppliers = async () => {
     try {
       const result = await getSuppliersAction();
-      if (result.isSuccess && result.data) {
+      if (notifyActionResult(result, { errorMessage: "Failed to load suppliers", silentSuccess: true }) && result.data) {
         setSuppliers(result.data);
       }
     } catch (error) {
       console.error("Error loading suppliers:", error);
+      notifyUnexpectedError("load suppliers");
     } finally {
       setLoading(false);
     }

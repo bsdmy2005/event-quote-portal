@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, XCircle, Loader2, Users, Building2, Wrench } from "lucide-react"
 import { acceptTeamInviteAction } from "@/actions/onboarding-actions"
-import { toast } from "sonner"
+import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
 
 export default function AcceptInvitePage() {
   const router = useRouter()
@@ -38,9 +38,8 @@ export default function AcceptInvitePage() {
       try {
         const result = await acceptTeamInviteAction(token)
         
-        if (result.isSuccess) {
+        if (notifyActionResult(result, { successMessage: "Invitation accepted successfully!" })) {
           setStatus("success")
-          toast.success("Invitation accepted successfully!")
           // Redirect to dashboard after 3 seconds
           setTimeout(() => {
             router.push("/redirect")
@@ -53,12 +52,11 @@ export default function AcceptInvitePage() {
           } else {
             setStatus("error")
           }
-          toast.error(result.message)
         }
       } catch (error) {
         console.error("Error accepting invite:", error)
         setStatus("error")
-        toast.error("Failed to accept invitation")
+        notifyUnexpectedError("accept invitation")
       } finally {
         setIsLoading(false)
       }
@@ -74,7 +72,7 @@ export default function AcceptInvitePage() {
           <CardContent className="p-8 text-center">
             <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Processing Invitation</h2>
-            <p className="text-gray-600">Please wait while we process your invitation...</p>
+            <p className="text-slate-600">Please wait while we process your invitation...</p>
           </CardContent>
         </Card>
       </div>
@@ -120,7 +118,7 @@ export default function AcceptInvitePage() {
               <CardDescription className="text-lg">
                 You've successfully joined the organization!
               </CardDescription>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 You can now access your dashboard and start collaborating with your team.
               </p>
               <div className="pt-4">
@@ -139,7 +137,7 @@ export default function AcceptInvitePage() {
               <CardDescription className="text-lg">
                 There was an error processing your invitation.
               </CardDescription>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 The invitation link may be invalid or you may not have permission to accept it.
               </p>
               <div className="pt-4 space-y-2">
@@ -165,7 +163,7 @@ export default function AcceptInvitePage() {
               <CardDescription className="text-lg">
                 This invitation has expired.
               </CardDescription>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Invitation links are valid for 7 days. Please contact the person who invited you for a new invitation.
               </p>
               <div className="pt-4">
@@ -184,7 +182,7 @@ export default function AcceptInvitePage() {
               <CardDescription className="text-lg">
                 This invitation has already been accepted.
               </CardDescription>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 You may have already accepted this invitation, or someone else has used this link.
               </p>
               <div className="pt-4">

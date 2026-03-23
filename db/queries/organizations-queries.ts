@@ -2,7 +2,7 @@
 
 import { eq, ilike, and, desc, asc } from "drizzle-orm";
 import { db } from "../db";
-import { agenciesTable, suppliersTable, InsertAgency, SelectAgency, InsertSupplier, SelectSupplier } from "../schema/organizations-schema";
+import { agenciesTable, suppliersTable, costConsultantsTable, InsertAgency, SelectAgency, InsertSupplier, SelectSupplier, InsertCostConsultant, SelectCostConsultant } from "../schema/organizations-schema";
 import { imagesTable } from "../schema/image-galleries-schema";
 
 // Agency CRUD operations
@@ -422,6 +422,55 @@ export const unpublishSupplier = async (id: string): Promise<SelectSupplier> => 
   }
 };
 
+// Cost Consultant CRUD operations
+export const createCostConsultant = async (data: InsertCostConsultant): Promise<SelectCostConsultant> => {
+  const [row] = await db.insert(costConsultantsTable).values(data).returning();
+  return row;
+};
+
+export const getCostConsultantById = async (id: string): Promise<SelectCostConsultant> => {
+  const result = await db
+    .select()
+    .from(costConsultantsTable)
+    .where(eq(costConsultantsTable.id, id))
+    .limit(1);
+
+  if (!result[0]) {
+    throw new Error("Cost consultant not found");
+  }
+  return result[0];
+};
+
+export const getAllCostConsultants = async (): Promise<SelectCostConsultant[]> => {
+  return db.select().from(costConsultantsTable).orderBy(costConsultantsTable.name);
+};
+
+export const updateCostConsultant = async (
+  id: string,
+  data: Partial<InsertCostConsultant>
+): Promise<SelectCostConsultant> => {
+  const [row] = await db
+    .update(costConsultantsTable)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(costConsultantsTable.id, id))
+    .returning();
+
+  if (!row) throw new Error("Cost consultant not found");
+  return row;
+};
+
+export const deleteCostConsultant = async (id: string): Promise<void> => {
+  await db.delete(costConsultantsTable).where(eq(costConsultantsTable.id, id));
+};
+
+export const searchCostConsultants = async (query: string): Promise<SelectCostConsultant[]> => {
+  return db
+    .select()
+    .from(costConsultantsTable)
+    .where(ilike(costConsultantsTable.name, `%${query}%`))
+    .orderBy(costConsultantsTable.name);
+};
+
 export const getAgencyByIdWithImages = async (id: string) => {
   try {
     const agency = await db.query.agenciesTable.findFirst({
@@ -481,4 +530,3 @@ export const getSupplierByIdWithImages = async (id: string) => {
     throw new Error("Failed to get supplier with images");
   }
 };
-

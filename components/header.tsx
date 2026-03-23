@@ -53,7 +53,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-1 text-gray-600 hover:text-primary transition-colors"
+                className="flex items-center space-x-1 text-slate-600 hover:text-primary transition-colors"
               >
                 <item.icon className="h-4 w-4" />
                 <span>{item.name}</span>
@@ -99,7 +99,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-2 px-4 py-3 text-gray-600 hover:bg-primary/10"
+                className="flex items-center space-x-2 px-4 py-3 text-slate-600 hover:bg-primary/10"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <item.icon className="h-5 w-5" />
