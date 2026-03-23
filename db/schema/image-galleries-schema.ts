@@ -6,7 +6,7 @@ import { z } from "zod";
 export const imagesTable = pgTable("images", {
   id: uuid("id").primaryKey().defaultRandom(),
   organizationId: uuid("organization_id").notNull(), // References agency or supplier
-  organizationType: text("organization_type", { enum: ["agency", "supplier"] }).notNull(), // Distinguishes between agency and supplier
+  organizationType: text("organization_type", { enum: ["agency", "supplier", "cost_consultant"] }).notNull(),
   fileName: text("file_name").notNull(), // Original filename
   filePath: text("file_path").notNull(), // Supabase storage path
   fileUrl: text("file_url").notNull(), // Public URL for the image

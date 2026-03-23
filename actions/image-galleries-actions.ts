@@ -49,7 +49,7 @@ export async function getImageByIdAction(id: string) {
   }
 }
 
-export async function getImagesByOrganizationAction(organizationId: string, organizationType: "agency" | "supplier") {
+export async function getImagesByOrganizationAction(organizationId: string, organizationType: "agency" | "supplier" | "cost_consultant") {
   try {
     return await getImagesByOrganization(organizationId, organizationType);
   } catch (error) {
@@ -91,7 +91,7 @@ export async function deleteImageAction(id: string) {
 }
 
 // Get featured images for an organization
-export async function getFeaturedImagesByOrganizationAction(organizationId: string, organizationType: "agency" | "supplier") {
+export async function getFeaturedImagesByOrganizationAction(organizationId: string, organizationType: "agency" | "supplier" | "cost_consultant") {
   try {
     return await getFeaturedImagesByOrganization(organizationId, organizationType);
   } catch (error) {

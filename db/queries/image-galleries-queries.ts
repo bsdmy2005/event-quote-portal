@@ -26,7 +26,7 @@ export async function getImageById(id: string) {
   }
 }
 
-export async function getImagesByOrganization(organizationId: string, organizationType: "agency" | "supplier") {
+export async function getImagesByOrganization(organizationId: string, organizationType: "agency" | "supplier" | "cost_consultant") {
   try {
     const images = await db.query.imagesTable.findMany({
       where: and(
@@ -67,7 +67,7 @@ export async function deleteImage(id: string) {
 }
 
 // Get featured images for an organization
-export async function getFeaturedImagesByOrganization(organizationId: string, organizationType: "agency" | "supplier") {
+export async function getFeaturedImagesByOrganization(organizationId: string, organizationType: "agency" | "supplier" | "cost_consultant") {
   try {
     const images = await db.query.imagesTable.findMany({
       where: and(

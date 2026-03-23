@@ -34,7 +34,7 @@ const FILE_LIMITS = {
 } as const;
 
 function generateImagePath(
-  organizationType: 'agency' | 'supplier',
+  organizationType: 'agency' | 'supplier' | 'cost_consultant',
   organizationId: string,
   fileName: string
 ): string {
@@ -71,7 +71,7 @@ export async function uploadImageAction(
   fileName: string,
   fileType: string,
   fileSize: number,
-  organizationType: 'agency' | 'supplier',
+  organizationType: 'agency' | 'supplier' | 'cost_consultant',
   organizationId: string
 ): Promise<UploadResult> {
   try {
@@ -240,7 +240,7 @@ export async function uploadQuotationAction(
  * Server action to delete an image from R2 storage
  */
 export async function deleteImageAction(
-  organizationType: 'agency' | 'supplier',
+  organizationType: 'agency' | 'supplier' | 'cost_consultant',
   storagePath: string
 ): Promise<{ success: boolean; error?: string }> {
   try {

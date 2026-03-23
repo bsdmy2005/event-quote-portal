@@ -90,7 +90,7 @@ export function validateQuotationFile(file: File): { valid: boolean; error?: str
 // Helper function to upload an image using server action
 export async function uploadImage(
   file: File,
-  organizationType: 'agency' | 'supplier',
+  organizationType: 'agency' | 'supplier' | 'cost_consultant',
   organizationId: string
 ): Promise<{ success: boolean; data?: { path: string; url: string; size: number; type: string }; error?: string }> {
   // Validate file first
@@ -147,7 +147,7 @@ export async function uploadQuotation(
 
 // Helper function to delete an image using server action
 export async function deleteImage(
-  organizationType: 'agency' | 'supplier',
+  organizationType: 'agency' | 'supplier' | 'cost_consultant',
   storagePath: string
 ): Promise<{ success: boolean; error?: string }> {
   const { deleteImageAction } = await import('@/actions/upload-actions');
