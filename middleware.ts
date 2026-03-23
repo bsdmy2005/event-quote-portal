@@ -19,6 +19,10 @@ export default authMiddleware({
     "/app/data/templates",
     "/api/inboundemail",
     "/api/webhooks/postmark",
+    "/terms",
+    "/privacy",
+    "/refund",
+    "/pricing",
   ],
   // Array of routes that can be accessed by authenticated users
   ignoredRoutes: ["/api/webhook", "/api/public"],
