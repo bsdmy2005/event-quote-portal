@@ -16,12 +16,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("=== LAYOUT RENDERED ===");
-  const { userId } = await auth();
-  const user = await currentUser();
-  console.log("Layout userId:", userId);
-  console.log("Layout user email:", user?.emailAddresses?.[0]?.emailAddress);
   let isAdmin = false;
+  let userId: string | null = null;
+  let user = null;
+
+  try {
+    const authResult = await auth();
+    userId = authResult.userId;
+    user = await currentUser();
+  } catch (error) {
+    console.error("Clerk auth() failed — rendering as unauthenticated:", error);
+  }
 
   if (userId) {
     // Check if profile exists
