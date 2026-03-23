@@ -31,7 +31,7 @@ import type { Image, NewImage } from "@/db/schema";
 
 interface ImageManagerProps {
   organizationId: string;
-  organizationType: "agency" | "supplier";
+  organizationType: "agency" | "supplier" | "cost_consultant";
 }
 
 export default function ImageManager({ organizationId, organizationType }: ImageManagerProps) {
