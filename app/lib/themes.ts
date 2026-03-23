@@ -870,4 +870,4 @@ export const themes: ThemeConfig[] = [
   forestEmerald,
 ];
 
-export const defaultTheme = blueSteel;
+export const defaultTheme = darkNavy;

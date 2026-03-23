@@ -1,7 +1,13 @@
 import { ServerClient } from 'postmark';
 import { generateTeamInviteEmail, generateRfqInviteEmail, generateQuotationReceivedEmail } from './email-templates';
 
-const client = new ServerClient(process.env.POSTMARK_SERVER_API_TOKEN as string);
+let _client: ServerClient | null = null;
+function getClient() {
+  if (!_client) {
+    _client = new ServerClient(process.env.POSTMARK_SERVER_API_TOKEN || '');
+  }
+  return _client;
+}
 
 interface SendEmailParams {
   to: string;
@@ -84,7 +90,7 @@ export async function sendEmail({
   const sanitizedEmail = sanitizeEmail(to);
 
   try {
-    const response = await client.sendEmail({
+    const response = await getClient().sendEmail({
       From: process.env.POSTMARK_FROM_EMAIL || 'noreply@quoteportal.com',
       To: sanitizedEmail,
       Subject: subject.trim(),
