@@ -3,7 +3,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import Header from "@/components/header";
-import { getProfileByIdAction, createProfileAction } from "@/actions/profiles-actions";
+import { getProfileByIdAction, createProfileAction, updateProfileAction } from "@/actions/profiles-actions";
 import { getProfileByEmail } from "@/db/queries/profiles-queries";
 import { autoAcceptInvitationAction } from "@/actions/onboarding-actions";
 import { Providers } from "@/components/utilities/providers";
@@ -36,7 +36,9 @@ export default async function RootLayout({
     if (!profileResult.data && user) {
       try {
         const userEmail = user.emailAddresses[0]?.emailAddress || "";
-        
+        const adminEmails = (process.env.ADMIN_EMAILS || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
+        const isAdminEmail = adminEmails.includes(userEmail.toLowerCase());
+
         // Check if a profile with this email already exists
         const existingProfile = await getProfileByEmail(userEmail);
         if (existingProfile) {
@@ -47,7 +49,7 @@ export default async function RootLayout({
             firstName: user.firstName || "",
             lastName: user.lastName || "",
             email: userEmail,
-            role: "agency_member" as "admin" | "agency_admin" | "agency_member" | "supplier_admin" | "supplier_member",
+            role: isAdminEmail ? "admin" : "agency_member" as "admin" | "agency_admin" | "agency_member" | "supplier_admin" | "supplier_member",
             agencyId: null,
             supplierId: null
           });
@@ -82,7 +84,17 @@ export default async function RootLayout({
     // Get the profile to check admin status
     const updatedProfileResult = await getProfileByIdAction(userId);
     const updatedProfile = updatedProfileResult.data;
-    isAdmin = updatedProfile?.role === 'admin';
+
+    // Auto-promote to admin if email matches ADMIN_EMAILS env var
+    if (updatedProfile && updatedProfile.role !== 'admin') {
+      const adminEmails = (process.env.ADMIN_EMAILS || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
+      if (adminEmails.includes(updatedProfile.email.toLowerCase())) {
+        await updateProfileAction(userId, { role: 'admin' });
+        isAdmin = true;
+      }
+    }
+
+    isAdmin = isAdmin || updatedProfile?.role === 'admin';
     
     // If user has a profile but no organization, check for invitations
     if (updatedProfile && !updatedProfile.agencyId && !updatedProfile.supplierId) {
