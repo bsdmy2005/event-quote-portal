@@ -12,8 +12,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { FileUpload } from "@/components/ui/file-upload"
 import { CalendarIcon, Plus, X, Upload, FileText } from "lucide-react"
 import { format } from "date-fns"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { updateRfqAction, updateRfqAttachmentsAction } from "@/actions/rfqs-actions"
+import { getAllCategoriesAction } from "@/actions/categories-actions"
 import { uploadRfqAttachment, validateRfqAttachmentFile } from "@/lib/r2-storage"
 import { toast } from "sonner"
 import { SelectRfq } from "@/db/schema/rfqs-schema"
@@ -43,6 +45,12 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
     end: string
   } | null>(rfq.eventDates || null)
   const [deadlineDate, setDeadlineDate] = useState<Date>(new Date(rfq.deadlineAt))
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([])
+  const [selectedServices, setSelectedServices] = useState<string[]>(
+    (rfq.requiredServices as string[] | null) || []
+  )
+  const [categorySearch, setCategorySearch] = useState("")
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [formData, setFormData] = useState({
     title: rfq.title,
     clientName: rfq.clientName,
@@ -81,6 +89,28 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
       setUploadedFiles(existingFiles)
     }
   }, [rfq.attachmentsUrl])
+
+  useEffect(() => {
+    async function fetchCategories() {
+      setCategoriesLoading(true)
+      const result = await getAllCategoriesAction()
+      if (result.isSuccess && result.data) {
+        setCategories(result.data.map(c => ({ id: c.id, name: c.name })))
+      }
+      setCategoriesLoading(false)
+    }
+    fetchCategories()
+  }, [])
+
+  const filteredCategories = categories.filter(cat =>
+    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+  )
+
+  const toggleService = (name: string) => {
+    setSelectedServices(prev =>
+      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
+    )
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -164,6 +194,7 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
         eventDates: eventDates || undefined,
         venue: formData.venue || undefined,
         scope: formData.scope,
+        requiredServices: selectedServices.length > 0 ? selectedServices : undefined,
         deadlineAt: deadlineDate.toISOString()
       })
 
@@ -313,6 +344,35 @@ export function EditRfqForm({ rfq, className }: EditRfqFormProps) {
               rows={6}
               required
             />
+          </div>
+
+          {/* Required Services */}
+          <div className="space-y-2">
+            <Label>Required Services</Label>
+            <Input
+              placeholder="Search categories..."
+              value={categorySearch}
+              onChange={(e) => setCategorySearch(e.target.value)}
+            />
+            <div className="flex flex-wrap gap-2 mt-2 max-h-48 overflow-y-auto p-2 border rounded-md">
+              {categoriesLoading ? (
+                <p className="text-sm text-muted-foreground">Loading categories...</p>
+              ) : filteredCategories.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No categories found</p>
+              ) : (
+                filteredCategories.map(cat => (
+                  <Badge
+                    key={cat.id}
+                    variant={selectedServices.includes(cat.name) ? "default" : "outline"}
+                    className="cursor-pointer"
+                    onClick={() => toggleService(cat.name)}
+                  >
+                    {cat.name}
+                  </Badge>
+                ))
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">{selectedServices.length} categories selected</p>
           </div>
 
           {/* Attachments */}

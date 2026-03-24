@@ -231,6 +231,7 @@ export async function updateRfqAction(
     venue: string
     scope: string
     attachmentsUrl: string[]
+    requiredServices: string[]
     deadlineAt: string
     status: "draft" | "sent" | "closed" | "awarded" | "not_awarded"
       | "published" | "evaluation" | "cancelled"

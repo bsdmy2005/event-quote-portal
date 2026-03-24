@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft, ArrowRight, Wrench, MapPin, Globe, Phone, Mail } from "lucide-react"
+import { ArrowLeft, ArrowRight, Wrench, MapPin, Globe, Phone, Mail, Search, Loader2 } from "lucide-react"
 import { createSupplierOnboardingAction } from "@/actions/onboarding-actions"
+import { getAllCategoriesAction } from "@/actions/categories-actions"
 import { createImageAction } from "@/actions/image-galleries-actions"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { uploadImage } from "@/lib/r2-storage"
@@ -24,6 +25,9 @@ export default function SupplierOnboardPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImages, setSelectedImages] = useState<File[]>([])
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  const [categories, setCategories] = useState<string[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categorySearch, setCategorySearch] = useState("")
   const [formData, setFormData] = useState({
     name: "",
     contactName: user?.fullName || "",
@@ -37,12 +41,35 @@ export default function SupplierOnboardPage() {
     isPublished: true
   })
 
-  const categories = [
-    "Audio Visual", "Catering", "Decor & Styling", "Entertainment", "Photography",
-    "Videography", "Lighting", "Sound", "Staging", "Transportation", "Security",
-    "Event Management", "Venue", "Equipment Rental", "Floral Design", "Printing",
-    "Signage", "Tents & Structures", "Power & Electrical", "Other"
-  ]
+  // Fetch categories from the database on mount
+  useEffect(() => {
+    async function fetchCategories() {
+      setCategoriesLoading(true)
+      try {
+        const result = await getAllCategoriesAction()
+        if (result.isSuccess && result.data) {
+          const names = result.data.map((cat) => cat.name).sort()
+          setCategories(names)
+        } else {
+          toast.error("Failed to load categories")
+          setCategories([])
+        }
+      } catch {
+        toast.error("Failed to load categories")
+        setCategories([])
+      } finally {
+        setCategoriesLoading(false)
+      }
+    }
+    fetchCategories()
+  }, [])
+
+  // Filter categories based on search input
+  const filteredCategories = useMemo(() => {
+    if (!categorySearch.trim()) return categories
+    const query = categorySearch.toLowerCase()
+    return categories.filter((cat) => cat.toLowerCase().includes(query))
+  }, [categories, categorySearch])
 
   const handleCategoryToggle = (category: string) => {
     setFormData(prev => ({
@@ -335,25 +362,65 @@ export default function SupplierOnboardPage() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Service Categories *</h3>
                 <p className="text-sm text-slate-600">Select the services you provide (at least one required)</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {categories.map((category) => (
-                    <Button
-                      key={category}
-                      type="button"
-                      variant={formData.serviceCategories.includes(category) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        handleCategoryToggle(category)
-                        if (validationErrors.serviceCategories) {
-                          setValidationErrors(prev => ({ ...prev, serviceCategories: "" }))
-                        }
-                      }}
-                      className="justify-start"
-                    >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
+
+                {categoriesLoading ? (
+                  <div className="flex items-center justify-center py-8 text-slate-500">
+                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    Loading categories...
+                  </div>
+                ) : categories.length === 0 ? (
+                  <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded border border-amber-200">
+                    No categories available. Please contact support.
+                  </div>
+                ) : (
+                  <>
+                    {/* Search filter */}
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Search categories..."
+                        value={categorySearch}
+                        onChange={(e) => setCategorySearch(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+
+                    {/* Selected count */}
+                    {formData.serviceCategories.length > 0 && (
+                      <p className="text-sm text-green-700 font-medium">
+                        {formData.serviceCategories.length} categor{formData.serviceCategories.length === 1 ? "y" : "ies"} selected
+                      </p>
+                    )}
+
+                    {/* Category buttons */}
+                    {filteredCategories.length === 0 ? (
+                      <p className="text-sm text-slate-500 py-4 text-center">
+                        No categories match &ldquo;{categorySearch}&rdquo;
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                        {filteredCategories.map((category) => (
+                          <Button
+                            key={category}
+                            type="button"
+                            variant={formData.serviceCategories.includes(category) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              handleCategoryToggle(category)
+                              if (validationErrors.serviceCategories) {
+                                setValidationErrors(prev => ({ ...prev, serviceCategories: "" }))
+                              }
+                            }}
+                            className="justify-start"
+                          >
+                            {category}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {validationErrors.serviceCategories && (
                   <p className="text-sm text-red-600">{validationErrors.serviceCategories}</p>
                 )}

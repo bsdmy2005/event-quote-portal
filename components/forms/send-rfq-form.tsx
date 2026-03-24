@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { SupplierSelectionForm } from "@/components/forms/supplier-selection-form"
 import { sendRfqAction } from "@/actions/rfqs-actions"
 import { getAllSuppliersAction } from "@/actions/organizations-actions"
-import { Building2, Calendar, Clock, FileText, Users, Mail, Send } from "lucide-react"
+import { Building2, Calendar, Clock, FileText, Users, Mail, Send, Zap } from "lucide-react"
 import { format } from "date-fns"
 import { toast } from "sonner"
 import { SelectRfq } from "@/db/schema/rfqs-schema"
@@ -77,6 +77,46 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
   }
 
   const selectedSuppliersData = suppliers.filter(s => selectedSuppliers.includes(s.id))
+
+  const matchingSupplierIds = useMemo(() => {
+    const required = rfq.requiredServices ?? []
+    if (required.length === 0) return []
+    return suppliers
+      .filter(s => {
+        const cats = s.serviceCategories ?? []
+        return cats.some((cat: string) =>
+          required.some((req: string) => req.toLowerCase() === cat.toLowerCase())
+        )
+      })
+      .map((s: any) => s.id)
+  }, [suppliers, rfq.requiredServices])
+
+  const handleSendToAllMatching = async () => {
+    if (matchingSupplierIds.length === 0) {
+      toast.error("No matching suppliers found")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const result = await sendRfqAction(rfq.id, matchingSupplierIds)
+
+      if (
+        notifyActionResult(result, {
+          successMessage: `RFQ sent to ${matchingSupplierIds.length} matching supplier(s) successfully`,
+          errorMessage: "Failed to send RFQ",
+        })
+      ) {
+        router.push(`/rfqs/${rfq.id}`)
+      }
+    } catch (error) {
+      console.error("Error sending RFQ:", error)
+      notifyUnexpectedError("send RFQ")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className={className}>
@@ -166,10 +206,32 @@ export function SendRfqForm({ rfq, className }: SendRfqFormProps) {
           <SupplierSelectionForm
             selectedSuppliers={selectedSuppliers}
             onSelectionChange={handleSupplierSelection}
+            rfq={rfq}
           />
 
-          {/* Send Button */}
-          <div className="mt-6 flex justify-end">
+          {/* Send Buttons */}
+          <div className="mt-6 flex justify-end gap-3">
+            {matchingSupplierIds.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={handleSendToAllMatching}
+                disabled={isLoading}
+                size="lg"
+                className="min-w-[200px] border-blue-300 text-blue-700 hover:bg-blue-50"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700 mr-2"></div>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4 mr-2" />
+                    Send to All Matching ({matchingSupplierIds.length})
+                  </>
+                )}
+              </Button>
+            )}
             <Button
               onClick={handleSendRfq}
               disabled={isLoading || selectedSuppliers.length === 0}

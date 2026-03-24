@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,8 +12,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { FileUpload } from "@/components/ui/file-upload"
 import { CalendarIcon, Plus, X, Upload, FileText } from "lucide-react"
 import { format } from "date-fns"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { createRfqAction, updateRfqAttachmentsAction } from "@/actions/rfqs-actions"
+import { getAllCategoriesAction } from "@/actions/categories-actions"
 import { uploadRfqAttachment, validateRfqAttachmentFile } from "@/lib/r2-storage"
 import { toast } from "sonner"
 import { notifyActionResult, notifyUnexpectedError } from "@/lib/client-action-feedback"
@@ -41,6 +43,10 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
     end: string
   } | null>(null)
   const [deadlineDate, setDeadlineDate] = useState<Date>()
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([])
+  const [selectedServices, setSelectedServices] = useState<string[]>([])
+  const [categorySearch, setCategorySearch] = useState("")
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [formData, setFormData] = useState({
     title: "",
     clientName: "",
@@ -49,8 +55,29 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
     projectType: "physical_event",
     ndaRequired: false,
     teaserSummary: "",
-    requiredServices: "",
   })
+
+  useEffect(() => {
+    async function fetchCategories() {
+      setCategoriesLoading(true)
+      const result = await getAllCategoriesAction()
+      if (result.isSuccess && result.data) {
+        setCategories(result.data.map(c => ({ id: c.id, name: c.name })))
+      }
+      setCategoriesLoading(false)
+    }
+    fetchCategories()
+  }, [])
+
+  const filteredCategories = categories.filter(cat =>
+    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+  )
+
+  const toggleService = (name: string) => {
+    setSelectedServices(prev =>
+      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
+    )
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -135,9 +162,7 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
         projectType: formData.projectType as any,
         ndaRequired: formData.ndaRequired,
         teaserSummary: formData.teaserSummary || undefined,
-        requiredServices: formData.requiredServices
-          ? formData.requiredServices.split(",").map(s => s.trim()).filter(Boolean)
-          : undefined,
+        requiredServices: selectedServices.length > 0 ? selectedServices : undefined,
         attachmentsUrl: [], // Will be updated after file uploads
         deadlineAt: deadlineDate.toISOString()
       })
@@ -306,15 +331,35 @@ export function CreateRfqForm({ className }: CreateRfqFormProps) {
                 <option value="other">Other</option>
               </select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="requiredServices">Required Services (comma separated)</Label>
-              <Input
-                id="requiredServices"
-                placeholder="Venue, Catering, AV"
-                value={formData.requiredServices}
-                onChange={(e) => handleInputChange("requiredServices", e.target.value)}
-              />
+          </div>
+
+          {/* Required Services */}
+          <div className="space-y-2">
+            <Label>Required Services</Label>
+            <Input
+              placeholder="Search categories..."
+              value={categorySearch}
+              onChange={(e) => setCategorySearch(e.target.value)}
+            />
+            <div className="flex flex-wrap gap-2 mt-2 max-h-48 overflow-y-auto p-2 border rounded-md">
+              {categoriesLoading ? (
+                <p className="text-sm text-muted-foreground">Loading categories...</p>
+              ) : filteredCategories.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No categories found</p>
+              ) : (
+                filteredCategories.map(cat => (
+                  <Badge
+                    key={cat.id}
+                    variant={selectedServices.includes(cat.name) ? "default" : "outline"}
+                    className="cursor-pointer"
+                    onClick={() => toggleService(cat.name)}
+                  >
+                    {cat.name}
+                  </Badge>
+                ))
+              )}
             </div>
+            <p className="text-sm text-muted-foreground">{selectedServices.length} categories selected</p>
           </div>
 
           <div className="space-y-2">
