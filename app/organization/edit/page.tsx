@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Save, Building2, Wrench, ImageIcon } from "lucide-react"
+import { Save, Building2, Wrench, ImageIcon, Search, Loader2 } from "lucide-react"
+import { getAllCategoriesAction } from "@/actions/categories-actions"
 import { getUserOrganizationAction, updateAgencyAction, updateSupplierAction } from "@/actions/onboarding-actions"
 import { publishSupplierAction, unpublishSupplierAction } from "@/actions/organizations-actions"
 import { OrganizationSidebar } from "@/components/ui/organization-sidebar"
@@ -38,25 +39,29 @@ export default function EditOrganizationPage() {
     servicesText: ""
   })
 
-  const categories: Record<string, string[]> = {
-    agency: [
-      "Corporate Events", "Weddings", "Conferences", "Trade Shows", "Product Launches",
-      "Awards Ceremonies", "Team Building", "Gala Dinners", "Exhibitions", "Festivals",
-      "Charity Events", "Networking Events", "Training Sessions", "Seminars", "Other"
-    ],
-    supplier: [
-      "Audio Visual", "Catering", "Decor & Styling", "Entertainment", "Photography",
-      "Videography", "Lighting", "Sound", "Staging", "Transportation", "Security",
-      "Event Management", "Venue", "Equipment Rental", "Floral Design", "Printing",
-      "Signage", "Tents & Structures", "Power & Electrical", "Other"
-    ],
-    cost_consultant: [
-      "Event Management", "Production & Staging", "Audio Visual", "Catering & Hospitality",
-      "Venue Sourcing", "Decor & Styling", "Entertainment", "Transportation & Logistics",
-      "Accommodation", "Marketing & Branding", "Digital & Virtual Events", "Security",
-      "Health & Safety", "Project Management", "Budget Advisory", "Other"
-    ]
-  }
+  const [dbCategories, setDbCategories] = useState<string[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categorySearch, setCategorySearch] = useState("")
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const result = await getAllCategoriesAction()
+        if (result.isSuccess && result.data) {
+          setDbCategories(result.data.map(c => c.name).sort())
+        }
+      } catch (error) {
+        console.error("Error loading categories:", error)
+      } finally {
+        setCategoriesLoading(false)
+      }
+    }
+    loadCategories()
+  }, [])
+
+  const filteredCategories = dbCategories.filter(c =>
+    c.toLowerCase().includes(categorySearch.toLowerCase())
+  )
 
   useEffect(() => {
     const loadOrganization = async () => {
@@ -359,33 +364,60 @@ export default function EditOrganizationPage() {
                     </div>
                   </div>
 
-                  {/* Categories (not applicable for cost consultants) */}
-                  {orgType !== "cost_consultant" && (
+                  {/* Categories */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">
                       {orgType === "agency" ? "Interest Categories" : "Service Categories"}
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {(categories[orgType] || []).map((category) => (
-                        <Button
-                          key={category}
-                          type="button"
-                          variant={
-                            (orgType === "agency"
+                    <p className="text-sm text-slate-500">
+                      {orgType === "agency"
+                        ? "Select the event categories your agency is interested in"
+                        : "Select the services your organization provides"}
+                    </p>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Search categories..."
+                        value={categorySearch}
+                        onChange={(e) => setCategorySearch(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    {categoriesLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-5 w-5 animate-spin text-slate-400 mr-2" />
+                        <span className="text-sm text-slate-500">Loading categories...</span>
+                      </div>
+                    ) : (
+                      <div className="max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {filteredCategories.map((category) => {
+                            const isSelected = orgType === "agency"
                               ? formData.interestCategories.includes(category)
                               : formData.serviceCategories.includes(category)
-                            ) ? "default" : "outline"
-                          }
-                          size="sm"
-                          onClick={() => handleCategoryToggle(category, orgType === "agency" ? "interest" : "service")}
-                          className="justify-start"
-                        >
-                          {category}
-                        </Button>
-                      ))}
-                    </div>
+                            return (
+                              <Button
+                                key={category}
+                                type="button"
+                                variant={isSelected ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleCategoryToggle(category, orgType === "agency" ? "interest" : "service")}
+                                className="justify-start text-xs"
+                              >
+                                {category}
+                              </Button>
+                            )
+                          })}
+                        </div>
+                        {filteredCategories.length === 0 && (
+                          <p className="text-sm text-slate-500 text-center py-4">No categories match your search</p>
+                        )}
+                      </div>
+                    )}
+                    <p className="text-sm text-slate-500">
+                      {(orgType === "agency" ? formData.interestCategories : formData.serviceCategories).length} categories selected
+                    </p>
                   </div>
-                  )}
 
                   {/* Description */}
                   <div className="space-y-4">
