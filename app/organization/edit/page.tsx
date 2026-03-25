@@ -59,7 +59,12 @@ export default function EditOrganizationPage() {
     loadCategories()
   }, [])
 
-  const filteredCategories = dbCategories.filter(c =>
+  // Merge DB categories with any existing saved categories not in DB (legacy)
+  const currentCategories = orgType === "agency" ? formData.interestCategories : formData.serviceCategories
+  const legacyCategories = currentCategories.filter(c => !dbCategories.includes(c))
+  const allCategories = [...legacyCategories, ...dbCategories]
+
+  const filteredCategories = allCategories.filter(c =>
     c.toLowerCase().includes(categorySearch.toLowerCase())
   )
 
@@ -365,47 +370,71 @@ export default function EditOrganizationPage() {
                   </div>
 
                   {/* Categories */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">
-                      {orgType === "agency" ? "Interest Categories" : "Service Categories"}
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      {orgType === "agency"
-                        ? "Select the event categories your agency is interested in"
-                        : "Select the services your organization provides"}
-                    </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">
+                        {orgType === "agency" ? "Interest Categories" : "Service Categories"}
+                      </h3>
+                      <span className="text-sm font-medium text-blue-600">
+                        {(orgType === "agency" ? formData.interestCategories : formData.serviceCategories).length} selected
+                      </span>
+                    </div>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                       <Input
                         placeholder="Search categories..."
                         value={categorySearch}
                         onChange={(e) => setCategorySearch(e.target.value)}
-                        className="pl-9"
+                        className="pl-9 h-9 text-sm"
                       />
                     </div>
                     {categoriesLoading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-5 w-5 animate-spin text-slate-400 mr-2" />
+                      <div className="flex items-center justify-center py-6">
+                        <Loader2 className="h-4 w-4 animate-spin text-slate-400 mr-2" />
                         <span className="text-sm text-slate-500">Loading categories...</span>
                       </div>
                     ) : (
-                      <div className="max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-3">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          {filteredCategories.map((category) => {
-                            const isSelected = orgType === "agency"
-                              ? formData.interestCategories.includes(category)
-                              : formData.serviceCategories.includes(category)
+                      <div className="max-h-72 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50">
+                        {legacyCategories.length > 0 && !categorySearch && (
+                        <div className="mb-3 pb-3 border-b border-slate-200">
+                          <p className="text-xs text-amber-600 font-medium mb-2">Previously saved (not in current category list — deselect to remove)</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {legacyCategories.map((category) => {
+                              const isSelected = currentCategories.includes(category)
+                              return (
+                                <button
+                                  key={category}
+                                  type="button"
+                                  onClick={() => handleCategoryToggle(category, orgType === "agency" ? "interest" : "service")}
+                                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                                    isSelected
+                                      ? "bg-amber-500 text-white hover:bg-amber-600"
+                                      : "bg-white text-slate-400 border border-dashed border-slate-300"
+                                  }`}
+                                >
+                                  {category}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex flex-wrap gap-1.5">
+                          {filteredCategories.filter(c => !legacyCategories.includes(c)).map((category) => {
+                            const isSelected = currentCategories.includes(category)
                             return (
-                              <Button
+                              <button
                                 key={category}
                                 type="button"
-                                variant={isSelected ? "default" : "outline"}
-                                size="sm"
                                 onClick={() => handleCategoryToggle(category, orgType === "agency" ? "interest" : "service")}
-                                className="justify-start text-xs"
+                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                                  isSelected
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-white text-slate-600 border border-slate-300 hover:border-blue-400 hover:text-blue-600"
+                                }`}
                               >
                                 {category}
-                              </Button>
+                              </button>
                             )
                           })}
                         </div>
@@ -414,9 +443,6 @@ export default function EditOrganizationPage() {
                         )}
                       </div>
                     )}
-                    <p className="text-sm text-slate-500">
-                      {(orgType === "agency" ? formData.interestCategories : formData.serviceCategories).length} categories selected
-                    </p>
                   </div>
 
                   {/* Description */}
